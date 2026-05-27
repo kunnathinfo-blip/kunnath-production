@@ -199,7 +199,8 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100/80 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_4px_6px_-2px_rgba(0,0,0,0.02)]">
+    <>
+      <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100/80 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_4px_6px_-2px_rgba(0,0,0,0.02)]">
       <Container>
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -454,40 +455,42 @@ export function Header() {
         </div>
       )}
 
-      {/* Logout Confirmation Modal */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-gray-950/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-gray-100/90 text-center animate-in zoom-in-95 duration-200">
-            {/* Soft Red logout indicator circle */}
-            <div className="mx-auto w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-[#E53935] mb-4">
-              <LogOut size={22} strokeWidth={2.5} />
-            </div>
-            
-            <h3 className="text-lg font-extrabold text-gray-950 font-serif">Log out</h3>
-            <p className="text-xs text-gray-500 mt-2 leading-relaxed px-1">
-              Are you sure you want to log out from <strong>Kunnath House</strong>? You'll need to verify your phone number to sign in again.
-            </p>
+    </header>
 
-            <div className="flex flex-col gap-2 mt-5">
-              <button
-                type="button"
-                onClick={handleConfirmLogout}
-                className="w-full bg-[#E53935] hover:bg-[#C62828] text-white py-3 rounded-xl text-xs font-bold shadow-lg shadow-red-500/10 transition-all cursor-pointer active:scale-98"
-              >
-                Yes, Logout
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setShowLogoutConfirm(false)}
-                className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-xl text-xs font-bold transition-all border border-gray-200/40 cursor-pointer active:scale-98"
-              >
-                Cancel
-              </button>
-            </div>
+    {/* Logout Confirmation Modal */}
+    {showLogoutConfirm && (
+      <div className="fixed inset-0 bg-gray-950/75 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-gray-100/90 text-center animate-in zoom-in-95 duration-200">
+          {/* Soft Red logout indicator circle */}
+          <div className="mx-auto w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-[#E53935] mb-4">
+            <LogOut size={22} strokeWidth={2.5} />
+          </div>
+          
+          <h3 className="text-lg font-extrabold text-gray-950 font-serif">Log out</h3>
+          <p className="text-xs text-gray-500 mt-2 leading-relaxed px-1">
+            Are you sure you want to log out from <strong>Kunnath House</strong>? You'll need to verify your phone number to sign in again.
+          </p>
+
+          <div className="flex flex-col gap-2 mt-5">
+            <button
+              type="button"
+              onClick={handleConfirmLogout}
+              className="w-full bg-[#E53935] hover:bg-[#C62828] text-white py-3 rounded-xl text-xs font-bold shadow-lg shadow-red-500/10 transition-all cursor-pointer active:scale-98"
+            >
+              Yes, Logout
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setShowLogoutConfirm(false)}
+              className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-xl text-xs font-bold transition-all border border-gray-200/40 cursor-pointer active:scale-98"
+            >
+              Cancel
+            </button>
           </div>
         </div>
-      )}
-    </header>
+      </div>
+    )}
+  </>
   );
 }
