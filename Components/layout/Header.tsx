@@ -169,9 +169,17 @@ import { cn } from '@/lib/utils';
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { user, logout } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
+
+  const handleConfirmLogout = () => {
+    logout();
+    setIsProfileOpen(false);
+    setIsMobileMenuOpen(false);
+    setShowLogoutConfirm(false);
+  };
 
   const handleStayClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -317,7 +325,7 @@ export function Header() {
 
                       <button
                         onClick={() => {
-                          logout();
+                          setShowLogoutConfirm(true);
                           setIsProfileOpen(false);
                         }}
                         className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50/80 rounded-xl transition-all duration-200 font-semibold text-left cursor-pointer"
@@ -423,7 +431,7 @@ export function Header() {
                   
                   <button
                     onClick={() => {
-                      logout();
+                      setShowLogoutConfirm(true);
                       setIsMobileMenuOpen(false);
                     }}
                     className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-red-50 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
@@ -441,6 +449,41 @@ export function Header() {
                   Login / Sign up
                 </Link>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-gray-950/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-gray-100/90 text-center animate-in zoom-in-95 duration-200">
+            {/* Soft Red logout indicator circle */}
+            <div className="mx-auto w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-[#E53935] mb-4">
+              <LogOut size={22} strokeWidth={2.5} />
+            </div>
+            
+            <h3 className="text-lg font-extrabold text-gray-950 font-serif">Log out</h3>
+            <p className="text-xs text-gray-500 mt-2 leading-relaxed px-1">
+              Are you sure you want to log out from <strong>Kunnath House</strong>? You'll need to verify your phone number to sign in again.
+            </p>
+
+            <div className="flex flex-col gap-2 mt-5">
+              <button
+                type="button"
+                onClick={handleConfirmLogout}
+                className="w-full bg-[#E53935] hover:bg-[#C62828] text-white py-3 rounded-xl text-xs font-bold shadow-lg shadow-red-500/10 transition-all cursor-pointer active:scale-98"
+              >
+                Yes, Logout
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 rounded-xl text-xs font-bold transition-all border border-gray-200/40 cursor-pointer active:scale-98"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
