@@ -223,117 +223,220 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-tr from-gray-100 via-gray-50 to-amber-50/20 px-4 py-12 overflow-hidden">
-      {/* Background Decorative Blobs */}
-      <div className="absolute top-1/4 left-1/4 -z-10 h-72 w-72 rounded-full bg-red-100/40 blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 -z-10 h-80 w-80 rounded-full bg-amber-100/30 blur-3xl" />
-
-      {/* Main Glassmorphic Wrapper */}
-      <div className="w-full max-w-md backdrop-blur-md bg-white/75 border border-white/40 p-8 shadow-2xl rounded-2xl transition-all duration-350 ease-in-out">
-        {/* Invisible reCAPTCHA Anchor */}
-        <div id="recaptcha-container" className="hidden"></div>
+    <div className="flex min-h-screen bg-gray-50 overflow-hidden font-sans">
+      {/* Left Column: Visual Brand Sidebar (Hidden on Mobile/Tablet) */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gray-900 overflow-hidden items-end justify-start p-16">
+        {/* Background Image of Stay property */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-[10000ms] ease-out hover:scale-105"
+          style={{ backgroundImage: "url('/stays/orange/Mainview.JPG')" }}
+        />
+        {/* Sleek Overlay Gradient for luxury feel */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-gray-950/20" />
         
-        {/* Header Branding */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 font-serif">Kunnath House</h1>
-          <p className="text-xs tracking-[0.25em] text-amber-700 uppercase mt-1">Crafted for Recreation</p>
-          <h2 className="mt-8 text-2xl font-bold tracking-tight text-gray-800">
-            {showOtpScreen ? 'Verification Code' : 'Sign In with Mobile'}
-          </h2>
-          <p className="text-sm text-gray-500 mt-2">
-            {showOtpScreen 
-              ? `Enter the 6-digit OTP code sent to +91 ${phoneNumber}` 
-              : 'Enter your phone number to login or register'}
-          </p>
+        {/* Brand visual info */}
+        <div className="relative z-10 text-white max-w-lg space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wider uppercase text-amber-300">
+            ★ Premium Private Sanctuary
+          </div>
+          <div className="space-y-3">
+            <h1 className="text-5xl font-extrabold tracking-tight font-serif leading-tight">
+              Kunnath House
+            </h1>
+            <p className="text-gray-300 text-lg leading-relaxed font-light">
+              Experience the perfect blend of private luxury stays, elite sports club amenities, and tranquil recreation designed for premium leisure.
+            </p>
+          </div>
+
+          {/* Testimonial/Badge widget */}
+          <div className="pt-6 border-t border-white/15 flex items-center gap-4">
+            <div className="flex -space-x-2">
+              <span className="h-8 w-8 rounded-full border border-gray-950 bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-300">G1</span>
+              <span className="h-8 w-8 rounded-full border border-gray-950 bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-300">G2</span>
+              <span className="h-8 w-8 rounded-full border border-gray-950 bg-gray-800 flex items-center justify-center text-xs font-bold text-gray-300">G3</span>
+            </div>
+            <div className="text-sm">
+              <p className="font-semibold text-white">Loved by Families & Athletes</p>
+              <p className="text-gray-400 text-xs font-light">5.0 Star rated hospitality and facilities</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column: Modern Authentication Form */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-between items-center p-6 sm:p-12 md:p-16 bg-gradient-to-tr from-gray-50 via-gray-100 to-amber-50/10 min-h-screen relative">
+        
+        {/* Invisible reCAPTCHA Anchor for Firebase */}
+        <div id="recaptcha-container" className="hidden"></div>
+
+        {/* Top Header Branding (Mobile/Tablet only) */}
+        <div className="w-full max-w-md flex justify-between items-center lg:justify-end mb-6">
+          <div className="lg:hidden">
+            <h2 className="text-xl font-extrabold tracking-tight text-gray-900 font-serif">Kunnath House</h2>
+            <p className="text-[9px] tracking-widest text-amber-700 uppercase font-bold">Recreation</p>
+          </div>
         </div>
 
-        {/* Global Errors */}
-        {(error || localError) && (
-          <div className="bg-red-50/80 border border-red-200/50 text-red-600 p-3 rounded-lg text-sm text-center mb-6 backdrop-blur-sm animate-pulse">
-            {localError || error}
+        {/* Main Content Form Card */}
+        <div className="w-full max-w-md my-auto space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-500">
+          
+          {/* Form Header */}
+          <div className="space-y-2.5">
+            <div className="h-12 w-12 rounded-2xl bg-[#E53935]/10 flex items-center justify-center text-[#E53935] mb-4">
+              {showOtpScreen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                </svg>
+              )}
+            </div>
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight font-serif">
+              {showOtpScreen ? 'Security Verification' : 'Sign In with Mobile'}
+            </h2>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">
+              {showOtpScreen 
+                ? `Please enter the 6-digit verification code sent to +91 ${phoneNumber}` 
+                : 'Enter your 10-digit mobile number to access stays, club bookings, and memberships.'}
+            </p>
           </div>
-        )}
 
-        {/* Phone Authentication Section */}
-        <div>
-          {!showOtpScreen ? (
-            // Step 1: Mobile number input
-            <form className="space-y-6" onSubmit={handleRequestOtp}>
-              <div className="relative rounded-lg shadow-sm">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 font-semibold border-r border-gray-200/60 pr-2">
-                  +91
-                </span>
-                <input
-                  type="tel"
-                  required
-                  maxLength={10}
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                  className="block w-full rounded-lg border-0 py-3 pl-16 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#E53935] sm:text-sm sm:leading-6 bg-white/50"
-                  placeholder="Enter mobile number"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#E53935] hover:bg-[#C62828] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E53935] shadow-lg shadow-red-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
-              >
-                {isLoading ? 'Sending...' : 'Get Verification Code'}
-              </button>
-            </form>
-          ) : (
-            // Step 2: OTP Entry screen
-            <form className="space-y-6" onSubmit={handleVerifyOtp}>
-              <div className="flex justify-between gap-2">
-                {otp.map((digit, idx) => (
-                  <input
-                    key={idx}
-                    ref={(el) => { otpRefs.current[idx] = el; }}
-                    type="text"
-                    maxLength={1}
-                    pattern="\d*"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(idx, e.target.value)}
-                    onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                    className="w-12 h-12 text-center text-xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E53935] focus:border-[#E53935] bg-white/50 outline-none transition-all"
-                  />
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between text-sm">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowOtpScreen(false);
-                    setLocalError(null);
-                  }}
-                  className="font-medium text-gray-600 hover:text-gray-800 transition-colors"
-                >
-                  ← Edit number
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  disabled={timer > 0}
-                  className={`font-semibold transition-colors ${
-                    timer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#E53935] hover:text-[#C62828]'
-                  }`}
-                >
-                  {timer > 0 ? `Resend in ${timer}s` : 'Resend OTP'}
-                </button>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-[#E53935] hover:bg-[#C62828] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E53935] shadow-lg shadow-red-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
-              >
-                {isLoading ? 'Verifying...' : 'Verify & Sign In'}
-              </button>
-            </form>
+          {/* Error Alert Box */}
+          {(error || localError) && (
+            <div className="bg-red-50/70 border border-red-200/40 text-red-700 p-4 rounded-xl text-xs flex items-start gap-3 backdrop-blur-md animate-in fade-in duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+              </svg>
+              <span className="font-medium leading-relaxed">{localError || error}</span>
+            </div>
           )}
+
+          {/* Forms Section */}
+          <div className="space-y-6">
+            {!showOtpScreen ? (
+              // Step 1: Mobile Number Input
+              <form className="space-y-5" onSubmit={handleRequestOtp}>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
+                    Phone Number
+                  </label>
+                  <div className="relative rounded-xl shadow-sm transition-all duration-300 group">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-4 pr-3 text-gray-400 font-semibold border-r border-gray-200/85">
+                      +91
+                    </div>
+                    <input
+                      type="tel"
+                      required
+                      maxLength={10}
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                      className="block w-full rounded-xl border border-gray-300/80 py-3.5 pl-16 pr-4 text-gray-900 placeholder:text-gray-400/80 focus:border-[#E53935] focus:ring-4 focus:ring-[#E53935]/10 sm:text-sm bg-white/70 transition-all outline-none"
+                      placeholder="Enter 10-digit number"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-[#E53935] hover:bg-[#C62828] focus:outline-none focus:ring-4 focus:ring-[#E53935]/20 shadow-xl shadow-red-500/10 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Sending Code...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Get Verification Code</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              // Step 2: OTP Verification Screen
+              <form className="space-y-6" onSubmit={handleVerifyOtp}>
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block text-center">
+                    Enter Verification Code
+                  </label>
+                  <div className="flex justify-between gap-2.5">
+                    {otp.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        ref={(el) => { otpRefs.current[idx] = el; }}
+                        type="text"
+                        maxLength={1}
+                        pattern="\d*"
+                        value={digit}
+                        onChange={(e) => handleOtpChange(idx, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                        className="w-12 h-14 text-center text-2xl font-bold border border-gray-300/80 rounded-xl focus:border-[#E53935] focus:ring-4 focus:ring-[#E53935]/10 bg-white/70 outline-none transition-all"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Resend and Edit Actions */}
+                <div className="flex items-center justify-between text-xs sm:text-sm pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowOtpScreen(false);
+                      setLocalError(null);
+                    }}
+                    className="font-bold text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>← Edit Phone Number</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={timer > 0}
+                    className={`font-bold transition-colors cursor-pointer ${
+                      timer > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#E53935] hover:text-[#C62828]'
+                    }`}
+                  >
+                    {timer > 0 ? `Resend in ${timer}s` : 'Resend Code'}
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-[#E53935] hover:bg-[#C62828] focus:outline-none focus:ring-4 focus:ring-[#E53935]/20 shadow-xl shadow-red-500/10 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Verifying...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Verify & Sign In</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
+        {/* Footer legal text */}
+        <div className="w-full max-w-md text-center text-xs text-gray-400 font-light mt-8">
+          By continuing, you agree to our{' '}
+          <a href="/terms" className="underline hover:text-gray-600 transition-colors">Terms of Service</a>{' '}
+          and{' '}
+          <a href="/privacy" className="underline hover:text-gray-600 transition-colors">Privacy Policy</a>.
         </div>
       </div>
     </div>
