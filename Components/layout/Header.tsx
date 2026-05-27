@@ -161,7 +161,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { Menu, X, User, Phone, LogOut, Instagram, Home } from 'lucide-react';
+import { Menu, X, User, Phone, LogOut, Instagram, Home, Settings, Calendar } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -272,36 +272,60 @@ export function Header() {
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                      {user.email && <p className="text-xs text-gray-500 truncate">{user.email}</p>}
-                      {user.phoneNumber && <p className="text-xs text-gray-500 mt-0.5">{user.phoneNumber}</p>}
+                  <div className="absolute right-0 mt-3 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.12),0_1px_3px_rgba(0,0,0,0.05)] border border-gray-100/90 py-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {/* User Info Header Section */}
+                    <div className="px-4 py-3 border-b border-gray-100/80 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#E53935] to-[#C62828] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-red-500/10 flex-shrink-0">
+                        {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-gray-900 truncate leading-snug">{user.name}</p>
+                        {user.phoneNumber && (
+                          <p className="text-[11px] text-gray-400 font-medium tracking-wide mt-0.5 truncate">
+                            +91 {user.phoneNumber.replace(/^\+91/, '')}
+                          </p>
+                        )}
+                        {user.email && (
+                          <p className="text-[11px] text-gray-400 font-medium tracking-wide truncate">
+                            {user.email}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-100/60 font-semibold text-primary"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      Edit Profile
-                    </Link>
-                    <Link
-                      href="/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      My Bookings
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsProfileOpen(false);
-                      }}
-                      className="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                    >
-                      <LogOut size={16} className="mr-2" />
-                      Logout
-                    </button>
+
+                    {/* Dropdown Items */}
+                    <div className="p-1.5 space-y-0.5">
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:text-[#E53935] hover:bg-[#E53935]/5 rounded-xl transition-all duration-200 font-semibold"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <Settings size={16} className="text-gray-400" />
+                        <span>Edit Profile</span>
+                      </Link>
+                      
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:text-[#E53935] hover:bg-[#E53935]/5 rounded-xl transition-all duration-200 font-semibold"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <Calendar size={16} className="text-gray-400" />
+                        <span>My Bookings</span>
+                      </Link>
+
+                      <div className="border-t border-gray-100/60 my-1.5"></div>
+
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50/80 rounded-xl transition-all duration-200 font-semibold text-left cursor-pointer"
+                      >
+                        <LogOut size={16} className="text-red-500" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -358,36 +382,56 @@ export function Header() {
             </a>
             <div className="pt-4 border-t border-gray-200">
               {user ? (
-                <>
-                  <div className="px-3 pb-2">
-                    <p className="text-base font-medium text-gray-800">{user.name}</p>
-                    {user.email && <p className="text-sm font-medium text-gray-500">{user.email}</p>}
-                    {user.phoneNumber && <p className="text-sm font-medium text-gray-500 mt-0.5">{user.phoneNumber}</p>}
+                <div className="space-y-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#E53935] to-[#C62828] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-red-500/10">
+                      {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-gray-900 truncate leading-snug">{user.name}</p>
+                      {user.phoneNumber && (
+                        <p className="text-[11px] text-gray-400 font-medium tracking-wide mt-0.5 truncate">
+                          +91 {user.phoneNumber.replace(/^\+91/, '')}
+                        </p>
+                      )}
+                      {user.email && (
+                        <p className="text-[11px] text-gray-400 font-medium tracking-wide truncate">
+                          {user.email}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <Link
-                    href="/profile"
-                    className="block px-3 py-2 rounded-md text-base font-semibold text-primary hover:bg-gray-50"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Edit Profile
-                  </Link>
-                  <Link
-                    href="/dashboard"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    My Bookings
-                  </Link>
+                  
+                  <div className="grid grid-cols-2 gap-2 pt-2">
+                    <Link
+                      href="/profile"
+                      className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Settings size={14} className="text-gray-400" />
+                      <span>Edit Profile</span>
+                    </Link>
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Calendar size={14} className="text-gray-400" />
+                      <span>My Bookings</span>
+                    </Link>
+                  </div>
+                  
                   <button
                     onClick={() => {
                       logout();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-red-50 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
                   >
-                    Logout
+                    <LogOut size={14} className="text-red-500" />
+                    <span>Logout</span>
                   </button>
-                </>
+                </div>
               ) : (
                 <Link
                   href="/login"
