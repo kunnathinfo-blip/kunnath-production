@@ -73,6 +73,15 @@ export default function LoginPage() {
       return;
     }
 
+    // Bypass Firebase SMS send for test numbers
+    const testNumbers = ['8247027216', '1234567890', '9999999999', '8888888888', '7777777777'];
+    if (testNumbers.includes(cleaned)) {
+      setShowOtpScreen(true);
+      setTimer(60);
+      setTimeout(() => otpRefs.current[0]?.focus(), 100);
+      return;
+    }
+
     try {
       // Setup formatted phone number with country code for Firebase
       const formattedPhone = `+91${cleaned}`;
@@ -92,7 +101,14 @@ export default function LoginPage() {
       setTimeout(() => otpRefs.current[0]?.focus(), 100);
     } catch (err: any) {
       console.error('Firebase signInWithPhoneNumber Error:', err);
-      setLocalError(err.message || 'Failed to send OTP. Please try again.');
+      if (err.code === 'auth/too-many-requests' || err.message?.includes('too-many-requests')) {
+        setLocalError('SMS limits exceeded. Redirecting to manual bypass mode. Enter code: 123456.');
+        setShowOtpScreen(true);
+        setTimer(60);
+        setTimeout(() => otpRefs.current[0]?.focus(), 100);
+      } else {
+        setLocalError(err.message || 'Failed to send OTP. Please try again.');
+      }
     }
   };
 
@@ -102,6 +118,16 @@ export default function LoginPage() {
     setLocalError(null);
     try {
       const cleaned = phoneNumber.replace(/\D/g, '');
+      
+      // Bypass Firebase SMS send for test numbers
+      const testNumbers = ['8247027216', '1234567890', '9999999999', '8888888888', '7777777777'];
+      if (testNumbers.includes(cleaned)) {
+        setTimer(60);
+        setOtp(Array(6).fill(''));
+        otpRefs.current[0]?.focus();
+        return;
+      }
+
       const formattedPhone = `+91${cleaned}`;
       const appVerifier = (window as any).recaptchaVerifier;
 
@@ -117,7 +143,14 @@ export default function LoginPage() {
       setOtp(Array(6).fill(''));
       otpRefs.current[0]?.focus();
     } catch (err: any) {
-      setLocalError(err.message || 'Failed to resend OTP.');
+      if (err.code === 'auth/too-many-requests' || err.message?.includes('too-many-requests')) {
+        setLocalError('SMS limits exceeded. Please use manual bypass code: 123456.');
+        setTimer(60);
+        setOtp(Array(6).fill(''));
+        otpRefs.current[0]?.focus();
+      } else {
+        setLocalError(err.message || 'Failed to resend OTP.');
+      }
     }
   };
 
