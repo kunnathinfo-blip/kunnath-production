@@ -6,6 +6,38 @@ import { useAuthStore } from '@/store/authStore';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
+// Helper to transform raw technical error codes into clear, beautiful, user-friendly messages.
+const getFriendlyErrorMessage = (err: any): string => {
+  const code = err?.code || '';
+  const message = err?.message || '';
+
+  if (code === 'auth/too-many-requests' || message.includes('too-many-requests')) {
+    return 'We have detected too many verification requests to this device. For security and to prevent spam, SMS delivery is temporarily locked for your mobile number. Please wait a few minutes before trying again.';
+  }
+  if (code === 'auth/invalid-phone-number' || message.includes('invalid-phone-number')) {
+    return 'The mobile number you entered is incorrect. Please check the digits and try again.';
+  }
+  if (code === 'auth/network-request-failed' || message.includes('network-request-failed')) {
+    return 'A network error occurred. Please check your internet connection and try again.';
+  }
+  if (code === 'auth/invalid-verification-code' || message.includes('invalid-verification-code') || message.includes('invalid-credential')) {
+    return 'The 6-digit code you entered is incorrect. Please double-check it and try again.';
+  }
+  if (code === 'auth/code-expired' || message.includes('code-expired')) {
+    return 'The verification code has expired. Please click Resend OTP to request a new code.';
+  }
+  if (code === 'auth/captcha-check-failed' || message.includes('captcha-check-failed')) {
+    return 'Security verification (reCAPTCHA) failed. Please refresh the page and try again.';
+  }
+  if (code === 'auth/user-disabled' || message.includes('user-disabled')) {
+    return 'Your account has been deactivated. Please contact Kunnath House support.';
+  }
+
+  // Clean raw Firebase messages
+  const cleanMsg = message.replace(/^Firebase:\s*/, '').replace(/\s*\(auth\/.*\)\./, '');
+  return cleanMsg || 'An unexpected error occurred. Please try again.';
+};
+
 export default function LoginPage() {
   const router = useRouter();
   const { sendOtp, verifyOtp, isLoading, error } = useAuthStore();
@@ -31,7 +63,7 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [showOtpScreen, timer]);
 
-  // Initialize Recaptcha Verifier
+  // Initialize reCAPTCHA Verifier
   useEffect(() => {
     if (typeof window !== 'undefined' && !(window as any).recaptchaVerifier) {
       try {
@@ -92,11 +124,7 @@ export default function LoginPage() {
       setTimeout(() => otpRefs.current[0]?.focus(), 100);
     } catch (err: any) {
       console.error('Firebase signInWithPhoneNumber Error:', err);
-      if (err.code === 'auth/too-many-requests' || err.message?.includes('too-many-requests')) {
-        setLocalError('SMS request blocked: Too many requests sent to this number. Please wait before trying again.');
-      } else {
-        setLocalError(err.message || 'Failed to send OTP. Please try again.');
-      }
+      setLocalError(getFriendlyErrorMessage(err));
     }
   };
 
@@ -121,11 +149,8 @@ export default function LoginPage() {
       setOtp(Array(6).fill(''));
       otpRefs.current[0]?.focus();
     } catch (err: any) {
-      if (err.code === 'auth/too-many-requests' || err.message?.includes('too-many-requests')) {
-        setLocalError('SMS request blocked: Too many requests. Please wait a few minutes before resending.');
-      } else {
-        setLocalError(err.message || 'Failed to resend OTP.');
-      }
+      console.error('Firebase resend OTP Error:', err);
+      setLocalError(getFriendlyErrorMessage(err));
     }
   };
 
@@ -193,7 +218,7 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       console.error('OTP confirmation/verification failed:', err);
-      setLocalError(err.message || 'Verification failed. Incorrect code.');
+      setLocalError(getFriendlyErrorMessage(err));
     }
   };
 
