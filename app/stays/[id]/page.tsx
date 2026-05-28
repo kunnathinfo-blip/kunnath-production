@@ -663,7 +663,7 @@ export default function StayDetailsPage() {
     }),
     onSubmit: () => {
       if (!user) {
-        router.push(`/login?redirect=/stays/${stayId}`);
+        alert('Please login to proceed with the booking.');
         return;
       }
       setStep(3);
@@ -883,7 +883,6 @@ export default function StayDetailsPage() {
         const msg = error.response?.data?.message || '';
         if (msg.includes('Not authorized') || msg.includes('token failed')) {
           alert('Please login to proceed with the payment.');
-          router.push(`/login?redirect=/stays/${stayId}`);
         } else {
           alert(msg || 'Error creating payment order. Please try again.');
         }
@@ -1399,6 +1398,12 @@ export default function StayDetailsPage() {
                       </div>
                     )}
 
+                    {!user && (
+                      <p className="text-center text-xs text-[#E53935] font-bold mb-3 animate-pulse">
+                        ⚠️ Please login to proceed with booking.
+                      </p>
+                    )}
+
                     <Button
                       size="lg"
                       fullWidth
@@ -1409,7 +1414,7 @@ export default function StayDetailsPage() {
                           return;
                         }
                         if (!user) {
-                          router.push(`/login?redirect=/stays/${stayId}`);
+                          alert('Please login to proceed with booking.');
                           return;
                         }
                         setStep(2);
