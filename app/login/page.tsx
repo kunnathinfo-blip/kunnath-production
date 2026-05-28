@@ -48,6 +48,18 @@ export default function LoginPage() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
   const [localError, setLocalError] = useState<string | null>(null);
   const [timer, setTimer] = useState(30);
+  const [redirect, setRedirect] = useState('/');
+
+  // Parse redirect query parameter safely on client-side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redir = params.get('redirect');
+      if (redir) {
+        setRedirect(redir);
+      }
+    }
+  }, []);
 
   // Refs for OTP inputs auto-focus
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -209,12 +221,12 @@ export default function LoginPage() {
 
       if (result.userExists) {
         if (result.user.name && result.user.isVerified) {
-          router.push('/');
+          router.push(redirect);
         } else {
-          router.push('/onboarding');
+          router.push(`/onboarding?redirect=${encodeURIComponent(redirect)}`);
         }
       } else {
-        router.push('/onboarding');
+        router.push(`/onboarding?redirect=${encodeURIComponent(redirect)}`);
       }
     } catch (err: any) {
       console.error('OTP confirmation/verification failed:', err);

@@ -662,6 +662,10 @@ export default function StayDetailsPage() {
         .required('Phone Number is required'),
     }),
     onSubmit: () => {
+      if (!user) {
+        router.push(`/login?redirect=/stays/${stayId}`);
+        return;
+      }
       setStep(3);
     },
   });
@@ -1394,8 +1398,15 @@ export default function StayDetailsPage() {
                       fullWidth
                       className="mb-3"
                       onClick={() => {
-                        if (!checkIn || !checkOut) alert('Please select dates.');
-                        else setStep(2);
+                        if (!checkIn || !checkOut) {
+                          alert('Please select dates.');
+                          return;
+                        }
+                        if (!user) {
+                          router.push(`/login?redirect=/stays/${stayId}`);
+                          return;
+                        }
+                        setStep(2);
                       }}
                     >
                       Reserve

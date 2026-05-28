@@ -11,18 +11,29 @@ export default function OnboardingPage() {
   const [name, setName] = useState('');
   const [aadhaarInput, setAadhaarInput] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
+  const [redirect, setRedirect] = useState('/');
 
-  // Authenticated state route guard
+  // Parse redirect query parameter safely on client-side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redir = params.get('redirect');
+      if (redir) {
+        setRedirect(redir);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     // If not loaded, wait. Once loaded, if user is not logged in, redirect to login.
     if (!isLoading && !user) {
-      router.replace('/login');
+      router.replace(`/login?redirect=${encodeURIComponent(redirect)}`);
     }
     // If user is already verified and onboarded, redirect to Landing
     if (!isLoading && user && user.isVerified) {
-      router.replace('/');
+      router.replace(redirect);
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, redirect]);
 
   // Real-time Aadhaar formatting: XXXX XXXX XXXX
   const handleAadhaarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +64,7 @@ export default function OnboardingPage() {
 
     try {
       await onboard(name, cleanedAadhaar);
-      router.push('/');
+      router.push(redirect);
     } catch (err: any) {
       setLocalError(err.response?.data?.message || 'Onboarding registration failed.');
     }
