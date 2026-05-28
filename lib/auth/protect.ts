@@ -41,7 +41,7 @@ export async function setAuthCookie(userId: string) {
   cookieStore.set('jwt', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax',
     maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
     path: '/',
   });
