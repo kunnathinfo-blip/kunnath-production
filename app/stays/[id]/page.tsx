@@ -880,7 +880,13 @@ export default function StayDetailsPage() {
         }
       },
       onError: (error: any) => {
-        alert(error.response?.data?.message || 'Error creating payment order. Are you logged in?');
+        const msg = error.response?.data?.message || '';
+        if (msg.includes('Not authorized') || msg.includes('token failed')) {
+          alert('Please login to proceed with the payment.');
+          router.push(`/login?redirect=/stays/${stayId}`);
+        } else {
+          alert(msg || 'Error creating payment order. Please try again.');
+        }
         setIsProcessingPayment(false);
       }
     });
