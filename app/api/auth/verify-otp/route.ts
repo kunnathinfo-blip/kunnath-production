@@ -17,6 +17,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Authentication token is required' }, { status: 400 });
     }
 
+    if (!firebaseAdmin || !firebaseAdmin.apps.length) {
+      return NextResponse.json({ message: 'Firebase Admin SDK was not initialized. Please configure process.env.FIREBASE_SERVICE_ACCOUNT.' }, { status: 500 });
+    }
+
     const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
     const firebasePhone = decodedToken.phone_number;
 
