@@ -8,6 +8,11 @@ import { auth } from '@/lib/firebase';
 
 // Helper to transform raw technical error codes into clear, beautiful, user-friendly messages.
 const getFriendlyErrorMessage = (err: any): string => {
+  // Check if it is an API response error from our backend first
+  if (err?.response?.data?.message) {
+    return err.response.data.message;
+  }
+
   const code = err?.code || '';
   const message = err?.message || '';
 
