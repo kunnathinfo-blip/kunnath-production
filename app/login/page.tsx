@@ -49,6 +49,7 @@ export default function LoginPage() {
   const [localError, setLocalError] = useState<string | null>(null);
   const [timer, setTimer] = useState(30);
   const [redirect, setRedirect] = useState('/');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
 
   // Parse redirect query parameter safely on client-side
   useEffect(() => {
@@ -117,6 +118,8 @@ export default function LoginPage() {
       return;
     }
 
+    setIsSendingOtp(true);
+
     try {
       // Setup formatted phone number with country code for Firebase
       const formattedPhone = `+91${cleaned}`;
@@ -124,6 +127,7 @@ export default function LoginPage() {
 
       if (!appVerifier) {
         setLocalError('reCAPTCHA verification is not initialized. Please refresh the page.');
+        setIsSendingOtp(false);
         return;
       }
 
@@ -137,6 +141,8 @@ export default function LoginPage() {
     } catch (err: any) {
       console.error('Firebase signInWithPhoneNumber Error:', err);
       setLocalError(getFriendlyErrorMessage(err));
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
@@ -352,10 +358,10 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-[#E53935] hover:bg-[#C62828] focus:outline-none focus:ring-4 focus:ring-[#E53935]/20 shadow-xl shadow-red-500/10 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+                  disabled={isSendingOtp}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-[#E53935] hover:bg-[#C62828] focus:outline-none focus:ring-4 focus:ring-[#E53935]/20 shadow-xl shadow-red-500/10 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  {isLoading ? (
+                  {isSendingOtp ? (
                     <>
                       <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       <span>Sending Code...</span>
