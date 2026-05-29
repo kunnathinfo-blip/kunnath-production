@@ -7,9 +7,9 @@ import FloatingButtons from './FloatingButtons';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLoginPage = pathname === '/login';
+  const isAuthPage = pathname === '/login' || pathname === '/onboarding';
 
-  if (isLoginPage) {
+  if (isAuthPage) {
     return (
       <main className="min-h-screen">
         {children}
