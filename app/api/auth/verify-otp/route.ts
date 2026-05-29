@@ -12,25 +12,20 @@ export async function POST(req: NextRequest) {
     let cleanedPhone = phoneNumber ? phoneNumber.replace(/\D/g, '').slice(-10) : '';
     let verifiedPhone = '';
 
-    // Master test code bypass
-    if (otp === '123456' && cleanedPhone) {
-      verifiedPhone = cleanedPhone;
-    } else {
-      // Use Firebase token verification
-      if (!idToken) {
-        return NextResponse.json({ message: 'Authentication token is required' }, { status: 400 });
-      }
-
-      const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
-      const firebasePhone = decodedToken.phone_number;
-
-      if (!firebasePhone) {
-        return NextResponse.json({ message: 'No phone number associated with this authentication token.' }, { status: 400 });
-      }
-
-      // Clean Firebase phone (usually starts with +91 or other country code)
-      verifiedPhone = firebasePhone.replace(/\D/g, '').slice(-10);
+    // Use Firebase token verification
+    if (!idToken) {
+      return NextResponse.json({ message: 'Authentication token is required' }, { status: 400 });
     }
+
+    const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const firebasePhone = decodedToken.phone_number;
+
+    if (!firebasePhone) {
+      return NextResponse.json({ message: 'No phone number associated with this authentication token.' }, { status: 400 });
+    }
+
+    // Clean Firebase phone (usually starts with +91 or other country code)
+    verifiedPhone = firebasePhone.replace(/\D/g, '').slice(-10);
 
     if (!verifiedPhone || verifiedPhone.length !== 10) {
       return NextResponse.json({ message: 'Invalid phone number verified' }, { status: 400 });

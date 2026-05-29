@@ -40,7 +40,7 @@ const getFriendlyErrorMessage = (err: any): string => {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { sendOtp, verifyOtp, isLoading, error } = useAuthStore();
+  const { verifyOtp, isLoading, error } = useAuthStore();
   
   // Phone flow state
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -207,23 +207,17 @@ export default function LoginPage() {
     try {
       const cleaned = phoneNumber.replace(/\D/g, '');
 
-      let result;
-      // Support master test code bypass
-      if (otpCode === '123456') {
-        result = await verifyOtp(cleaned, otpCode);
-      } else {
-        const confirmationResult = (window as any).confirmationResult;
-        if (!confirmationResult) {
-          setLocalError('No active verification session. Please request a new code.');
-          return;
-        }
-
-        const userCredential = await confirmationResult.confirm(otpCode);
-        const idToken = await userCredential.user.getIdToken();
-
-        // Pass Firebase ID token to the backend for session creation
-        result = await verifyOtp(cleaned, undefined, idToken);
+      const confirmationResult = (window as any).confirmationResult;
+      if (!confirmationResult) {
+        setLocalError('No active verification session. Please request a new code.');
+        return;
       }
+
+      const userCredential = await confirmationResult.confirm(otpCode);
+      const idToken = await userCredential.user.getIdToken();
+
+      // Pass Firebase ID token to the backend for session creation
+      const result = await verifyOtp(cleaned, undefined, idToken);
 
       if (result.userExists) {
         if (result.user.name && result.user.isVerified) {

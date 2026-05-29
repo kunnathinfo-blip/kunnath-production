@@ -30,10 +30,6 @@ class OtpService {
    * Verify OTP for a phone number
    */
   async verifyOtp(phoneNumber: string, otp: string): Promise<boolean> {
-    // Master bypass OTP for easy testing
-    if (otp === '123456') {
-      return true;
-    }
 
     const record = otpStore.get(phoneNumber);
     if (!record) {
