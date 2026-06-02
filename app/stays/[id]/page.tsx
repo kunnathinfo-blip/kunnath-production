@@ -367,17 +367,19 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
   const handleDateClick = (ymd: string | null) => {
     if (!ymd) return;
-    if (isDateBooked(ymd, bookedDates)) return;
     if (ymd < todayLocal) return;
 
     if (!checkIn || (checkIn && checkOut)) {
+      if (isDateBooked(ymd, bookedDates)) return;
       onDateSelect(ymd);
     } else {
       if (ymd > checkIn) {
-        // Check if any date in the range [checkIn, ymd] is booked
-        const start = new Date(checkIn);
-        const end = new Date(ymd);
-        let current = new Date(start);
+        // Check if any date in the range [checkIn, ymd - 1 day] is booked
+        // (Checkout on a booked date is allowed as long as the intervening nights are free)
+        const start = localDateFromString(checkIn);
+        const end = localDateFromString(ymd);
+        end.setDate(end.getDate() - 1);
+        let current = localDateFromString(checkIn);
         let hasBookedInRange = false;
         while (current <= end) {
           const dateStr = formatLocalYMD(current);
@@ -394,6 +396,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         }
         onDateSelect(ymd);
       } else if (ymd < checkIn) {
+        if (isDateBooked(ymd, bookedDates)) return;
         onDateSelect(ymd);
       }
     }
@@ -425,7 +428,31 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           const end = isEnd(ymd);
           const past = isPast(ymd);
           const booked = isBooked(ymd);
-          const disabled = past || booked;
+          
+          let disabled = false;
+          if (past) {
+            disabled = true;
+          } else if (!checkIn || (checkIn && checkOut)) {
+            if (booked) disabled = true;
+          } else {
+            if (ymd < checkIn) {
+              if (booked) disabled = true;
+            } else if (ymd > checkIn) {
+              const start = localDateFromString(checkIn);
+              const end = localDateFromString(ymd);
+              end.setDate(end.getDate() - 1);
+              let current = localDateFromString(checkIn);
+              let hasBooked = false;
+              while (current <= end) {
+                if (isDateBooked(formatLocalYMD(current), bookedDates)) {
+                  hasBooked = true;
+                  break;
+                }
+                current.setDate(current.getDate() + 1);
+              }
+              if (hasBooked) disabled = true;
+            }
+          }
 
           let bgClass = '';
           let textClass = 'text-gray-900';
