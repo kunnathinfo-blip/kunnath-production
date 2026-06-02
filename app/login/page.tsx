@@ -86,7 +86,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (typeof window !== 'undefined' && !(window as any).recaptchaVerifier) {
       try {
-        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
           size: 'invisible',
           callback: (response: any) => {
             // reCAPTCHA solved
@@ -95,6 +95,9 @@ export default function LoginPage() {
             // reCAPTCHA expired
           }
         });
+        (window as any).recaptchaVerifier = verifier;
+        // Pre-render the invisible reCAPTCHA in the background so it's instantly ready
+        verifier.render().catch(console.error);
       } catch (err) {
         console.error('Error creating RecaptchaVerifier:', err);
       }
