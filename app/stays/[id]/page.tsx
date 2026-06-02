@@ -1414,7 +1414,7 @@ export default function StayDetailsPage() {
                           return;
                         }
                         if (!user) {
-                          alert('Please login to proceed with booking.');
+                          router.push(`/login?redirect=/stays/${stayId}`);
                           return;
                         }
                         setStep(2);
