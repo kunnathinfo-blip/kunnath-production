@@ -1570,9 +1570,9 @@ export default function StayDetailsPage() {
                     </div>
 
                     {/* ── PINNED FOOTER (Always visible, never scrolls) ── */}
-                    <div className="flex-shrink-0 pt-5 border-t border-gray-100 mt-2 bg-white relative">
+                    <div className="flex-shrink-0 pt-5 border-t border-gray-100 mt-2 bg-bg-card relative">
                       {/* Subtle top fade overlay */}
-                      <div className="absolute -top-6 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                      <div className="absolute -top-6 left-0 right-0 h-6 bg-gradient-to-t from-bg-card to-transparent pointer-events-none" />
 
                       {/* Visual Payment Timeline Stepper */}
                       <div className="mb-4 px-1">
@@ -1583,8 +1583,8 @@ export default function StayDetailsPage() {
                         <div className="relative flex items-center justify-between">
                           <div className="absolute left-2 right-2 h-[2px] bg-gray-200 rounded-full" />
                           <div className="absolute left-2 w-1/2 h-[2px] bg-green-500 rounded-full" />
-                          <div className="h-3.5 w-3.5 rounded-full bg-green-500 border-[3px] border-white shadow-sm z-10" />
-                          <div className="h-3.5 w-3.5 rounded-full bg-amber-400 border-[3px] border-white shadow-sm z-10" />
+                          <div className="h-3.5 w-3.5 rounded-full bg-green-500 border-[3px] border-bg-card shadow-sm z-10" />
+                          <div className="h-3.5 w-3.5 rounded-full bg-amber-400 border-[3px] border-bg-card shadow-sm z-10" />
                         </div>
                         <div className="flex items-center justify-between mt-1">
                           <span className="text-xs font-black text-green-600">{formatCurrency(totalPrice * 0.5)}</span>
