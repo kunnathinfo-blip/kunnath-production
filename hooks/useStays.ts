@@ -50,23 +50,7 @@ export const useStays = () => {
     queryKey: ['stays'],
     queryFn: async () => {
       const { data } = await api.get<FarmStay[]>('/stays');
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('kunnath_cached_stays', JSON.stringify(data));
-      }
       return data;
-    },
-    initialData: () => {
-      if (typeof window !== 'undefined') {
-        const cached = localStorage.getItem('kunnath_cached_stays');
-        if (cached) {
-          try {
-            return JSON.parse(cached) as FarmStay[];
-          } catch (e) {
-            console.error('Error parsing cached stays', e);
-          }
-        }
-      }
-      return undefined;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -78,9 +62,6 @@ export const useStayDetails = (id: string) => {
     queryKey: ['stay', id],
     queryFn: async () => {
       const { data } = await api.get<FarmStay>(`/stays/${id}`);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(`kunnath_cached_stay_${id}`, JSON.stringify(data));
-      }
       return data;
     },
     enabled: !!id,
@@ -89,18 +70,6 @@ export const useStayDetails = (id: string) => {
       const stays = queryClient.getQueryData<FarmStay[]>(['stays']);
       const stayFromList = stays?.find(s => s._id === id);
       if (stayFromList) return stayFromList;
-
-      // 2. Fallback to localStorage for stay details
-      if (typeof window !== 'undefined') {
-        const cached = localStorage.getItem(`kunnath_cached_stay_${id}`);
-        if (cached) {
-          try {
-            return JSON.parse(cached) as FarmStay;
-          } catch (e) {
-            console.error('Error parsing cached stay detail', e);
-          }
-        }
-      }
       return undefined;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
