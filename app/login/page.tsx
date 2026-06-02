@@ -55,6 +55,7 @@ export default function LoginPage() {
   const [timer, setTimer] = useState(30);
   const [redirect, setRedirect] = useState('/');
   const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   // Parse redirect query parameter safely on client-side
   useEffect(() => {
@@ -209,6 +210,9 @@ export default function LoginPage() {
       return;
     }
 
+    if (isVerifyingOtp) return;
+    setIsVerifyingOtp(true);
+
     try {
       const cleaned = phoneNumber.replace(/\D/g, '');
 
@@ -236,6 +240,8 @@ export default function LoginPage() {
     } catch (err: any) {
       console.error('OTP confirmation/verification failed:', err);
       setLocalError(getFriendlyErrorMessage(err));
+    } finally {
+      setIsVerifyingOtp(false);
     }
   };
 
@@ -426,10 +432,10 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || isVerifyingOtp}
                   className="w-full flex items-center justify-center gap-2 py-3.5 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-[#E53935] hover:bg-[#C62828] focus:outline-none focus:ring-4 focus:ring-[#E53935]/20 shadow-xl shadow-red-500/10 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
                 >
-                  {isLoading ? (
+                  {isLoading || isVerifyingOtp ? (
                     <>
                       <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       <span>Verifying...</span>
