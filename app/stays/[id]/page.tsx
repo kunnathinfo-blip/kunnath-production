@@ -1276,7 +1276,7 @@ export default function StayDetailsPage() {
                       {/* Guest Picker Popover */}
                       {isGuestPickerOpen && (
                         <div
-                          className="absolute top-full left-0 right-0 mt-2 bg-gray-50 rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 space-y-6 animate-in fade-in zoom-in-95 duration-200"
+                          className="absolute top-full left-0 right-0 mt-2 bg-gray-50 rounded-2xl shadow-2xl border border-gray-100 p-4 sm:p-6 z-50 space-y-6 animate-in fade-in zoom-in-95 duration-200"
                         >
                           {/* Adults */}
                           <div className="flex items-center justify-between">
@@ -1284,7 +1284,7 @@ export default function StayDetailsPage() {
                               <div className="text-sm font-bold text-gray-900">Adults</div>
                               <div className="text-xs text-gray-400">Age 13+</div>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                               <button
                                 onClick={() => setAdults(Math.max(1, adults - 1))}
                                 className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors"
@@ -1316,7 +1316,7 @@ export default function StayDetailsPage() {
                               <div className="text-sm font-bold text-gray-900">Children</div>
                               <div className="text-xs text-gray-400">Ages 2–12</div>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                               <button
                                 onClick={() => setChildren(Math.max(0, children - 1))}
                                 className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors"
@@ -1349,7 +1349,7 @@ export default function StayDetailsPage() {
                               <div className="text-sm font-bold text-gray-900">Pets</div>
                               <div className="text-xs text-gray-400 underline cursor-pointer">Bringing a service animal?</div>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                               <button
                                 onClick={() => setPets(Math.max(0, pets - 1))}
                                 disabled={pets <= 0}
