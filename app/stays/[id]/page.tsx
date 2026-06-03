@@ -1186,7 +1186,7 @@ export default function StayDetailsPage() {
 
 
                     <div className="relative border border-gray-300 rounded-xl mb-4">
-                      <div className="flex border-b border-gray-300 relative">
+                      <div className="flex border-b border-gray-300 relative" ref={datePickerRef}>
                         <div
                           className="flex-1 p-3 border-r border-gray-300 cursor-pointer hover:bg-gray-50/50 transition-colors"
                           onClick={() => {
@@ -1229,7 +1229,6 @@ export default function StayDetailsPage() {
                         {/* Date Picker Popover */}
                         {isDatePickerOpen && (
                           <div
-                            ref={datePickerRef}
                             className="fixed inset-0 sm:absolute sm:inset-auto sm:top-0 sm:right-0 md:-right-4 lg:-right-8 mt-0 bg-white sm:rounded-[2rem] shadow-[0_20px_80px_rgba(0,0,0,0.25)] border-t sm:border border-gray-100 p-0 z-[100] sm:z-50 animate-in fade-in zoom-in-95 duration-200 w-full md:w-[680px] overflow-y-auto sm:overflow-visible"
                           >
                             <AvailabilityCalendar
@@ -1255,8 +1254,10 @@ export default function StayDetailsPage() {
                         )}
                       </div>
 
-                      {/* Guest Picker Trigger */}
-                      <div
+                      {/* Guest Picker Wrapper */}
+                      <div className="relative" ref={guestPickerRef}>
+                        {/* Guest Picker Trigger */}
+                        <div
                         className="p-3 w-full flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors rounded-b-xl"
                         onClick={() => {
                           setIsGuestPickerOpen(!isGuestPickerOpen);
@@ -1275,7 +1276,6 @@ export default function StayDetailsPage() {
                       {/* Guest Picker Popover */}
                       {isGuestPickerOpen && (
                         <div
-                          ref={guestPickerRef}
                           className="absolute top-full left-0 right-0 mt-2 bg-gray-50 rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 space-y-6 animate-in fade-in zoom-in-95 duration-200"
                         >
                           {/* Adults */}
@@ -1391,6 +1391,7 @@ export default function StayDetailsPage() {
                           </div>
                         </div>
                       )}
+                      </div>
                     </div>
 
 
