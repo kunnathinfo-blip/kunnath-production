@@ -1395,7 +1395,7 @@ export default function StayDetailsPage() {
 
 
                     {/* Add-ons selection in booking card */}
-                    {addOns && addOns.length > 0 && (
+                    {checkIn && checkOut && addOns && addOns.length > 0 && (
                       <div className="mb-4">
                         <div className="text-xs font-bold uppercase text-gray-800 mb-2">Optional Add-ons</div>
                         <div className="space-y-2">
