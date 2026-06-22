@@ -203,7 +203,7 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
           try {
             // Open Razorpay Popup
             const options = {
-              key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_Sq1fM8H5iOEwy0", // Razorpay key from env or fallback
+              key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_StVO3LfXhJKkY1", // Razorpay key from env or fallback
               amount: data.order.amount,
               currency: data.order.currency,
               name: "Kunnath House",

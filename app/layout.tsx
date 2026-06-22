@@ -7,6 +7,11 @@ import LayoutWrapper from '../Components/layout/LayoutWrapper'
 export const metadata: Metadata = {
   title: 'Kunnath House - Crafted for Recreation.',
   description: 'Luxury farm stay booking platform.',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 }
 
 import Script from 'next/script'

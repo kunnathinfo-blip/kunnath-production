@@ -166,7 +166,7 @@ export const Footer = () => {
                 <img src="/Logo/insta/facebook.png" alt="Facebook" className="w-full h-full object-contain" />
               </a>
             </div>
-              {/* <a
+            {/* <a
                 href="#"
                 className="text-[#666666] hover:text-primary transition-colors"
                 aria-label="Twitter"
@@ -193,8 +193,8 @@ export const Footer = () => {
             <Link href="/terms" className="hover:text-primary transition-colors">
               Terms
             </Link>
-            <Link href="/sitemap" className="hover:text-primary transition-colors">
-              Sitemap
+            <Link href="/admin" className="hover:text-primary transition-colors">
+              admin
             </Link>
           </div>
         </div>

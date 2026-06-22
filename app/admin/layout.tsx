@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 pt-20">
+    <div className="flex h-screen bg-gray-50 ">
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 h-full flex flex-col hidden md:flex">
         <div className="p-6 border-b border-gray-100">
@@ -63,11 +63,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${
-                pathname === item.href 
-                  ? 'bg-primary/10 text-primary font-semibold' 
+              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${pathname === item.href
+                  ? 'bg-primary/10 text-primary font-semibold'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
+                }`}
             >
               <div className="flex items-center space-x-3">
                 <span className={pathname === item.href ? 'text-primary' : 'text-gray-400'}>
