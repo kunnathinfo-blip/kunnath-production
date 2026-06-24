@@ -230,14 +230,14 @@ const dummySports = [
     description: 'Enjoy an adrenaline-filled ride on our off-road ATV track.',
     icon: '🏎️'
   },
-  {
-    name: 'RC Car',
-    price: 299,
-    duration: '15 mins',
-    image: 'https://res.cloudinary.com/dwrxo4hvx/image/upload/v1777899657/3_xdxidp.jpg',
-    description: 'Have fun racing high-speed remote-controlled cars on our custom track.',
-    icon: '🚗'
-  }
+  // {
+  //   name: 'RC Car',
+  //   price: 299,
+  //   duration: '15 mins',
+  //   image: 'https://res.cloudinary.com/dwrxo4hvx/image/upload/v1777899657/3_xdxidp.jpg',
+  //   description: 'Have fun racing high-speed remote-controlled cars on our custom track.',
+  //   icon: '🚗'
+  // }
 ];
 
 const dummyEvents = [

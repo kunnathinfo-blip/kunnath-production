@@ -259,11 +259,11 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-3">
             <div className="flex items-center bg-gray-100/40 border border-gray-200/50 rounded-full px-4 py-1.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]">
               <a
-                href="tel:+917702402505"
+                href="tel:+919700799099"
                 className="flex items-center text-[11px] font-black text-gray-700 hover:text-primary transition-colors border-r border-gray-200 pr-4 mr-4"
               >
                 <Phone size={13} className="mr-2 text-primary/70" />
-                +91 7702402505
+                +91 97007 99099
               </a>
 
               <a
@@ -399,10 +399,10 @@ export function Header() {
               );
             })}
             <a
-              href="tel:+911234567890"
+              href="tel:+919700799099"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50 hover:text-primary"
             >
-              Call Us: +91 12345 67890
+              Call Us: +91 97007 99099
             </a>
             <div className="pt-4 border-t border-gray-200">
               {user ? (

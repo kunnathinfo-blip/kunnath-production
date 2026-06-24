@@ -14,7 +14,7 @@ interface BookingModalProps {
   hasStayBooking: boolean;
 }
 
-const WHATSAPP_NUMBER = '+917702402505';
+const WHATSAPP_NUMBER = '918143245959';
 
 export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }: BookingModalProps) {
   const { user } = useAuthStore();

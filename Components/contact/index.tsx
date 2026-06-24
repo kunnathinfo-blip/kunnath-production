@@ -66,7 +66,7 @@ export default function Contact() {
                                     <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Phone & WhatsApp</h3>
                                     <p className="text-[#666666] mb-3">Mon-Sun from 8am to 8pm.</p>
                                     <a
-                                        href="https://wa.me/911234567890"
+                                        href="https://wa.me/918143245959"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-colors bg-[#FAFAFA] hover:bg-green-50 text-green-600 border border-green-200 hover:border-green-300"
@@ -95,9 +95,9 @@ export default function Contact() {
                                 <div>
                                     <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Location</h3>
                                     <p className="text-[#666666] leading-relaxed">
-                                        Kunnath House Estate<br />
-                                        Survey No. 45/2, Hillside Road<br />
-                                        Hyderabad, Telangana 500075
+                                        Shivam, G1, Kunnath House<br />
+                                        Station Road, Jeedipally, Manoharabad<br />
+                                        Telangana 502336
                                     </p>
                                 </div>
                             </div>
@@ -106,13 +106,13 @@ export default function Contact() {
                         {/* Map Embed */}
                         <div className="w-full h-80 rounded-2xl overflow-hidden shadow-soft border border-[#E0E0E0]">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d121820.67253507106!2d78.37568574163973!3d17.4121530663738!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b78392bafbc2!2sHyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3799.9662212671265!2d78.4679647!3d17.746230699999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcc775bf397e4d1%3A0x830514304966871a!2sKunnath%20House%20Farm%20House!5e0!3m2!1sen!2sin!4v1782287360836!5m2!1sen!2sin"
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}
                                 allowFullScreen={false}
                                 loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
+                                referrerPolicy="strict-origin-when-cross-origin"
                             ></iframe>
                         </div>
 

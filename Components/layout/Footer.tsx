@@ -37,10 +37,10 @@ export const Footer = () => {
             </p>
             <div className="mt-4">
               <a
-                href="tel:+919876543210"
+                href="tel:+919700799099"
                 className="text-primary hover:text-primary-hover font-medium transition-colors"
               >
-                +91 7702402505
+                +91 97007 99099
               </a>
             </div>
             <div className="flex gap-4 mt-6">
@@ -189,7 +189,7 @@ export const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-[#E0E0E0] mt-10 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-[#666666]">
-          <p>&copy; {currentYear} Kunnath House Arya private Limited. All rights reserved.</p>
+          <p>&copy; {currentYear} Kunnath House Arya Private Limited. All rights reserved.</p>
           <div className="flex space-x-4 mt-2 md:mt-0">
             <Link href="/privacy" className="hover:text-primary transition-colors">
               Privacy
