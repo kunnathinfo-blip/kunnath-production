@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { useStays, FarmStay, useDeleteStay } from '@/hooks/useStays';
 import { Card } from '@/Components/ui/Card';
 import { Button } from '@/Components/ui/Button';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Calendar } from 'lucide-react';
 import StayModal from '@/Components/admin/StayModal';
+import BlockDatesModal from '@/Components/admin/BlockDatesModal';
 
 export default function AdminStaysPage() {
   const { data: stays, isLoading } = useStays();
@@ -14,6 +15,8 @@ export default function AdminStaysPage() {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stayToEdit, setStayToEdit] = useState<FarmStay | null>(null);
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
+  const [stayToBlock, setStayToBlock] = useState<FarmStay | null>(null);
 
   const handleDelete = (id: string) => {
     if (!window.confirm('Are you sure you want to delete this stay? This will only hide it from users (soft delete).')) return;
@@ -32,6 +35,11 @@ export default function AdminStaysPage() {
   const openEditModal = (stay: FarmStay) => {
     setStayToEdit(stay);
     setIsModalOpen(true);
+  };
+
+  const openBlockModal = (stay: FarmStay) => {
+    setStayToBlock(stay);
+    setIsBlockModalOpen(true);
   };
 
   if (isLoading) {
@@ -101,6 +109,14 @@ export default function AdminStaysPage() {
                 </Button>
                 <Button 
                   variant="outline" 
+                  className="flex-1"
+                  onClick={() => openBlockModal(stay)}
+                >
+                  <Calendar size={16} className="mr-2" />
+                  Block Dates
+                </Button>
+                <Button 
+                  variant="outline" 
                   className="flex-none text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200"
                   onClick={() => handleDelete(stay._id)}
                   disabled={isDeleting === stay._id}
@@ -127,11 +143,17 @@ export default function AdminStaysPage() {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <StayModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         stayToEdit={stayToEdit} 
+      />
+
+      <BlockDatesModal
+        isOpen={isBlockModalOpen}
+        onClose={() => setIsBlockModalOpen(false)}
+        stay={stayToBlock}
       />
     </div>
   );

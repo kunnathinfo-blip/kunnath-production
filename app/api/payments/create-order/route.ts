@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import connectDB from '@/lib/db/connect';
 import Booking from '@/lib/db/models/Booking';
 import FarmStay from '@/lib/db/models/FarmStay';
+import BlockedDate from '@/lib/db/models/BlockedDate';
 import { getAuthenticatedUser } from '@/lib/auth/protect';
 import { getRazorpayInstance } from '@/lib/payments/razorpay';
 
@@ -47,6 +48,17 @@ export async function POST(req: NextRequest) {
 
     if (overlappingBookings.length > 0) {
       return NextResponse.json({ message: 'These dates are already booked for this stay' }, { status: 400 });
+    }
+
+    // Check for overlapping blocked dates
+    const overlappingBlocks = await BlockedDate.find({
+      stayId,
+      startDate: { $lt: checkOutDate },
+      endDate: { $gt: checkInDate }
+    });
+
+    if (overlappingBlocks.length > 0) {
+      return NextResponse.json({ message: 'These dates are blocked by the administrator for stay maintenance or private events' }, { status: 400 });
     }
 
     const stay = await FarmStay.findById(stayId);

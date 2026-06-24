@@ -4,6 +4,7 @@ import path from 'path';
 import connectDB from '@/lib/db/connect';
 import FarmStay from '@/lib/db/models/FarmStay';
 import Booking from '@/lib/db/models/Booking';
+import BlockedDate from '@/lib/db/models/BlockedDate';
 
 const IMAGE_RE = /\.(jpg|jpeg|png|gif|webp)$/i;
 
@@ -77,9 +78,34 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       }
     });
 
+    // Calculate blocked dates from admin manual blocks
+    const blocks = await BlockedDate.find({ stayId: stay._id });
+    const blockedDates: { date: string; reason: string; notes?: string; blockId: string }[] = [];
+    const blockedDateStrings: string[] = [];
+    blocks.forEach(block => {
+      const start = new Date(block.startDate);
+      const end = new Date(block.endDate);
+      let current = new Date(start);
+
+      while (current < end) {
+        const dateStr = current.toLocaleDateString('en-CA');
+        blockedDates.push({
+          date: dateStr,
+          reason: block.reason,
+          notes: block.notes,
+          blockId: block._id.toString()
+        });
+        blockedDateStrings.push(dateStr);
+        current.setDate(current.getDate() + 1);
+      }
+    });
+
+    stayObj.bookedDates = bookedDates;
+    stayObj.blockedDates = blockedDates;
     stayObj.unavailableDates = Array.from(new Set([
       ...(stayObj.unavailableDates || []),
-      ...bookedDates
+      ...bookedDates,
+      ...blockedDateStrings
     ])).sort();
 
     if (stayObj.slug && process.env.NODE_ENV !== 'production') {

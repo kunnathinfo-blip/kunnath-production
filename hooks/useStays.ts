@@ -114,3 +114,56 @@ export const useDeleteStay = () => {
     },
   });
 };
+
+export interface BlockedDateRange {
+  _id: string;
+  stayId: string;
+  startDate: string;
+  endDate: string;
+  reason: 'Offline Booking' | 'Maintenance' | 'Owner Use' | 'Special Event' | 'Other';
+  notes?: string;
+  blockedBy: string | { _id: string; name: string };
+  createdAt?: string;
+  isOverride?: boolean;
+}
+
+export const useBlockedDates = (stayId: string) => {
+  return useQuery({
+    queryKey: ['blocked-dates', stayId],
+    queryFn: async () => {
+      const { data } = await api.get<BlockedDateRange[]>(`/admin/stays/${stayId}/blocked-dates`);
+      return data;
+    },
+    enabled: !!stayId,
+  });
+};
+
+export const useCreateBlock = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ stayId, blockData }: { stayId: string; blockData: { startDate: string; endDate: string; reason: string; notes?: string; override?: boolean } }) => {
+      const { data } = await api.post(`/admin/stays/${stayId}/blocked-dates`, blockData);
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['blocked-dates', variables.stayId] });
+      queryClient.invalidateQueries({ queryKey: ['stays'] });
+      queryClient.invalidateQueries({ queryKey: ['stay', variables.stayId] });
+    },
+  });
+};
+
+export const useDeleteBlock = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ stayId, blockId }: { stayId: string; blockId: string }) => {
+      const { data } = await api.delete(`/admin/stays/${stayId}/blocked-dates/${blockId}`);
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['blocked-dates', variables.stayId] });
+      queryClient.invalidateQueries({ queryKey: ['stays'] });
+      queryClient.invalidateQueries({ queryKey: ['stay', variables.stayId] });
+    },
+  });
+};

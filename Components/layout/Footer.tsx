@@ -1,3 +1,5 @@
+'use client';
+
 // import React from 'react';
 
 // export function Footer() {
@@ -14,8 +16,10 @@
 // components/Footer.tsx
 import Link from 'next/link';
 import { Instagram, Facebook, Mail, Phone } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
 
 export const Footer = () => {
+  const { user } = useAuthStore();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -193,9 +197,11 @@ export const Footer = () => {
             <Link href="/terms" className="hover:text-primary transition-colors">
               Terms
             </Link>
-            <Link href="/admin" className="hover:text-primary transition-colors">
-              admin
-            </Link>
+            {user?.role === 'admin' && (
+              <Link href="/admin" className="hover:text-primary transition-colors">
+                Admin
+              </Link>
+            )}
           </div>
         </div>
       </div>
