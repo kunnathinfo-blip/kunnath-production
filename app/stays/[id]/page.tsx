@@ -815,6 +815,26 @@ export default function StayDetailsPage() {
       alert('Please select check-in and check-out dates.');
       return;
     }
+
+    // Verify selected check-in/checkout range is actually available (no overlap with booked/blocked dates)
+    const start = localDateFromString(checkIn);
+    const end = localDateFromString(checkOut);
+    let current = new Date(start);
+    let hasOverlap = false;
+    while (current < end) {
+      const dateStr = formatLocalYMD(current);
+      if (bookedDates.includes(dateStr)) {
+        hasOverlap = true;
+        break;
+      }
+      current.setDate(current.getDate() + 1);
+    }
+
+    if (hasOverlap) {
+      alert('Some of the selected dates in your range are unavailable or blocked. Please select another date range.');
+      return;
+    }
+
     if (!formik.values.guestName || !formik.values.guestPhone) {
       alert('Please fill out all guest details.');
       return;

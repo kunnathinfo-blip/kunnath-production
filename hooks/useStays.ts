@@ -57,7 +57,6 @@ export const useStays = () => {
 };
 
 export const useStayDetails = (id: string) => {
-  const queryClient = useQueryClient();
   return useQuery({
     queryKey: ['stay', id],
     queryFn: async () => {
@@ -65,14 +64,7 @@ export const useStayDetails = (id: string) => {
       return data;
     },
     enabled: !!id,
-    initialData: () => {
-      // 1. Try to get from active stays list in query cache
-      const stays = queryClient.getQueryData<FarmStay[]>(['stays']);
-      const stayFromList = stays?.find(s => s._id === id);
-      if (stayFromList) return stayFromList;
-      return undefined;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0,
   });
 };
 

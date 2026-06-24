@@ -73,8 +73,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       let current = new Date(start);
 
       while (current < end) {
-        bookedDates.push(current.toLocaleDateString('en-CA'));
-        current.setDate(current.getDate() + 1);
+        bookedDates.push(current.toISOString().split('T')[0]);
+        current.setUTCDate(current.getUTCDate() + 1);
       }
     });
 
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       let current = new Date(start);
 
       while (current < end) {
-        const dateStr = current.toLocaleDateString('en-CA');
+        const dateStr = current.toISOString().split('T')[0];
         blockedDates.push({
           date: dateStr,
           reason: block.reason,
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           blockId: block._id.toString()
         });
         blockedDateStrings.push(dateStr);
-        current.setDate(current.getDate() + 1);
+        current.setUTCDate(current.getUTCDate() + 1);
       }
     });
 
