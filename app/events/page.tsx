@@ -36,11 +36,11 @@ export default function EventsPage() {
         </Container>
       </section>
 
-      <Container className="-mt-10 relative z-20">
-        {/* Search & Filter Bar */}
+      {/* <Container className="-mt-10 relative z-20">
+      
         <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-12 flex flex-col md:flex-row gap-4 items-center justify-between border border-gray-100">
           
-          {/* Tabs */}
+         
           <div className="flex w-full md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar gap-2">
             {tabs.map((tab) => (
               <button
@@ -57,7 +57,7 @@ export default function EventsPage() {
             ))}
           </div>
 
-          {/* Search */}
+         
           <div className="relative w-full md:w-72 shrink-0">
             <input
               type="text"
@@ -71,9 +71,26 @@ export default function EventsPage() {
           
         </div>
 
-        {/* Dynamic Grid */}
+        
         <EventGrid category={activeTab} search={debouncedSearchTerm} />
 
+      </Container> */}
+
+      <Container className="py-16">
+        <div className="bg-gray-50 rounded-2xl shadow-sm p-12 text-center border border-gray-200 max-w-2xl mx-auto">
+          <div className="text-6xl mb-6">🚧</div>
+          <h2 className="text-3xl font-display font-bold text-gray-800 mb-4">
+            Events Coming Soon!
+          </h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            We're curating an amazing lineup of events for you.
+            <br />
+            Stay tuned – this section will be live shortly.
+          </p>
+          <div className="mt-6 inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+            Under Construction
+          </div>
+        </div>
       </Container>
     </div>
   );

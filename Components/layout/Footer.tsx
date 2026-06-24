@@ -30,7 +30,7 @@ export const Footer = () => {
           {/* Brand Column */}
           <div>
             <h3 className="text-2xl font-semibold text-primary hover:text-primary-hover transition-colors">
-              Kunnath House Arya private Limited
+              Kunnath House Arya Private Limited
             </h3>
             <p className="text-gray-400 mt-2 text-[10px] uppercase tracking-[0.3em] font-bold opacity-80">
               Crafted for Recreation
