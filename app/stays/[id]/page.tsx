@@ -1091,7 +1091,7 @@ export default function StayDetailsPage() {
               </div>
             )} */}
 
-            {/* Categorized Galleries */}
+            {/* Categorized Galleries
             {(() => {
               const categories = [
                 { key: 'rooms', label: 'Rooms' },
@@ -1168,6 +1168,7 @@ export default function StayDetailsPage() {
                 </div>
               );
             })()}
+            */}
 
             {/* Double Month Availability Calendar */}
             <div id="availability" className="border-t border-gray-200 pt-8">
