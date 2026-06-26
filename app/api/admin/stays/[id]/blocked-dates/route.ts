@@ -3,6 +3,7 @@ import connectDB from '@/lib/db/connect';
 import BlockedDate from '@/lib/db/models/BlockedDate';
 import Booking from '@/lib/db/models/Booking';
 import { checkAdmin } from '@/lib/auth/protect';
+import { parseUTCDate } from '@/lib/utils';
 
 // GET: Retrieve all date blocks for a stay
 export async function GET(
@@ -47,8 +48,8 @@ export async function POST(
       return NextResponse.json({ message: 'Start date, end date, and reason are required' }, { status: 400 });
     }
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const start = parseUTCDate(startDate);
+    const end = parseUTCDate(endDate);
 
     if (start >= end) {
       return NextResponse.json({ message: 'End date must be after start date' }, { status: 400 });

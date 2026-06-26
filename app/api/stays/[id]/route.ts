@@ -5,6 +5,7 @@ import connectDB from '@/lib/db/connect';
 import FarmStay from '@/lib/db/models/FarmStay';
 import Booking from '@/lib/db/models/Booking';
 import BlockedDate from '@/lib/db/models/BlockedDate';
+import { normalizeStayImages, parseUTCDate } from '@/lib/utils';
 
 const IMAGE_RE = /\.(jpg|jpeg|png|gif|webp)$/i;
 
@@ -68,8 +69,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const bookedDates: string[] = [];
     bookings.forEach(booking => {
-      const start = new Date(booking.checkIn);
-      const end = new Date(booking.checkOut);
+      const start = parseUTCDate(booking.checkIn);
+      const end = parseUTCDate(booking.checkOut);
       let current = new Date(start);
 
       while (current < end) {
@@ -83,8 +84,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const blockedDates: { date: string; reason: string; notes?: string; blockId: string }[] = [];
     const blockedDateStrings: string[] = [];
     blocks.forEach(block => {
-      const start = new Date(block.startDate);
-      const end = new Date(block.endDate);
+      const start = parseUTCDate(block.startDate);
+      const end = parseUTCDate(block.endDate);
       let current = new Date(start);
 
       while (current < end) {
@@ -124,7 +125,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       }
     }
 
-    return NextResponse.json(stayObj);
+    return NextResponse.json(normalizeStayImages(stayObj));
   } catch (error: any) {
     console.error('Fetch Stay Detail Error:', error);
     return NextResponse.json({ message: 'Farm stay not found' }, { status: 404 });

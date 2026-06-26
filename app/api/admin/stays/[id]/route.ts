@@ -22,6 +22,7 @@ export async function PUT(
       stay.name = body.name || stay.name;
       stay.slug = body.slug || stay.slug;
       stay.price = body.price !== undefined ? body.price : stay.price;
+      stay.weekendPrice = body.weekendPrice !== undefined ? body.weekendPrice : stay.weekendPrice;
       stay.capacity = body.capacity !== undefined ? body.capacity : stay.capacity;
       stay.beds = body.beds !== undefined ? body.beds : stay.beds;
       stay.bathrooms = body.bathrooms !== undefined ? body.bathrooms : stay.bathrooms;
@@ -34,6 +35,9 @@ export async function PUT(
       stay.description = body.description || stay.description;
       stay.amenities = body.amenities || stay.amenities;
       stay.images = body.images || stay.images;
+      stay.featuredImages = body.featuredImages || stay.featuredImages;
+      stay.categorizedImages = body.categorizedImages || stay.categorizedImages;
+      stay.otherImages = body.otherImages || stay.otherImages;
       stay.foodOptions = body.foodOptions || stay.foodOptions;
       stay.addOns = body.addOns || stay.addOns;
 

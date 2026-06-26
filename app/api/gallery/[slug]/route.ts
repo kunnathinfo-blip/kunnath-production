@@ -1,8 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { NextRequest, NextResponse } from 'next/server';
+import connectDB from '@/lib/db/connect';
+import FarmStay from '@/lib/db/models/FarmStay';
+import { normalizeStayImages } from '@/lib/utils';
 
-const KNOWN_CATEGORIES = ['exterior', 'living', 'bedroom', 'bathroom', 'kitchen', 'amenities'];
+const KNOWN_CATEGORIES = ['rooms', 'amenities', 'dining', 'activities', 'exterior', 'interior', 'other'];
 const IMAGE_RE = /\.(jpg|jpeg|png|gif|webp)$/i;
 
 export async function GET(
@@ -13,22 +16,21 @@ export async function GET(
   const slug = resolvedParams.slug;
 
   try {
-    // Try to fetch from backend database first to support Cloudinary links
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
     try {
-      const res = await fetch(`${API_BASE_URL}/api/stays`);
-      if (res.ok) {
-        const stays = await res.json();
-        const stay = stays.find((s: any) => s.slug === slug);
-        if (stay && stay.images && stay.images.length > 0 && stay.images[0].startsWith('http')) {
-          return NextResponse.json({
-            flat: stay.images,
-            categorized: stay.gallery || {}
-          });
-        }
+      await connectDB();
+      const stay = await FarmStay.findOne({ slug, isDeleted: { $ne: true } });
+      if (stay) {
+        const normalized = normalizeStayImages(stay);
+        return NextResponse.json({
+          flat: normalized.images || [],
+          categorized: {
+            ...normalized.categorizedImages,
+            other: normalized.otherImages || []
+          }
+        });
       }
-    } catch (apiError) {
-      console.warn('Failed to fetch gallery from backend API, falling back to local files:', apiError);
+    } catch (dbError) {
+      console.warn('Failed to fetch gallery from database, falling back to local files:', dbError);
     }
 
     const galleryPath = path.join(process.cwd(), 'public', 'stays', slug);

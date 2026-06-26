@@ -17,6 +17,16 @@ export interface FarmStay {
   securityDeposit: number;
   bookingAdvance: number;
   images: string[];
+  featuredImages?: string[];
+  categorizedImages?: {
+    rooms: string[];
+    amenities: string[];
+    dining: string[];
+    activities: string[];
+    exterior: string[];
+    interior: string[];
+  };
+  otherImages?: string[];
   amenities: string[];
   foodOptions: string[];
   addOns: { name: string; price: number }[];
@@ -88,8 +98,9 @@ export const useUpdateStay = () => {
       const { data } = await api.put<FarmStay>(`/admin/stays/${id}`, stayData);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['stays'] });
+      queryClient.invalidateQueries({ queryKey: ['stay', variables.id] });
     },
   });
 };

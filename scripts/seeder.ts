@@ -51,6 +51,38 @@ const dummyStays = [
       'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685461/2-Bedroom_pnhyqb.jpg',
       'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685460/1-_Bedrrom_cnk71d.jpg'
     ],
+    featuredImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685469/Mainview_yviktw.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685471/Pool_uigk8q.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685471/Others4_gslwsx.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685470/Others3_ihbdbs.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685470/Others2_di6zyi.jpg'
+    ],
+    categorizedImages: {
+      rooms: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685467/Living_Room_ncnzev.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685461/2-Bedroom_pnhyqb.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685460/1-_Bedrrom_cnk71d.jpg'
+      ],
+      amenities: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685471/Pool_uigk8q.jpg'
+      ],
+      dining: [],
+      activities: [],
+      exterior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685469/Mainview_yviktw.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685471/Others4_gslwsx.jpg'
+      ],
+      interior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685467/Living_Room_ncnzev.jpg'
+      ]
+    },
+    otherImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685469/Others1_ryfahu.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685469/Others_6_vceo0e.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685469/Others_pcy3rq.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685468/Others_5_juv6zy.jpg'
+    ],
     gallery: {
       exterior: [
         'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685466/Others4_ovcvhl.jpg',
@@ -109,6 +141,44 @@ const dummyStays = [
       'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685477/Bedrrom_1_rlqd4j.jpg',
       'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685472/1-Living_room_2_ms2z0w.jpg'
     ],
+    featuredImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685484/Mainview_dv9s6f.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685492/Bedrrom3_kqd2cl.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685487/Others2_zzl8xr.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685486/Others3_uxesn7.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685485/others1_ygso5i.jpg'
+    ],
+    categorizedImages: {
+      rooms: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685492/Bedrrom3_kqd2cl.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685485/Kitchen_tvya1f.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685485/Living_room1_dmqjfi.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685483/Living_room_g7vump.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685478/Bedrrom2_rj8ixp.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685478/Bedroom4_tq0whr.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685477/Bedrrom_1_rlqd4j.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685472/1-Living_room_2_ms2z0w.jpg'
+      ],
+      amenities: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685484/Mainview_dv9s6f.jpg'
+      ],
+      dining: [],
+      activities: [],
+      exterior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685484/Mainview_dv9s6f.jpg'
+      ],
+      interior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685485/Kitchen_tvya1f.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685485/Living_room1_dmqjfi.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685483/Living_room_g7vump.jpg'
+      ]
+    },
+    otherImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685487/Others2_zzl8xr.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685486/Others3_uxesn7.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685485/others1_ygso5i.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685484/Others_twm8kk.jpg'
+    ],
     gallery: {
       exterior: [
         'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685481/Others2_dfpzhj.jpg',
@@ -166,6 +236,36 @@ const dummyStays = [
       'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685452/Mint_bedroom_3_v33xjn.jpg',
       'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685454/Others_fjrtel.jpg',
       'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685452/Pool_wbefpi.jpg'
+    ],
+    featuredImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685456/1-Living_room_pnip5v.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685456/others3_zrphvp.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685456/Others2_d5ny6s.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685454/Others1_zrlcfk.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685453/main_View_k548gg.jpg'
+    ],
+    categorizedImages: {
+      rooms: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685456/1-Living_room_pnip5v.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685452/Bedroom_2_yevzeo.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685452/Mint_bedroom_3_v33xjn.jpg'
+      ],
+      amenities: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685452/Pool_wbefpi.jpg'
+      ],
+      dining: [],
+      activities: [],
+      exterior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685453/main_View_k548gg.jpg'
+      ],
+      interior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685456/1-Living_room_pnip5v.jpg'
+      ]
+    },
+    otherImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685456/others3_zrphvp.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685456/Others2_d5ny6s.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685454/Others_fjrtel.jpg'
     ],
     gallery: {
       exterior: [

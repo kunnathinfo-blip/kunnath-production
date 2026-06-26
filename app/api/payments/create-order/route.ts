@@ -6,6 +6,7 @@ import FarmStay from '@/lib/db/models/FarmStay';
 import BlockedDate from '@/lib/db/models/BlockedDate';
 import { getAuthenticatedUser } from '@/lib/auth/protect';
 import { getRazorpayInstance } from '@/lib/payments/razorpay';
+import { parseUTCDate } from '@/lib/utils';
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,8 +27,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'You must accept the booking and payment terms to proceed' }, { status: 400 });
     }
 
-    const checkInDate = new Date(checkIn);
-    const checkOutDate = new Date(checkOut);
+    const checkInDate = parseUTCDate(checkIn);
+    const checkOutDate = parseUTCDate(checkOut);
 
     if (checkInDate >= checkOutDate) {
       return NextResponse.json({ message: 'Check-out date must be after check-in date' }, { status: 400 });
@@ -75,13 +76,13 @@ export async function POST(req: NextRequest) {
     let weekendNights = 0;
     let current = new Date(checkInDate);
     while (current < checkOutDate) {
-      const day = current.getDay();
+      const day = current.getUTCDay();
       if (day === 5 || day === 6) { // Friday or Saturday
         weekendNights++;
       } else {
         weekdayNights++;
       }
-      current.setDate(current.getDate() + 1);
+      current.setUTCDate(current.getUTCDate() + 1);
     }
 
     const basePrice = (weekdayNights * stay.price) + (weekendNights * (stay.weekendPrice || stay.price));

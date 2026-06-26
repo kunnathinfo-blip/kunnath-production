@@ -282,7 +282,7 @@ import { useStayDetails } from '@/hooks/useStays';
 import { useCreateBooking, useCreatePaymentOrder, useVerifyPayment } from '@/hooks/useBookings';
 import { useAuthStore } from '@/store/authStore';
 
-import { formatCurrency, cn, getOptimizedImageUrl } from '@/lib/utils';
+import { formatCurrency, cn, getOptimizedImageUrl, normalizeStayImages } from '@/lib/utils';
 import ShareModal from '@/Components/stays/ShareModal';
 import TermsModal from '@/Components/stays/TermsModal';
 import Link from 'next/link';
@@ -756,7 +756,10 @@ export default function StayDetailsPage() {
   const displayedAmenities = showAllAmenities ? allAmenities : allAmenities.slice(0, 6);
   const hasMoreAmenities = allAmenities.length > 6;
 
-  const imagesToDisplay = dynamicImages.length > 0 ? dynamicImages : (images.length > 0 ? images : ['/placeholder.jpg']);
+  const normalizedImages = normalizeStayImages(stayData);
+  const imagesToDisplay = normalizedImages.featuredImages && normalizedImages.featuredImages.length > 0
+    ? normalizedImages.featuredImages
+    : (dynamicImages.length > 0 ? dynamicImages : (images.length > 0 ? images : ['/placeholder.jpg']));
   const galleryImages = imagesToDisplay.length >= 5 ? imagesToDisplay : [...imagesToDisplay, ...Array(5 - imagesToDisplay.length).fill(imagesToDisplay[0] || '/placeholder.jpg')];
 
   // Calculate pricing breakdown
@@ -1087,6 +1090,84 @@ export default function StayDetailsPage() {
                 )}
               </div>
             )} */}
+
+            {/* Categorized Galleries */}
+            {(() => {
+              const categories = [
+                { key: 'rooms', label: 'Rooms' },
+                { key: 'amenities', label: 'Amenities' },
+                { key: 'dining', label: 'Dining' },
+                { key: 'activities', label: 'Activities' },
+                { key: 'exterior', label: 'Exterior' },
+                { key: 'interior', label: 'Interior' }
+              ];
+
+              const hasAnyCategorized = categories.some(cat => normalizedImages.categorizedImages?.[cat.key as keyof typeof normalizedImages.categorizedImages]?.length > 0) || (normalizedImages.otherImages && normalizedImages.otherImages.length > 0);
+
+              if (!hasAnyCategorized) return null;
+
+              return (
+                <div className="border-t border-gray-200 pt-8 space-y-8">
+                  <div>
+                    <h2 className="text-2xl font-black text-gray-900 tracking-tight">Explore the property</h2>
+                    <p className="text-xs font-bold text-gray-400 mt-1 uppercase tracking-wider">Browse images by category</p>
+                  </div>
+                  
+                  {categories.map(cat => {
+                    const catImages = normalizedImages.categorizedImages?.[cat.key as keyof typeof normalizedImages.categorizedImages] || [];
+                    if (catImages.length === 0) return null;
+
+                    return (
+                      <div key={cat.key} className="space-y-3">
+                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary" /> {cat.label}
+                        </h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          {catImages.map((img: string, idx: number) => (
+                            <div 
+                              key={idx} 
+                              className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 border border-gray-150 group cursor-pointer relative shadow-sm hover:shadow-md transition-all duration-300"
+                              onClick={() => openGallery(0)}
+                            >
+                              <img 
+                                src={getOptimizedImageUrl(img, 400)} 
+                                alt={`${cat.label} ${idx + 1}`} 
+                                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" 
+                                loading="lazy"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {normalizedImages.otherImages && normalizedImages.otherImages.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Other Images
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {normalizedImages.otherImages.map((img: string, idx: number) => (
+                          <div 
+                            key={idx} 
+                            className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 border border-gray-150 group cursor-pointer relative shadow-sm hover:shadow-md transition-all duration-300"
+                            onClick={() => openGallery(0)}
+                          >
+                            <img 
+                              src={getOptimizedImageUrl(img, 400)} 
+                              alt={`Other image ${idx + 1}`} 
+                              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" 
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Double Month Availability Calendar */}
             <div id="availability" className="border-t border-gray-200 pt-8">

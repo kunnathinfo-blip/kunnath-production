@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Image as ImageIcon, Settings, DollarSign, CheckCircle2 } from 'lucide-react';
+import { X, Image as ImageIcon, Settings, DollarSign, CheckCircle2, ChevronDown } from 'lucide-react';
 import { FarmStay, useCreateStay, useUpdateStay } from '@/hooks/useStays';
 import { Button } from '@/Components/ui/Button';
+import { normalizeStayImages } from '@/lib/utils';
 
 interface StayModalProps {
   isOpen: boolean;
@@ -11,12 +12,24 @@ interface StayModalProps {
 
 export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProps) {
   const [step, setStep] = useState(1);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     description: '',
     images: [''],
+    featuredImages: ['', '', '', '', ''] as string[],
+    categorizedImages: {
+      rooms: [''],
+      amenities: [''],
+      dining: [''],
+      activities: [''],
+      exterior: [''],
+      interior: ['']
+    },
+    otherImages: [''],
     price: 0,
+    weekendPrice: 0,
     capacity: 2,
     beds: 1,
     bathrooms: 1,
@@ -38,13 +51,29 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
 
   useEffect(() => {
     if (isOpen) {
+      setErrorMsg(null);
       if (stayToEdit) {
+        const normalized = normalizeStayImages(stayToEdit);
+        const feat = [...(normalized.featuredImages || [])];
+        while (feat.length < 5) feat.push('');
+        
         setFormData({
           name: stayToEdit.name,
           slug: stayToEdit.slug || '',
           description: stayToEdit.description,
           images: stayToEdit.images?.length ? stayToEdit.images : [''],
+          featuredImages: feat.slice(0, 5),
+          categorizedImages: {
+            rooms: normalized.categorizedImages?.rooms?.length ? normalized.categorizedImages.rooms : [''],
+            amenities: normalized.categorizedImages?.amenities?.length ? normalized.categorizedImages.amenities : [''],
+            dining: normalized.categorizedImages?.dining?.length ? normalized.categorizedImages.dining : [''],
+            activities: normalized.categorizedImages?.activities?.length ? normalized.categorizedImages.activities : [''],
+            exterior: normalized.categorizedImages?.exterior?.length ? normalized.categorizedImages.exterior : [''],
+            interior: normalized.categorizedImages?.interior?.length ? normalized.categorizedImages.interior : ['']
+          },
+          otherImages: normalized.otherImages?.length ? normalized.otherImages : [''],
           price: stayToEdit.price,
+          weekendPrice: stayToEdit.weekendPrice !== undefined ? stayToEdit.weekendPrice : stayToEdit.price,
           capacity: stayToEdit.capacity,
           beds: stayToEdit.beds,
           bathrooms: stayToEdit.bathrooms || 1,
@@ -64,7 +93,18 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
           slug: '',
           description: '',
           images: [''],
+          featuredImages: ['', '', '', '', ''],
+          categorizedImages: {
+            rooms: [''],
+            amenities: [''],
+            dining: [''],
+            activities: [''],
+            exterior: [''],
+            interior: ['']
+          },
+          otherImages: [''],
           price: 0,
+          weekendPrice: 0,
           capacity: 2,
           beds: 1,
           bathrooms: 1,
@@ -89,40 +129,115 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
   const handleBack = () => setStep((s) => Math.max(s - 1, 1));
 
   const isStep1Valid = formData.name.trim() !== '' && formData.description.trim() !== '';
-  const isStep2Valid = formData.images[0]?.trim() !== '';
-  const isStep3Valid = formData.price > 0 && formData.capacity > 0 && formData.beds > 0;
+  const isStep2Valid = formData.featuredImages.filter(img => img.trim() !== '').length === 5;
+  const isStep3Valid = formData.price > 0 && formData.weekendPrice > 0 && formData.capacity > 0 && formData.beds > 0;
 
-  const handleArrayChange = (index: number, value: string, field: 'images' | 'amenities') => {
+  const handleFeaturedImageChange = (index: number, value: string) => {
+    const newFeatured = [...formData.featuredImages];
+    newFeatured[index] = value;
+    setFormData({ ...formData, featuredImages: newFeatured });
+  };
+
+  const handleCategorizedImageChange = (category: string, index: number, value: string) => {
+    const newCategorized = { ...formData.categorizedImages };
+    const arr = [...(newCategorized as any)[category]];
+    arr[index] = value;
+    (newCategorized as any)[category] = arr;
+    setFormData({ ...formData, categorizedImages: newCategorized });
+  };
+
+  const addCategorizedImageItem = (category: string) => {
+    const newCategorized = { ...formData.categorizedImages };
+    (newCategorized as any)[category] = [...(newCategorized as any)[category], ''];
+    setFormData({ ...formData, categorizedImages: newCategorized });
+  };
+
+  const removeCategorizedImageItem = (category: string, index: number) => {
+    const newCategorized = { ...formData.categorizedImages };
+    const arr = (newCategorized as any)[category].filter((_: any, i: number) => i !== index);
+    if (arr.length === 0) arr.push('');
+    (newCategorized as any)[category] = arr;
+    setFormData({ ...formData, categorizedImages: newCategorized });
+  };
+
+  const handleOtherImageChange = (index: number, value: string) => {
+    const newOther = [...formData.otherImages];
+    newOther[index] = value;
+    setFormData({ ...formData, otherImages: newOther });
+  };
+
+  const addOtherImageItem = () => {
+    setFormData({ ...formData, otherImages: [...formData.otherImages, ''] });
+  };
+
+  const removeOtherImageItem = (index: number) => {
+    const newOther = formData.otherImages.filter((_, i) => i !== index);
+    if (newOther.length === 0) newOther.push('');
+    setFormData({ ...formData, otherImages: newOther });
+  };
+
+  const handleArrayChange = (index: number, value: string, field: 'amenities') => {
     const newArray = [...formData[field]];
     newArray[index] = value;
     setFormData({ ...formData, [field]: newArray });
   };
 
-  const addArrayItem = (field: 'images' | 'amenities') => {
+  const addArrayItem = (field: 'amenities') => {
     setFormData({ ...formData, [field]: [...formData[field], ''] });
   };
 
-  const removeArrayItem = (index: number, field: 'images' | 'amenities') => {
+  const removeArrayItem = (index: number, field: 'amenities') => {
     const newArray = formData[field].filter((_, i) => i !== index);
     if (newArray.length === 0) newArray.push('');
     setFormData({ ...formData, [field]: newArray });
   };
 
   const handleSubmit = () => {
+    const cleanFeatured = formData.featuredImages.filter(img => img.trim() !== '');
+    const cleanCategorized = {
+      rooms: formData.categorizedImages.rooms.filter(img => img.trim() !== ''),
+      amenities: formData.categorizedImages.amenities.filter(img => img.trim() !== ''),
+      dining: formData.categorizedImages.dining.filter(img => img.trim() !== ''),
+      activities: formData.categorizedImages.activities.filter(img => img.trim() !== ''),
+      exterior: formData.categorizedImages.exterior.filter(img => img.trim() !== ''),
+      interior: formData.categorizedImages.interior.filter(img => img.trim() !== '')
+    };
+    const cleanOther = formData.otherImages.filter(img => img.trim() !== '');
+
     const payload = {
       ...formData,
-      images: formData.images.filter((img) => img.trim() !== ''),
+      featuredImages: cleanFeatured,
+      categorizedImages: cleanCategorized,
+      otherImages: cleanOther,
+      images: [
+        ...cleanFeatured,
+        ...cleanCategorized.rooms,
+        ...cleanCategorized.amenities,
+        ...cleanCategorized.dining,
+        ...cleanCategorized.activities,
+        ...cleanCategorized.exterior,
+        ...cleanCategorized.interior,
+        ...cleanOther
+      ],
       amenities: formData.amenities.filter((a) => a.trim() !== ''),
       foodOptions: formData.foodOptions.filter((f) => f.trim() !== ''),
       addOns: formData.addOns.filter((a) => a.name.trim() !== ''),
     };
 
-    const onSuccess = () => onClose();
+    const onSuccess = () => {
+      setErrorMsg(null);
+      onClose();
+    };
+
+    const onError = (err: any) => {
+      console.error(err);
+      setErrorMsg(err.response?.data?.message || err.message || 'An error occurred while saving.');
+    };
 
     if (stayToEdit) {
-      updateStay({ id: stayToEdit._id, stayData: payload }, { onSuccess });
+      updateStay({ id: stayToEdit._id, stayData: payload }, { onSuccess, onError });
     } else {
-      createStay(payload, { onSuccess });
+      createStay(payload, { onSuccess, onError });
     }
   };
 
@@ -172,6 +287,11 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
 
         {/* Content */}
         <div className="p-6">
+          {errorMsg && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm text-center font-medium animate-in fade-in duration-200">
+              {errorMsg}
+            </div>
+          )}
           {step === 1 && (
             <div className="space-y-4 animate-in slide-in-from-right-4">
               <div>
@@ -208,60 +328,165 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
 
           {step === 2 && (
             <div className="space-y-6 animate-in slide-in-from-right-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Image URLs *</label>
-                <p className="text-xs text-gray-500 mb-3">Provide direct links to images. The first image will be the cover.</p>
+              
+              {/* Featured Images with Drag & Drop */}
+              <div className="border-b border-gray-150 pb-6">
+                <label className="block text-sm font-bold text-gray-900 mb-1">Featured Gallery Images *</label>
+                <p className="text-xs text-gray-500 mb-4">Provide exactly 5 featured images. Drag and drop the thumbnail cards to reorder them.</p>
+                
+                <div className="grid grid-cols-5 gap-3 mb-4">
+                  {formData.featuredImages.map((img, idx) => {
+                    const isValidUrl = img && img.startsWith('http');
+                    return (
+                      <div 
+                        key={idx}
+                        draggable={!!isValidUrl}
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData('text/plain', idx.toString());
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const srcIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+                          if (isNaN(srcIndex) || srcIndex === idx) return;
+                          const newFeatured = [...formData.featuredImages];
+                          const temp = newFeatured[srcIndex];
+                          newFeatured[srcIndex] = newFeatured[idx];
+                          newFeatured[idx] = temp;
+                          setFormData({ ...formData, featuredImages: newFeatured });
+                        }}
+                        className={`aspect-[4/3] rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden relative transition-all duration-300 ${
+                          isValidUrl 
+                            ? 'border-gray-200 cursor-grab active:cursor-grabbing hover:border-primary hover:shadow-md' 
+                            : 'border-gray-200 bg-gray-50 text-gray-400'
+                        }`}
+                      >
+                        {isValidUrl ? (
+                          <>
+                            <img src={img} alt={`Featured ${idx + 1}`} className="w-full h-full object-cover" />
+                            <div className="absolute top-1 left-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+                              {idx + 1}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-center p-1">
+                            <span className="text-[10px] font-black uppercase text-gray-400">Slot {idx + 1}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-2.5">
+                  {formData.featuredImages.map((img, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <span className="text-xs font-bold text-gray-400 w-16">Image {idx + 1}:</span>
+                      <input 
+                        type="url"
+                        placeholder="Cloudinary Image URL..."
+                        className="flex-1 p-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                        value={img}
+                        onChange={(e) => handleFeaturedImageChange(idx, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Category-wise Images Accordion */}
+              <div className="border-b border-gray-150 pb-6">
+                <label className="block text-sm font-bold text-gray-900 mb-1">Category-wise Images</label>
+                <p className="text-xs text-gray-500 mb-4">Organize property images into specific visual categories.</p>
                 
                 <div className="space-y-3">
-                  {formData.images.map((img, idx) => (
+                  {[
+                    { key: 'rooms', label: 'Rooms' },
+                    { key: 'amenities', label: 'Amenities' },
+                    { key: 'dining', label: 'Dining' },
+                    { key: 'activities', label: 'Activities' },
+                    { key: 'exterior', label: 'Exterior' },
+                    { key: 'interior', label: 'Interior' }
+                  ].map(cat => {
+                    const catList = formData.categorizedImages[cat.key as keyof typeof formData.categorizedImages] || [''];
+                    return (
+                      <details key={cat.key} className="group border border-gray-200 rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+                        <summary className="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer select-none">
+                          <span className="text-sm font-bold text-gray-800">{cat.label} ({catList.filter(u => u.trim()).length} images)</span>
+                          <span className="text-gray-400 transition group-open:rotate-180">
+                            <ChevronDown size={18} />
+                          </span>
+                        </summary>
+                        <div className="p-4 bg-white border-t border-gray-150 space-y-3">
+                          {catList.map((url, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <input 
+                                type="url"
+                                placeholder={`Cloudinary URL for ${cat.label}...`}
+                                className="flex-1 p-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                                value={url}
+                                onChange={(e) => handleCategorizedImageChange(cat.key, idx, e.target.value)}
+                              />
+                              <button 
+                                onClick={() => removeCategorizedImageItem(cat.key, idx)}
+                                className="p-2.5 text-red-500 hover:bg-red-50 rounded-lg border border-red-100"
+                              >
+                                <X size={18} />
+                              </button>
+                            </div>
+                          ))}
+                          <button 
+                            onClick={() => addCategorizedImageItem(cat.key)}
+                            className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                          >
+                            + Add {cat.label} image
+                          </button>
+                        </div>
+                      </details>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Other Images */}
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-1">Other Images</label>
+                <p className="text-xs text-gray-500 mb-3">Add miscellaneous images that do not fit standard categories.</p>
+                <div className="space-y-3">
+                  {formData.otherImages.map((img, idx) => (
                     <div key={idx} className="flex gap-2">
                       <input 
                         type="url"
-                        placeholder="https://images.unsplash.com/photo-..."
-                        className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                        placeholder="Cloudinary Image URL..."
+                        className="flex-1 p-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                         value={img}
-                        onChange={(e) => handleArrayChange(idx, e.target.value, 'images')}
+                        onChange={(e) => handleOtherImageChange(idx, e.target.value)}
                       />
                       <button 
-                        onClick={() => removeArrayItem(idx, 'images')}
-                        className="p-3 text-red-500 hover:bg-red-50 rounded-lg border border-red-100"
+                        onClick={() => removeOtherImageItem(idx)}
+                        className="p-2.5 text-red-500 hover:bg-red-50 rounded-lg border border-red-100"
                       >
-                        <X size={20} />
+                        <X size={18} />
                       </button>
                     </div>
                   ))}
                   <button 
-                    onClick={() => addArrayItem('images')}
-                    className="text-sm font-medium text-primary hover:underline"
+                    onClick={addOtherImageItem}
+                    className="text-xs font-bold text-primary hover:underline"
                   >
-                    + Add another image
+                    + Add other image
                   </button>
                 </div>
               </div>
 
-              {formData.images[0] && (
-                <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">Cover Preview</p>
-                  <div className="w-full h-64 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center">
-                    <img 
-                      src={formData.images[0]} 
-                      alt="Preview" 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Invalid+Image+URL';
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
           {step === 3 && (
             <div className="space-y-6 animate-in slide-in-from-right-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price per night (₹) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Weekday Price per night (₹) *</label>
                   <input 
                     type="number"
                     min="0"
@@ -270,6 +495,19 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
                     onChange={(e) => setFormData({...formData, price: Number(e.target.value)})}
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Weekend Price per night (₹) *</label>
+                  <input 
+                    type="number"
+                    min="0"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    value={formData.weekendPrice}
+                    onChange={(e) => setFormData({...formData, weekendPrice: Number(e.target.value)})}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Capacity (Guests) *</label>
                   <input 
@@ -496,9 +734,12 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
                 
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">{formData.name}</h3>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
                     <span className="bg-primary/10 text-primary font-semibold px-3 py-1 rounded-full text-sm">
-                      ₹{formData.price.toLocaleString()} / night
+                      Weekday: ₹{formData.price.toLocaleString()} / night
+                    </span>
+                    <span className="bg-amber-50 text-amber-700 font-semibold px-3 py-1 rounded-full text-sm">
+                      Weekend: ₹{formData.weekendPrice.toLocaleString()} / night
                     </span>
                     <span className="text-gray-500 text-sm">· {formData.capacity} guests · {formData.beds} beds</span>
                   </div>

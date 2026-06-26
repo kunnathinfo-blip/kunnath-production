@@ -4,6 +4,8 @@ import path from 'path';
 import connectDB from '@/lib/db/connect';
 import FarmStay from '@/lib/db/models/FarmStay';
 
+import { normalizeStayImages } from '@/lib/utils';
+
 const IMAGE_RE = /\.(jpg|jpeg|png|gif|webp)$/i;
 
 function collectImages(baseDir: string, slug: string): string[] {
@@ -54,7 +56,7 @@ export async function GET(req: NextRequest) {
     const stays = await FarmStay.find({ isDeleted: { $ne: true } });
 
     const staysWithImages = stays.map(stay => {
-      const stayObj = stay.toObject();
+      let stayObj = stay.toObject();
       if (stayObj.slug && process.env.NODE_ENV !== 'production') {
         const hasExternalImages = stayObj.images && stayObj.images.length > 0 && stayObj.images[0].startsWith('http');
         if (!hasExternalImages) {
@@ -70,7 +72,7 @@ export async function GET(req: NextRequest) {
           }
         }
       }
-      return stayObj;
+      return normalizeStayImages(stayObj);
     });
 
     return NextResponse.json(staysWithImages);

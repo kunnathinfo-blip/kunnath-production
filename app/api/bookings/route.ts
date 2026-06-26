@@ -4,6 +4,7 @@ import Booking from '@/lib/db/models/Booking';
 import FarmStay from '@/lib/db/models/FarmStay';
 import BlockedDate from '@/lib/db/models/BlockedDate';
 import { getAuthenticatedUser } from '@/lib/auth/protect';
+import { parseUTCDate } from '@/lib/utils';
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,8 +21,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Please provide all required fields' }, { status: 400 });
     }
 
-    const checkInDate = new Date(checkIn);
-    const checkOutDate = new Date(checkOut);
+    const checkInDate = parseUTCDate(checkIn);
+    const checkOutDate = parseUTCDate(checkOut);
 
     if (checkInDate >= checkOutDate) {
       return NextResponse.json({ message: 'Check-out date must be after check-in date' }, { status: 400 });
@@ -66,11 +67,11 @@ export async function POST(req: NextRequest) {
     let basePrice = 0;
     let tempDate = new Date(checkInDate);
     for (let i = 0; i < nights; i++) {
-      const day = tempDate.getDay();
+      const day = tempDate.getUTCDay();
       // Friday (5) and Saturday (6) are weekend days
       const isWeekend = day === 5 || day === 6;
       basePrice += isWeekend && stay.weekendPrice ? stay.weekendPrice : stay.price;
-      tempDate.setDate(tempDate.getDate() + 1);
+      tempDate.setUTCDate(tempDate.getUTCDate() + 1);
     }
 
     // Extra guest charges

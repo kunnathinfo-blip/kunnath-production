@@ -64,6 +64,20 @@ const farmStaySchema = new mongoose.Schema({
   images: [{
     type: String
   }],
+  featuredImages: [{
+    type: String
+  }],
+  categorizedImages: {
+    rooms: [{ type: String }],
+    amenities: [{ type: String }],
+    dining: [{ type: String }],
+    activities: [{ type: String }],
+    exterior: [{ type: String }],
+    interior: [{ type: String }]
+  },
+  otherImages: [{
+    type: String
+  }],
   gallery: {
     exterior: [{ type: String }],
     living: [{ type: String }],
@@ -84,6 +98,69 @@ const farmStaySchema = new mongoose.Schema({
     default: false
   }
 }, { timestamps: true });
+
+farmStaySchema.pre('save', function(this: any, next: any) {
+  const stay = this as any;
+
+  // If the new fields are not populated but old ones are, initialize them!
+  if ((!stay.featuredImages || stay.featuredImages.length === 0) && stay.images && stay.images.length > 0) {
+    stay.featuredImages = stay.images.slice(0, 5);
+  }
+
+  if (!stay.categorizedImages || (
+    (!stay.categorizedImages.rooms || stay.categorizedImages.rooms.length === 0) &&
+    (!stay.categorizedImages.amenities || stay.categorizedImages.amenities.length === 0) &&
+    (!stay.categorizedImages.dining || stay.categorizedImages.dining.length === 0) &&
+    (!stay.categorizedImages.activities || stay.categorizedImages.activities.length === 0) &&
+    (!stay.categorizedImages.exterior || stay.categorizedImages.exterior.length === 0) &&
+    (!stay.categorizedImages.interior || stay.categorizedImages.interior.length === 0)
+  )) {
+    // Populate categorizedImages from old gallery if it exists
+    stay.categorizedImages = {
+      rooms: [
+        ...(stay.gallery?.bedroom || []),
+        ...(stay.gallery?.living || []),
+        ...(stay.gallery?.kitchen || []),
+        ...(stay.gallery?.bathroom || [])
+      ],
+      amenities: stay.gallery?.amenities || [],
+      dining: [],
+      activities: [],
+      exterior: stay.gallery?.exterior || [],
+      interior: []
+    };
+  }
+
+  if ((!stay.otherImages || stay.otherImages.length === 0) && stay.images && stay.images.length > 5) {
+    stay.otherImages = stay.images.slice(5);
+  }
+
+  // Compile flat images list for backward compatibility with list pages/etc.
+  const compiledImages: string[] = [];
+  if (stay.featuredImages) {
+    compiledImages.push(...stay.featuredImages.filter((img: string) => img && img.trim()));
+  }
+  if (stay.categorizedImages) {
+    const cat = stay.categorizedImages;
+    if (cat.rooms) compiledImages.push(...cat.rooms.filter((img: string) => img && img.trim()));
+    if (cat.amenities) compiledImages.push(...cat.amenities.filter((img: string) => img && img.trim()));
+    if (cat.dining) compiledImages.push(...cat.dining.filter((img: string) => img && img.trim()));
+    if (cat.activities) compiledImages.push(...cat.activities.filter((img: string) => img && img.trim()));
+    if (cat.exterior) compiledImages.push(...cat.exterior.filter((img: string) => img && img.trim()));
+    if (cat.interior) compiledImages.push(...cat.interior.filter((img: string) => img && img.trim()));
+  }
+  if (stay.otherImages) {
+    compiledImages.push(...stay.otherImages.filter((img: string) => img && img.trim()));
+  }
+
+  if (compiledImages.length > 0) {
+    stay.images = compiledImages;
+  }
+
+  if (typeof next === 'function') {
+    next();
+  }
+});
 
 const FarmStay = mongoose.models.FarmStay || mongoose.model('FarmStay', farmStaySchema);
 export default FarmStay;

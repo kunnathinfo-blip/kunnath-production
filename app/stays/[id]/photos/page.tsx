@@ -15,11 +15,13 @@ interface Category {
 
 // ─── Category Config ──────────────────────────────────────────────────────────
 const CATEGORIES: Category[] = [
-  { id: 'exterior', label: 'Exterior' },
-  { id: 'living', label: 'Living room' },
-  { id: 'bedroom', label: 'Bedroom' },
-  { id: 'bathroom', label: 'Bathroom' },
+  { id: 'rooms', label: 'Rooms' },
   { id: 'amenities', label: 'Amenities' },
+  { id: 'dining', label: 'Dining' },
+  { id: 'activities', label: 'Activities' },
+  { id: 'exterior', label: 'Exterior' },
+  { id: 'interior', label: 'Interior' },
+  { id: 'other', label: 'Other Images' },
 ];
 
 function PhotoGrid({ images }: { images: string[] }) {
