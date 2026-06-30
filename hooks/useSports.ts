@@ -58,8 +58,9 @@ export function useUpdateSport() {
       const { data } = await api.put<Sport>(`/admin/sports/${id}`, sportData);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['sports'] });
+      queryClient.invalidateQueries({ queryKey: ['sport', variables.id] });
     },
   });
 }

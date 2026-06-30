@@ -418,21 +418,40 @@ const importData = async () => {
     console.log('Connecting to database...');
     await connectDB();
 
-    console.log('Clearing old collections...');
-    await FarmStay.deleteMany({});
-    await Sport.deleteMany({});
-    await Event.deleteMany({});
+    const force = process.argv.includes('--force');
 
-    console.log('Seeding stays...');
-    await FarmStay.insertMany(dummyStays);
+    if (force) {
+      console.log('Force flag detected. Clearing old collections...');
+      await FarmStay.deleteMany({});
+      await Sport.deleteMany({});
+      await Event.deleteMany({});
+    }
 
-    console.log('Seeding sports...');
-    await Sport.insertMany(dummySports);
+    const stayCount = await FarmStay.countDocuments();
+    if (stayCount === 0) {
+      console.log('Seeding stays...');
+      await FarmStay.insertMany(dummyStays);
+    } else {
+      console.log('Stays already exist, skipping stays seeding.');
+    }
 
-    console.log('Seeding events...');
-    await Event.insertMany(dummyEvents);
+    const sportCount = await Sport.countDocuments();
+    if (sportCount === 0) {
+      console.log('Seeding sports...');
+      await Sport.insertMany(dummySports);
+    } else {
+      console.log('Sports already exist, skipping sports seeding.');
+    }
 
-    console.log('Database seeded successfully!');
+    const eventCount = await Event.countDocuments();
+    if (eventCount === 0) {
+      console.log('Seeding events...');
+      await Event.insertMany(dummyEvents);
+    } else {
+      console.log('Events already exist, skipping events seeding.');
+    }
+
+    console.log('Database operation completed!');
     mongoose.connection.close();
     process.exit(0);
   } catch (error: any) {

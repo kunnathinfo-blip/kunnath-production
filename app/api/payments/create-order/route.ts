@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     let current = new Date(checkInDate);
     while (current < checkOutDate) {
       const day = current.getUTCDay();
-      if (day === 5 || day === 6) { // Friday or Saturday
+      if (day === 6 || day === 0) { // Saturday or Sunday
         weekendNights++;
       } else {
         weekdayNights++;

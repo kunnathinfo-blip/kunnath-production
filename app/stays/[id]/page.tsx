@@ -569,10 +569,10 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       <div className={cn("relative", isPopover ? "px-4 sm:px-6 pt-2" : "")}>
         {isPopover && (
           <>
-            <button onClick={goPrevMonth} className="absolute left-6 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-gray-100 transition-colors z-10">
+            <button onClick={goPrevMonth} className="absolute left-4 sm:left-6 top-2.5 p-2 rounded-full hover:bg-gray-100 transition-colors z-10">
               <ChevronLeft size={24} className="text-gray-400" />
             </button>
-            <button onClick={goNextMonth} className="absolute right-6 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-gray-100 transition-colors z-10">
+            <button onClick={goNextMonth} className="absolute right-4 sm:right-6 top-2.5 p-2 rounded-full hover:bg-gray-100 transition-colors z-10">
               <ChevronRight size={24} className="text-gray-400" />
             </button>
           </>
@@ -775,8 +775,8 @@ export default function StayDetailsPage() {
     let current = new Date(start);
     while (current < end) {
       const day = current.getDay();
-      // Friday (5) and Saturday (6) are weekends
-      if (day === 5 || day === 6) {
+      // Saturday (6) and Sunday (0) are weekends
+      if (day === 6 || day === 0) {
         weekendNights++;
       } else {
         weekdayNights++;

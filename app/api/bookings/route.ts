@@ -68,8 +68,8 @@ export async function POST(req: NextRequest) {
     let tempDate = new Date(checkInDate);
     for (let i = 0; i < nights; i++) {
       const day = tempDate.getUTCDay();
-      // Friday (5) and Saturday (6) are weekend days
-      const isWeekend = day === 5 || day === 6;
+      // Saturday (6) and Sunday (0) are weekend days
+      const isWeekend = day === 6 || day === 0;
       basePrice += isWeekend && stay.weekendPrice ? stay.weekendPrice : stay.price;
       tempDate.setUTCDate(tempDate.getUTCDate() + 1);
     }
