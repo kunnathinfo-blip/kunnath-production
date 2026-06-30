@@ -458,7 +458,11 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           let textClass = 'text-gray-900';
           let roundedClass = '';
 
-          if (selected) {
+          if (disabled) {
+            bgClass = 'bg-gray-100';
+            textClass = 'text-gray-400 line-through';
+            roundedClass = 'rounded-full';
+          } else if (selected) {
             bgClass = 'bg-gray-900 text-white';
             textClass = 'text-white';
             roundedClass = 'rounded-full';
@@ -476,10 +480,10 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
               disabled={disabled}
               onClick={() => handleDateClick(ymd)}
               className={cn(
-                "text-xs transition-colors hover:bg-gray-100",
+                "text-xs transition-colors",
                 isPopover ? "p-1.5" : "p-2",
                 roundedClass, bgClass, textClass,
-                disabled ? 'text-gray-300 line-through cursor-not-allowed' : 'cursor-pointer'
+                disabled ? 'cursor-not-allowed' : 'hover:bg-gray-100 cursor-pointer'
               )}
             >
               {dayNumber}
