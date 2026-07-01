@@ -334,7 +334,7 @@ export default function StayModal({ isOpen, onClose, stayToEdit }: StayModalProp
                 <label className="block text-sm font-bold text-gray-900 mb-1">Featured Gallery Images *</label>
                 <p className="text-xs text-gray-500 mb-4">Provide exactly 5 featured images. Drag and drop the thumbnail cards to reorder them.</p>
                 
-                <div className="grid grid-cols-5 gap-3 mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
                   {formData.featuredImages.map((img, idx) => {
                     const isValidUrl = img && img.startsWith('http');
                     return (

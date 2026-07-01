@@ -9,7 +9,7 @@ export default function HouseRulesPage() {
       <Container>
         <div className="max-w-4xl mx-auto bg-white rounded-[32px] p-8 md:p-12 shadow-sm border border-gray-100">
           <h1 className="text-4xl font-black text-gray-900 mb-8 tracking-tight">House Rules & Regulations</h1>
-          
+
           <div className="prose prose-gray max-w-none space-y-8 text-gray-600 leading-relaxed">
             <section>
               <p>
@@ -22,7 +22,7 @@ export default function HouseRulesPage() {
                 <li>Check-in and check-out timings must be strictly followed. Early check-in or late check-out is subject to availability and additional charges.</li>
                 <li>Guests must carry valid government-issued ID proof during check-in.</li>
                 <li>Outside illegal substances, weapons, or prohibited activities are strictly not allowed on the property.</li>
-                <li>Loud music and noise levels should be maintained responsibly, especially during late-night hours, to avoid disturbance to neighboring properties.</li>
+                {/* <li>Loud music and noise levels should be maintained responsibly, especially during late-night hours, to avoid disturbance to neighboring properties.</li> */}
                 <li>Guests are requested to maintain cleanliness and take care of the property, furniture, pool area, sports facilities, and equipment.</li>
                 <li>Any damages caused to the property, appliances, furnishings, or recreational equipment will be charged accordingly.</li>
                 <li>Pool usage is at guests’ own risk. Children must be supervised by adults at all times near the swimming pool and activity areas.</li>

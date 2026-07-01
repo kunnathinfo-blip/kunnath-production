@@ -107,7 +107,7 @@ const dummyStays = [
         'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685471/Pool_uigk8q.jpg'
       ]
     },
-    amenities: ['Private Swimming Pool', 'Lawn', 'Bonfires', 'Outdoor Projector', '55inch Smart TV', 'Party speaker', 'RO Water', 'Refrigerator', 'Barbeque', 'Microwave', 'Kitchen', 'WIFI', 'Extra Mattresses', 'Geyser', 'AC', 'Campfire', 'Restaurant'],
+    amenities: ['Private Swimming Pool', 'Lawn', 'Bonfires', 'Outdoor Projector', '55inch Smart TV', 'Party speaker', 'RO Water', 'Refrigerator', 'Barbeque', 'Microwave', 'Kitchen', 'WIFI', 'Extra Mattresses', 'Geyser', 'AC', 'Campfire', 'In-house Kitchen'],
     foodOptions: ['Swiggy & Zomato Available', 'Chef Available on request', 'In-House kitchen available'],
     addOns: [{ name: 'Campfire', price: 750 }],
     description: 'Orange is a 2BHK peaceful retreat with private swimming pool, designed for comfort, fun, and memorable moments. Ideal for families, friends, and weekend escapes, this beautifully maintained space offers the perfect balance of relaxation and entertainment.',
@@ -207,7 +207,7 @@ const dummyStays = [
         'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685484/Mainview_dv9s6f.jpg'
       ]
     },
-    amenities: ['Swimming Pool', 'Music System', 'WIFI', 'Refrigerator', 'Microwave', 'BBQ Setup', '55inch Smart TV', 'Party speaker', 'RO Water', 'Extra Mattresses', 'Geyser', 'AC', 'Campfire', 'Restaurant'],
+    amenities: ['Swimming Pool', 'Music System', 'WIFI', 'Refrigerator', 'Microwave', 'BBQ Setup', '55inch Smart TV', 'Party speaker', 'RO Water', 'Extra Mattresses', 'Geyser', 'AC', 'Campfire', 'In-house Kitchen'],
     foodOptions: ['Swiggy & Zomato Available', 'Chef Available on request', 'In-House kitchen available'],
     addOns: [{ name: 'Campfire', price: 750 }],
     description: 'Lemon is Spacious private stay with 2 villas, 5 bedrooms, and 4 large halls, ideal for groups up to 25 guests. Enjoy a swimming pool, music system, WiFi, refrigerator, microwave, and BBQ setup—perfect for family get-togethers, parties, and group stays.',
@@ -290,7 +290,7 @@ const dummyStays = [
         'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685454/Others_fjrtel.jpg'
       ]
     },
-    amenities: ['Huge Swimming Pool', 'Party Lawn', 'Projector', '65” Smart TV', 'Powerful Music System', 'WIFI', 'Refrigerator', 'Microwave', 'BBQ Setup', '55inch Smart TV', 'Party speaker', 'RO Water', 'Kitchen', 'Extra Mattresses', 'Geyser', 'AC', 'Campfire', 'Restaurant'],
+    amenities: ['Huge Swimming Pool', 'Party Lawn', 'Projector', '65” Smart TV', 'Powerful Music System', 'WIFI', 'Refrigerator', 'Microwave', 'BBQ Setup', '55inch Smart TV', 'Party speaker', 'RO Water', 'Kitchen', 'Extra Mattresses', 'Geyser', 'AC', 'Campfire', 'In-house Kitchen'],
     foodOptions: ['Swiggy & Zomato Available', 'Chef Available on request', 'In-House kitchen available'],
     addOns: [{ name: 'Campfire', price: 750 }],
     description: 'Mint is a spacious 4-bedroom private stay featuring a living room, dining area, and a large party hall. Enjoy a huge swimming pool, party lawn, projector, 65” Smart TV, powerful music system, high-speed WIFI, refrigerator, microwave, and BBQ setup—perfect for celebrations, group stays, and unforgettable get-togethers.',

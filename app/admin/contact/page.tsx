@@ -95,70 +95,117 @@ export default function AdminContactPage() {
         )}
       </div>
 
-      {/* Table */}
-      <Card className="overflow-hidden border-gray-100">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
-              <tr>
-                <th className="p-4 font-semibold w-8"></th>
-                <th className="p-4 font-semibold">Name</th>
-                <th className="p-4 font-semibold">Email</th>
-                <th className="p-4 font-semibold">Subject</th>
-                <th className="p-4 font-semibold hidden lg:table-cell">Message</th>
-                <th className="p-4 font-semibold">Date</th>
-                <th className="p-4 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredMessages.length === 0 ? (
+      {/* Mobile view (List Cards) */}
+      <div className="block sm:hidden space-y-4">
+        {filteredMessages.length === 0 ? (
+          <div className="p-12 text-center text-gray-500 bg-white rounded-2xl border border-gray-150 shadow-sm">
+            {search || dateFilter ? 'No enquiries match your filters.' : 'No enquiries yet.'}
+          </div>
+        ) : (
+          filteredMessages.map((msg) => (
+            <Card
+              key={msg._id}
+              className={`p-4 space-y-3 cursor-pointer border hover:shadow-md transition-shadow ${
+                !msg.isRead ? 'border-primary/30 bg-primary/[0.01]' : 'border-gray-200'
+              }`}
+              onClick={() => setSelectedMessage(msg)}
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  {!msg.isRead ? (
+                    <Mail size={16} className="text-primary shrink-0" />
+                  ) : (
+                    <MailOpen size={16} className="text-gray-400 shrink-0" />
+                  )}
+                  <span className={`text-sm ${!msg.isRead ? 'font-bold text-gray-900' : 'text-gray-700'}`}>
+                    {msg.firstName} {msg.lastName}
+                  </span>
+                </div>
+                <span className="text-[10px] text-gray-400">{formatDate(msg.createdAt)}</span>
+              </div>
+              <div className="text-xs text-gray-500 truncate">{msg.email}</div>
+              <div className="flex justify-between items-center gap-2">
+                <span className="bg-gray-150 text-gray-700 px-2.5 py-1 rounded-md text-[10px] font-semibold">
+                  {msg.subject}
+                </span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDelete(msg._id); }}
+                  className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* Table (Desktop View) */}
+      <div className="hidden sm:block">
+        <Card className="overflow-hidden border-gray-100">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
                 <tr>
-                  <td colSpan={7} className="p-12 text-center text-gray-500">
-                    {search || dateFilter ? 'No enquiries match your filters.' : 'No enquiries yet.'}
-                  </td>
+                  <th className="p-4 font-semibold w-8"></th>
+                  <th className="p-4 font-semibold">Name</th>
+                  <th className="p-4 font-semibold">Email</th>
+                  <th className="p-4 font-semibold">Subject</th>
+                  <th className="p-4 font-semibold hidden lg:table-cell">Message</th>
+                  <th className="p-4 font-semibold">Date</th>
+                  <th className="p-4 font-semibold">Actions</th>
                 </tr>
-              ) : (
-                filteredMessages.map((msg) => (
-                  <tr
-                    key={msg._id}
-                    className={`transition-colors cursor-pointer hover:bg-gray-50 ${!msg.isRead ? 'bg-primary/[0.03] font-medium' : ''}`}
-                    onClick={() => setSelectedMessage(msg)}
-                  >
-                    <td className="p-4 text-center">
-                      {!msg.isRead ? (
-                        <Mail size={16} className="text-primary" />
-                      ) : (
-                        <MailOpen size={16} className="text-gray-400" />
-                      )}
-                    </td>
-                    <td className={`p-4 ${!msg.isRead ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
-                      {msg.firstName} {msg.lastName}
-                    </td>
-                    <td className="p-4 text-gray-600">{msg.email}</td>
-                    <td className="p-4">
-                      <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md text-xs font-medium">
-                        {msg.subject}
-                      </span>
-                    </td>
-                    <td className="p-4 text-gray-500 max-w-xs truncate hidden lg:table-cell">
-                      {msg.message.substring(0, 60)}{msg.message.length > 60 ? '…' : ''}
-                    </td>
-                    <td className="p-4 text-gray-500 text-xs whitespace-nowrap">{formatDate(msg.createdAt)}</td>
-                    <td className="p-4">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(msg._id); }}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredMessages.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-12 text-center text-gray-500">
+                      {search || dateFilter ? 'No enquiries match your filters.' : 'No enquiries yet.'}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+                ) : (
+                  filteredMessages.map((msg) => (
+                    <tr
+                      key={msg._id}
+                      className={`transition-colors cursor-pointer hover:bg-gray-50 ${!msg.isRead ? 'bg-primary/[0.03] font-medium' : ''}`}
+                      onClick={() => setSelectedMessage(msg)}
+                    >
+                      <td className="p-4 text-center">
+                        {!msg.isRead ? (
+                          <Mail size={16} className="text-primary" />
+                        ) : (
+                          <MailOpen size={16} className="text-gray-400" />
+                        )}
+                      </td>
+                      <td className={`p-4 ${!msg.isRead ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
+                        {msg.firstName} {msg.lastName}
+                      </td>
+                      <td className="p-4 text-gray-600">{msg.email}</td>
+                      <td className="p-4">
+                        <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md text-xs font-medium">
+                          {msg.subject}
+                        </span>
+                      </td>
+                      <td className="p-4 text-gray-500 max-w-xs truncate hidden lg:table-cell">
+                        {msg.message.substring(0, 60)}{msg.message.length > 60 ? '…' : ''}
+                      </td>
+                      <td className="p-4 text-gray-500 text-xs whitespace-nowrap">{formatDate(msg.createdAt)}</td>
+                      <td className="p-4">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDelete(msg._id); }}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
 
       {/* Message Detail Modal */}
       {selectedMessage && (

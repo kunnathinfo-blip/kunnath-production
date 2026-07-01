@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, AlertTriangle, Trash2, CheckCircle2, ShieldAlert } from 'lucide-react';
-import { FarmStay, useBlockedDates, useCreateBlock, useDeleteBlock } from '@/hooks/useStays';
+import { X, Calendar, AlertTriangle, Trash2, CheckCircle2, ShieldAlert, Edit2 } from 'lucide-react';
+import { FarmStay, useBlockedDates, useCreateBlock, useDeleteBlock, useUpdateBlock, BlockedDateRange } from '@/hooks/useStays';
 import { Button } from '@/Components/ui/Button';
 
 interface BlockDatesModalProps {
@@ -17,14 +17,21 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
   const [endDate, setEndDate] = useState('');
   const [reason, setReason] = useState('Offline Booking');
   const [notes, setNotes] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [aadhaarNumber, setAadhaarNumber] = useState('');
   const [override, setOverride] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [conflictDetected, setConflictDetected] = useState(false);
+  const [editingBlock, setEditingBlock] = useState<BlockedDateRange | null>(null);
 
   const { data: blocks, isLoading: loadingBlocks, refetch: refetchBlocks } = useBlockedDates(stay?._id || '');
   const { mutate: createBlock, isPending: isCreating } = useCreateBlock();
   const { mutate: deleteBlock, isPending: isDeleting } = useDeleteBlock();
+  const { mutate: updateBlock, isPending: isUpdating } = useUpdateBlock();
+
+  const isSaving = isCreating || isUpdating;
 
   useEffect(() => {
     if (isOpen) {
@@ -40,13 +47,17 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
     setEndDate('');
     setReason('Offline Booking');
     setNotes('');
+    setCustomerName('');
+    setPhoneNumber('');
+    setAadhaarNumber('');
     setOverride(false);
     setErrorMessage(null);
     setSuccessMessage(null);
     setConflictDetected(false);
+    setEditingBlock(null);
   };
 
-  const handleCreateBlock = (e: React.FormEvent) => {
+  const handleSubmitBlock = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -56,36 +67,59 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
       return;
     }
 
-    createBlock(
-      {
-        stayId: stay._id,
-        blockData: {
-          startDate,
-          endDate,
-          reason,
-          notes,
-          override
-        }
-      },
-      {
-        onSuccess: () => {
-          setSuccessMessage('Dates blocked successfully!');
-          refetchBlocks();
-          setTimeout(() => {
-            resetForm();
-            setActiveTab('list');
-          }, 1500);
-        },
-        onError: (err: any) => {
-          const status = err.response?.status;
-          const msg = err.response?.data?.message || 'Error blocking dates';
-          if (status === 409) {
-            setConflictDetected(true);
-          }
-          setErrorMessage(msg);
-        }
+    const payload = {
+      startDate,
+      endDate,
+      reason,
+      notes,
+      override,
+      customerName,
+      phoneNumber,
+      aadhaarNumber
+    };
+
+    const onSuccess = () => {
+      setSuccessMessage(editingBlock ? 'Blocked dates updated successfully!' : 'Dates blocked successfully!');
+      refetchBlocks();
+      setTimeout(() => {
+        resetForm();
+        setActiveTab('list');
+      }, 1500);
+    };
+
+    const onError = (err: any) => {
+      const status = err.response?.status;
+      const msg = err.response?.data?.message || 'Error saving date block';
+      if (status === 409) {
+        setConflictDetected(true);
       }
-    );
+      setErrorMessage(msg);
+    };
+
+    if (editingBlock) {
+      updateBlock(
+        {
+          stayId: stay._id,
+          blockId: editingBlock._id,
+          blockData: payload
+        },
+        {
+          onSuccess,
+          onError
+        }
+      );
+    } else {
+      createBlock(
+        {
+          stayId: stay._id,
+          blockData: payload
+        },
+        {
+          onSuccess,
+          onError
+        }
+      );
+    }
   };
 
   const handleDeleteBlock = (blockId: string) => {
@@ -127,9 +161,9 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-gray-100 bg-gray-50/50 px-6">
+        <div className="flex flex-wrap border-b border-gray-100 bg-gray-50/50 px-4 sm:px-6">
           <button
-            onClick={() => { setActiveTab('list'); setErrorMessage(null); }}
+            onClick={() => { setActiveTab('list'); setErrorMessage(null); setEditingBlock(null); }}
             className={`py-3 px-4 text-sm font-semibold border-b-2 transition-all ${
               activeTab === 'list' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
@@ -142,7 +176,7 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
               activeTab === 'add' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-900'
             }`}
           >
-            Block New Dates
+            {editingBlock ? 'Edit Blocked Dates' : 'Block New Dates'}
           </button>
         </div>
 
@@ -201,7 +235,7 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
                   {blocks?.map((block) => (
                     <div key={block._id} className="border border-gray-100 rounded-xl p-4 bg-white hover:shadow-sm transition-shadow flex items-start justify-between gap-4">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="font-bold text-gray-900 text-sm">
                             {formatDateString(block.startDate)} — {formatDateString(block.endDate)}
                           </span>
@@ -221,17 +255,45 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
                         {block.notes && (
                           <p className="text-xs text-gray-500 italic">“{block.notes}”</p>
                         )}
+                        {(block.customerName || block.phoneNumber || block.aadhaarNumber) && (
+                          <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded-lg mt-1 space-y-0.5 w-fit border border-gray-100">
+                            {block.customerName && <div><span className="font-semibold text-gray-700">Customer:</span> {block.customerName}</div>}
+                            {block.phoneNumber && <div><span className="font-semibold text-gray-700">Phone:</span> {block.phoneNumber}</div>}
+                            {block.aadhaarNumber && <div><span className="font-semibold text-gray-700">Aadhaar:</span> {block.aadhaarNumber}</div>}
+                          </div>
+                        )}
                         <p className="text-[10px] text-gray-400">
                           Blocked by: {typeof block.blockedBy === 'object' ? block.blockedBy.name : 'Administrator'}
                         </p>
                       </div>
-                      <button
-                        onClick={() => handleDeleteBlock(block._id)}
-                        disabled={isDeleting}
-                        className="text-gray-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100 flex-shrink-0"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          onClick={() => {
+                            setEditingBlock(block);
+                            setStartDate(block.startDate.split('T')[0]);
+                            setEndDate(block.endDate.split('T')[0]);
+                            setReason(block.reason);
+                            setNotes(block.notes || '');
+                            setCustomerName(block.customerName || '');
+                            setPhoneNumber(block.phoneNumber || '');
+                            setAadhaarNumber(block.aadhaarNumber || '');
+                            setOverride(block.isOverride || false);
+                            setActiveTab('add');
+                          }}
+                          className="text-gray-400 hover:text-primary p-2 hover:bg-primary/10 rounded-lg transition-colors border border-transparent hover:border-primary/20"
+                          title="Edit Blocked Dates"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteBlock(block._id)}
+                          disabled={isDeleting}
+                          className="text-gray-400 hover:text-red-600 p-2 hover:bg-red-55 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                          title="Delete Blocked Dates"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -239,9 +301,9 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
             </div>
           )}
 
-          {/* TAB 2: Create Block Form */}
+          {/* TAB 2: Create/Edit Block Form */}
           {activeTab === 'add' && (
-            <form onSubmit={handleCreateBlock} className="space-y-5 animate-in slide-in-from-right-4">
+            <form onSubmit={handleSubmitBlock} className="space-y-5 animate-in slide-in-from-right-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Block Start Date</label>
@@ -280,6 +342,39 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
                 </select>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Customer Name (Optional)</label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="e.g. Ramesh Kumar"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Phone (Optional)</label>
+                  <input
+                    type="text"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Aadhaar (Optional)</label>
+                  <input
+                    type="text"
+                    value={aadhaarNumber}
+                    onChange={(e) => setAadhaarNumber(e.target.value)}
+                    placeholder="e.g. 1234 5678 9012"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Administrative Notes (Optional)</label>
                 <textarea
@@ -294,15 +389,15 @@ export default function BlockDatesModal({ isOpen, onClose, stay }: BlockDatesMod
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => { setActiveTab('list'); setErrorMessage(null); }}
+                  onClick={() => { resetForm(); setActiveTab('list'); }}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  isLoading={isCreating}
+                  isLoading={isSaving}
                 >
-                  Save Date Block
+                  {editingBlock ? 'Update Date Block' : 'Save Date Block'}
                 </Button>
               </div>
             </form>

@@ -295,6 +295,12 @@ function getTodayLocal(): string {
   return today.toLocaleDateString('en-CA');
 }
 
+function getMaxBookingDateLocal(): string {
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() + 90);
+  return maxDate.toLocaleDateString('en-CA');
+}
+
 function localDateFromString(ymd: string): Date {
   const [year, month, day] = ymd.split('-').map(Number);
   return new Date(year, month - 1, day);
@@ -369,6 +375,12 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
     if (!ymd) return;
     if (ymd < todayLocal) return;
 
+    const maxBookingDateLocal = getMaxBookingDateLocal();
+    if (ymd > maxBookingDateLocal) {
+      alert("Stay bookings are restricted to a maximum of 90 days from the current date.");
+      return;
+    }
+
     if (!checkIn || (checkIn && checkOut)) {
       if (isDateBooked(ymd, bookedDates)) return;
       onDateSelect(ymd);
@@ -428,9 +440,12 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
           const end = isEnd(ymd);
           const past = isPast(ymd);
           const booked = isBooked(ymd);
-          
+
+          const maxBookingDateLocal = getMaxBookingDateLocal();
+          const isAfterMaxDate = ymd > maxBookingDateLocal;
+
           let disabled = false;
-          if (past) {
+          if (past || isAfterMaxDate) {
             disabled = true;
           } else if (!checkIn || (checkIn && checkOut)) {
             if (booked) disabled = true;
@@ -749,10 +764,10 @@ export default function StayDetailsPage() {
   } = stayData || {};
 
   // Strict capacity enforcement based on stay type
-  const limitMaxGuests = stayData?.name?.includes('Orange') ? 15 
-                       : stayData?.name?.includes('Lemon') ? 20 
-                       : stayData?.name?.includes('Mint') ? 15 
-                       : maxGuests;
+  const limitMaxGuests = stayData?.name?.includes('Orange') ? 15
+    : stayData?.name?.includes('Lemon') ? 20
+      : stayData?.name?.includes('Mint') ? 15
+        : maxGuests;
 
   // const bookedDates = unavailableDates.length > 0 ? unavailableDates : generateMockBookedDates();
   const bookedDates = unavailableDates || [];
@@ -823,6 +838,12 @@ export default function StayDetailsPage() {
       return;
     }
 
+    const maxBookingDateLocal = getMaxBookingDateLocal();
+    if (checkIn > maxBookingDateLocal) {
+      alert('Stay bookings are restricted to a maximum of 90 days from the current date.');
+      return;
+    }
+
     // Verify selected check-in/checkout range is actually available (no overlap with booked/blocked dates)
     const start = localDateFromString(checkIn);
     const end = localDateFromString(checkOut);
@@ -846,7 +867,7 @@ export default function StayDetailsPage() {
       alert('Please fill out all guest details.');
       return;
     }
-    
+
     setIsProcessingPayment(true);
 
     // Dynamically ensure Razorpay script is loaded
@@ -867,7 +888,7 @@ export default function StayDetailsPage() {
       setIsProcessingPayment(false);
       return;
     }
-    
+
     // Step 1: Create Order securely on backend
     createPaymentOrder({ stayId, checkIn, checkOut, guests, guestName: formik.values.guestName, guestEmail: formik.values.guestEmail || 'no-email@kunnath.com', guestPhone: formik.values.guestPhone, totalPrice, selectedAddOns, termsAccepted: true }, {
       onSuccess: (data) => {
@@ -915,7 +936,7 @@ export default function StayDetailsPage() {
               color: "#1a1a1a" // Match premium dark theme
             },
             modal: {
-              ondismiss: function() {
+              ondismiss: function () {
                 setIsProcessingPayment(false);
               }
             }
@@ -982,7 +1003,7 @@ export default function StayDetailsPage() {
             </div> */}
           </div>
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setIsShareModalOpen(true)}
               className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-gray-900 transition-colors"
             >
@@ -1048,7 +1069,7 @@ export default function StayDetailsPage() {
             </div>
 
             {/* Food Options */}
-            {foodOptions && foodOptions.length > 0 && (
+            {/* {foodOptions && foodOptions.length > 0 && (
               <div className="border-t border-gray-200 pt-8">
                 <h2 className="text-xl font-semibold mb-5">Food</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1060,7 +1081,7 @@ export default function StayDetailsPage() {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Reviews */}
             {/* {reviews > 0 && (
@@ -1364,139 +1385,139 @@ export default function StayDetailsPage() {
                       <div className="relative" ref={guestPickerRef}>
                         {/* Guest Picker Trigger */}
                         <div
-                        className="p-3 w-full flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors rounded-b-xl"
-                        onClick={() => {
-                          setIsGuestPickerOpen(!isGuestPickerOpen);
-                          if (!isGuestPickerOpen) setIsDatePickerOpen(false);
-                        }}
-                      >
-                        <div className="w-full">
-                          <div className="text-[12px] font-black uppercase text-gray-900 tracking-wider">Guests</div>
-                          <div className="text-base font-medium text-gray-700 mt-1">
-                            {guests} guest{guests > 1 ? 's' : ''}{infants > 0 ? `, ${infants} infant${infants > 1 ? 's' : ''}` : ''}{pets > 0 ? `, ${pets} pet${pets > 1 ? 's' : ''}` : ''}
-                          </div>
-                        </div>
-                        <ChevronDown size={18} className={cn("text-gray-400 transition-transform", isGuestPickerOpen && "rotate-180")} />
-                      </div>
-
-                      {/* Guest Picker Popover */}
-                      {isGuestPickerOpen && (
-                        <div
-                          className="absolute top-full left-0 right-0 mt-2 bg-gray-50 rounded-2xl shadow-2xl border border-gray-100 p-4 sm:p-6 z-50 space-y-6 animate-in fade-in zoom-in-95 duration-200"
+                          className="p-3 w-full flex justify-between items-center cursor-pointer hover:bg-gray-50 transition-colors rounded-b-xl"
+                          onClick={() => {
+                            setIsGuestPickerOpen(!isGuestPickerOpen);
+                            if (!isGuestPickerOpen) setIsDatePickerOpen(false);
+                          }}
                         >
-                          {/* Adults */}
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-sm font-bold text-gray-900">Adults</div>
-                              <div className="text-xs text-gray-400">Age 13+</div>
-                            </div>
-                            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                              <button
-                                onClick={() => setAdults(Math.max(1, adults - 1))}
-                                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors"
-                              >
-                                <Minus size={14} />
-                              </button>
-                              <input
-                                type="number"
-                                value={adults}
-                                onChange={(e) => {
-                                  const val = parseInt(e.target.value);
-                                  if (!isNaN(val)) setAdults(Math.max(1, val));
-                                }}
-                                className="w-8 text-center font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              />
-                              <button
-                                onClick={() => setAdults(adults + 1)}
-                                disabled={guests >= limitMaxGuests}
-                                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                              >
-                                <Plus size={14} />
-                              </button>
+                          <div className="w-full">
+                            <div className="text-[12px] font-black uppercase text-gray-900 tracking-wider">Guests</div>
+                            <div className="text-base font-medium text-gray-700 mt-1">
+                              {guests} guest{guests > 1 ? 's' : ''}{infants > 0 ? `, ${infants} infant${infants > 1 ? 's' : ''}` : ''}{pets > 0 ? `, ${pets} pet${pets > 1 ? 's' : ''}` : ''}
                             </div>
                           </div>
-
-                          {/* Children */}
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-sm font-bold text-gray-900">Children</div>
-                              <div className="text-xs text-gray-400">Ages 2–12</div>
-                            </div>
-                            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                              <button
-                                onClick={() => setChildren(Math.max(0, children - 1))}
-                                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors"
-                              >
-                                <Minus size={14} />
-                              </button>
-                              <input
-                                type="number"
-                                value={children}
-                                onChange={(e) => {
-                                  const val = parseInt(e.target.value);
-                                  if (!isNaN(val)) setChildren(Math.max(0, val));
-                                }}
-                                className="w-8 text-center font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              />
-                              <button
-                                onClick={() => setChildren(children + 1)}
-                                disabled={guests >= limitMaxGuests}
-                                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                              >
-                                <Plus size={14} />
-                              </button>
-                            </div>
-                          </div>
-
-
-                          {/* Pets */}
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-sm font-bold text-gray-900">Pets</div>
-                              <div className="text-xs text-gray-400 underline cursor-pointer">Bringing a service animal?</div>
-                            </div>
-                            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-                              <button
-                                onClick={() => setPets(Math.max(0, pets - 1))}
-                                disabled={pets <= 0}
-                                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                              >
-                                <Minus size={14} />
-                              </button>
-                              <input
-                                type="number"
-                                value={pets}
-                                onChange={(e) => {
-                                  const val = parseInt(e.target.value);
-                                  if (!isNaN(val)) setPets(Math.min(1, Math.max(0, val)));
-                                }}
-                                className="w-8 text-center font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              />
-                              <button
-                                onClick={() => setPets(Math.min(1, pets + 1))}
-                                disabled={pets >= 1}
-                                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                              >
-                                <Plus size={14} />
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                            {guests >= limitMaxGuests ? (
-                              <span className="text-[10px] text-red-500 font-bold uppercase tracking-widest animate-pulse">Maximum capacity reached</span>
-                            ) : (
-                              <span className="text-[10px] text-gray-400 font-medium">Maximum {limitMaxGuests} guests allowed</span>
-                            )}
-                            <button
-                              onClick={() => setIsGuestPickerOpen(false)}
-                              className="text-sm font-bold text-gray-900 hover:underline"
-                            >
-                              Close
-                            </button>
-                          </div>
+                          <ChevronDown size={18} className={cn("text-gray-400 transition-transform", isGuestPickerOpen && "rotate-180")} />
                         </div>
-                      )}
+
+                        {/* Guest Picker Popover */}
+                        {isGuestPickerOpen && (
+                          <div
+                            className="absolute top-full left-0 right-0 mt-2 bg-gray-50 rounded-2xl shadow-2xl border border-gray-100 p-4 sm:p-6 z-50 space-y-6 animate-in fade-in zoom-in-95 duration-200"
+                          >
+                            {/* Adults */}
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-sm font-bold text-gray-900">Adults</div>
+                                <div className="text-xs text-gray-400">Age 13+</div>
+                              </div>
+                              <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                                <button
+                                  onClick={() => setAdults(Math.max(1, adults - 1))}
+                                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <input
+                                  type="number"
+                                  value={adults}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    if (!isNaN(val)) setAdults(Math.max(1, val));
+                                  }}
+                                  className="w-8 text-center font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <button
+                                  onClick={() => setAdults(adults + 1)}
+                                  disabled={guests >= limitMaxGuests}
+                                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Children */}
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-sm font-bold text-gray-900">Children</div>
+                                <div className="text-xs text-gray-400">Ages 2–12</div>
+                              </div>
+                              <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                                <button
+                                  onClick={() => setChildren(Math.max(0, children - 1))}
+                                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <input
+                                  type="number"
+                                  value={children}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    if (!isNaN(val)) setChildren(Math.max(0, val));
+                                  }}
+                                  className="w-8 text-center font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <button
+                                  onClick={() => setChildren(children + 1)}
+                                  disabled={guests >= limitMaxGuests}
+                                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            </div>
+
+
+                            {/* Pets */}
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="text-sm font-bold text-gray-900">Pets</div>
+                                <div className="text-xs text-gray-400 underline cursor-pointer">Bringing a service animal?</div>
+                              </div>
+                              <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                                <button
+                                  onClick={() => setPets(Math.max(0, pets - 1))}
+                                  disabled={pets <= 0}
+                                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <input
+                                  type="number"
+                                  value={pets}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value);
+                                    if (!isNaN(val)) setPets(Math.min(1, Math.max(0, val)));
+                                  }}
+                                  className="w-8 text-center font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <button
+                                  onClick={() => setPets(Math.min(1, pets + 1))}
+                                  disabled={pets >= 1}
+                                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-gray-900 hover:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+                              {guests >= limitMaxGuests ? (
+                                <span className="text-[10px] text-red-500 font-bold uppercase tracking-widest animate-pulse">Maximum capacity reached</span>
+                              ) : (
+                                <span className="text-[10px] text-gray-400 font-medium">Maximum {limitMaxGuests} guests allowed</span>
+                              )}
+                              <button
+                                onClick={() => setIsGuestPickerOpen(false)}
+                                className="text-sm font-bold text-gray-900 hover:underline"
+                              >
+                                Close
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1509,25 +1530,25 @@ export default function StayDetailsPage() {
                           {addOns
                             .filter(addon => addon.name !== 'Kitchen') // Filter out Kitchen as requested
                             .map((addon) => (
-                            <label key={addon.name} className="flex items-center justify-between p-2 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
-                              <div className="flex items-center gap-2">
-                                <input
-                                  type="checkbox"
-                                  className="w-4 h-4 rounded text-gray-900 focus:ring-gray-900 border-gray-300"
-                                  checked={selectedAddOns.includes(addon.name)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      setSelectedAddOns([...selectedAddOns, addon.name]);
-                                    } else {
-                                      setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
-                                    }
-                                  }}
-                                />
-                                <span className="text-sm font-medium">{addon.name}</span>
-                              </div>
-                              <span className="text-sm text-gray-600">₹{addon.price}</span>
-                            </label>
-                          ))}
+                              <label key={addon.name} className="flex items-center justify-between p-2 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    className="w-4 h-4 rounded text-gray-900 focus:ring-gray-900 border-gray-300"
+                                    checked={selectedAddOns.includes(addon.name)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedAddOns([...selectedAddOns, addon.name]);
+                                      } else {
+                                        setSelectedAddOns(selectedAddOns.filter(a => a !== addon.name));
+                                      }
+                                    }}
+                                  />
+                                  <span className="text-sm font-medium">{addon.name}</span>
+                                </div>
+                                <span className="text-sm text-gray-600">₹{addon.price}</span>
+                              </label>
+                            ))}
                         </div>
                       </div>
                     )}
@@ -1661,7 +1682,7 @@ export default function StayDetailsPage() {
                                 <span>{formatCurrency(addon.price)}</span>
                               </div>
                             ))}
-                             {user?.isMember && discountAmount > 0 && (
+                            {user?.isMember && discountAmount > 0 && (
                               <div className="flex justify-between text-green-600 font-semibold">
                                 <span>{((user.membershipType || 'none').charAt(0).toUpperCase() + (user.membershipType || 'none').slice(1))} discount ({discountPercent}%)</span>
                                 <span>-{formatCurrency(discountAmount)}</span>
@@ -1773,7 +1794,7 @@ export default function StayDetailsPage() {
                     </div>
                     <h3 className="text-2xl font-black mb-2 text-gray-900 tracking-tight">Payment Successful!</h3>
                     <p className="text-gray-500 mb-8 text-sm">Your reservation at <span className="font-bold text-gray-900">{name}</span> is confirmed.</p>
-                    
+
                     {paymentDetails && (
                       <div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-left space-y-4">
                         <div className="flex justify-between items-center pb-3 border-b border-gray-200">
@@ -1809,18 +1830,18 @@ export default function StayDetailsPage() {
                     )}
 
                     <div className="flex flex-col gap-3">
-                      <Button 
-                        onClick={() => router.push('/profile')} 
-                        fullWidth 
+                      <Button
+                        onClick={() => router.push('/profile')}
+                        fullWidth
                         size="lg"
                         className="bg-gray-900 hover:bg-gray-800 text-white shadow-lg shadow-gray-900/20 text-base font-bold py-6 transition-transform hover:scale-[1.02]"
                       >
                         View Booking Details
                       </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => router.push('/')} 
-                        fullWidth 
+                      <Button
+                        variant="outline"
+                        onClick={() => router.push('/')}
+                        fullWidth
                         size="lg"
                         className="border-2 border-gray-200 hover:border-gray-900 hover:bg-gray-50 text-gray-700 hover:text-gray-900 text-base font-bold py-6 transition-all"
                       >

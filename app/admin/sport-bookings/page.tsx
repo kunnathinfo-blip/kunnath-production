@@ -75,7 +75,105 @@ export default function AdminSportBookingsPage() {
         <p className="text-gray-500">View and manage all customer sports reservations</p>
       </div>
 
-      <Card className="overflow-hidden">
+      {/* Mobile view (List Cards) */}
+      <div className="space-y-4 md:hidden">
+        {bookings?.map((booking) => (
+          <Card key={booking._id} className="p-4 space-y-4 border border-gray-200">
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="font-bold text-gray-900">{booking.userDetails?.name || booking.user?.name}</h4>
+                <p className="text-xs text-gray-505">{booking.userDetails?.email || booking.user?.email}</p>
+                <p className="text-xs text-gray-505">{booking.userDetails?.phone}</p>
+              </div>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                booking.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                'bg-yellow-100 text-yellow-700'
+              }`}>
+                {booking.status.toUpperCase()}
+              </span>
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded-xl text-xs space-y-2 border border-gray-100">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Sport:</span>
+                <span className="font-bold text-gray-900">{booking.sport?.name || 'Deleted Sport'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Date & Time:</span>
+                <span className="font-medium text-gray-900">{booking.date} ({getTimeDisplay(booking)})</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Duration:</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold">
+                  <Clock size={10} />
+                  {getDurationDisplay(booking)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Payment Status:</span>
+                {booking.razorpayPaymentId ? (
+                  <span className="px-2.5 py-0.5 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-wider rounded border border-green-100">Paid (ID: {booking.razorpayPaymentId})</span>
+                ) : (
+                  <span className={`px-2.5 py-0.5 rounded border text-[10px] font-black uppercase tracking-wider ${
+                    booking.paymentStatus === 'completed' ? 'bg-green-50 text-green-600 border-green-100' :
+                    booking.paymentStatus === 'failed' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-yellow-50 text-yellow-600 border-yellow-100'
+                  }`}>
+                    {booking.paymentStatus || 'Pending'}
+                  </span>
+                )}
+              </div>
+              <div className="flex justify-between border-t border-gray-100 pt-2 font-bold">
+                <span className="text-gray-900">Price:</span>
+                <span className="text-gray-900">₹{booking.totalPrice?.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              {booking.status !== 'confirmed' && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                  onClick={() => updateStatusMutation.mutate({ id: booking._id, status: 'confirmed' })}
+                >
+                  <CheckCircle size={14} className="mr-1.5" /> Confirm
+                </Button>
+              )}
+              {booking.status !== 'cancelled' && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100"
+                  onClick={() => updateStatusMutation.mutate({ id: booking._id, status: 'cancelled' })}
+                >
+                  <XCircle size={14} className="mr-1.5" /> Cancel
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-none text-red-600 hover:text-red-750 hover:bg-red-55 hover:border-red-200"
+                onClick={() => {
+                  if(window.confirm('Delete this booking permanently?')) {
+                    deleteMutation.mutate(booking._id);
+                  }
+                }}
+              >
+                <Trash2 size={14} />
+              </Button>
+            </div>
+          </Card>
+        ))}
+        {bookings?.length === 0 && (
+          <div className="p-8 text-center text-gray-500 bg-white rounded-xl border border-gray-150">
+            No bookings found.
+          </div>
+        )}
+      </div>
+
+      {/* Table (Desktop View) */}
+      <Card className="overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 text-gray-900 border-b border-gray-100">

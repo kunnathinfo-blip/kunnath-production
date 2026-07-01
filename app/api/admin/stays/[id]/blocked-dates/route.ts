@@ -42,7 +42,7 @@ export async function POST(
     }
 
     const { id: stayId } = await params;
-    const { startDate, endDate, reason, notes, override } = await req.json();
+    const { startDate, endDate, reason, notes, override, customerName, phoneNumber, aadhaarNumber } = await req.json();
 
     if (!startDate || !endDate || !reason) {
       return NextResponse.json({ message: 'Start date, end date, and reason are required' }, { status: 400 });
@@ -94,7 +94,10 @@ export async function POST(
       reason,
       notes: notes || '',
       blockedBy: isAdmin._id,
-      isOverride: !!conflictingBooking
+      isOverride: !!conflictingBooking,
+      customerName: customerName || '',
+      phoneNumber: phoneNumber || '',
+      aadhaarNumber: aadhaarNumber || ''
     });
 
     return NextResponse.json({ success: true, block }, { status: 201 });

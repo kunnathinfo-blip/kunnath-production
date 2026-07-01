@@ -31,6 +31,18 @@ const blockedDateSchema = new mongoose.Schema({
   isOverride: {
     type: Boolean,
     default: false
+  },
+  customerName: {
+    type: String,
+    trim: true
+  },
+  phoneNumber: {
+    type: String,
+    trim: true
+  },
+  aadhaarNumber: {
+    type: String,
+    trim: true
   }
 }, { timestamps: true });
 

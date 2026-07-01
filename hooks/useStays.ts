@@ -128,6 +128,9 @@ export interface BlockedDateRange {
   blockedBy: string | { _id: string; name: string };
   createdAt?: string;
   isOverride?: boolean;
+  customerName?: string;
+  phoneNumber?: string;
+  aadhaarNumber?: string;
 }
 
 export const useBlockedDates = (stayId: string) => {
@@ -144,7 +147,7 @@ export const useBlockedDates = (stayId: string) => {
 export const useCreateBlock = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ stayId, blockData }: { stayId: string; blockData: { startDate: string; endDate: string; reason: string; notes?: string; override?: boolean } }) => {
+    mutationFn: async ({ stayId, blockData }: { stayId: string; blockData: { startDate: string; endDate: string; reason: string; notes?: string; override?: boolean; customerName?: string; phoneNumber?: string; aadhaarNumber?: string } }) => {
       const { data } = await api.post(`/admin/stays/${stayId}/blocked-dates`, blockData);
       return data;
     },
@@ -161,6 +164,21 @@ export const useDeleteBlock = () => {
   return useMutation({
     mutationFn: async ({ stayId, blockId }: { stayId: string; blockId: string }) => {
       const { data } = await api.delete(`/admin/stays/${stayId}/blocked-dates/${blockId}`);
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['blocked-dates', variables.stayId] });
+      queryClient.invalidateQueries({ queryKey: ['stays'] });
+      queryClient.invalidateQueries({ queryKey: ['stay', variables.stayId] });
+    },
+  });
+};
+
+export const useUpdateBlock = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ stayId, blockId, blockData }: { stayId: string; blockId: string; blockData: { startDate: string; endDate: string; reason: string; notes?: string; override?: boolean; customerName?: string; phoneNumber?: string; aadhaarNumber?: string } }) => {
+      const { data } = await api.put(`/admin/stays/${stayId}/blocked-dates/${blockId}`, blockData);
       return data;
     },
     onSuccess: (_, variables) => {

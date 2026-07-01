@@ -76,8 +76,77 @@ export const EventBookingManagement = () => {
         </div>
       </div>
 
-      {/* Table Card */}
-      <Card className="border-gray-100 shadow-sm overflow-hidden">
+      {/* Mobile view (List Cards) */}
+      <div className="space-y-4 md:hidden">
+        {bookingsData?.bookings.map((booking: any) => (
+          <Card key={booking._id} className="p-4 space-y-4 border border-gray-200">
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="font-bold text-gray-900">{booking.guestName}</h4>
+                <p className="text-xs text-gray-500">{booking.guestEmail}</p>
+                <p className="text-xs text-gray-500">{booking.guestPhone}</p>
+              </div>
+              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border ${getStatusColor(booking.status)}`}>
+                {booking.status === 'confirmed' && <CheckCircle size={10} className="mr-1" />}
+                {booking.status === 'cancelled' && <XCircle size={10} className="mr-1" />}
+                {booking.status === 'pending' && <Clock size={10} className="mr-1" />}
+                {booking.status.toUpperCase()}
+              </span>
+            </div>
+
+            <div className="bg-gray-50 p-3 rounded-xl text-xs space-y-2 border border-gray-100">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Event:</span>
+                <span className="font-medium text-gray-900">{booking.eventId?.title}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Booking Date:</span>
+                <span className="text-gray-900">{new Date(booking.date).toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Guests:</span>
+                <span className="font-medium text-gray-900">{booking.guests} Pax</span>
+              </div>
+              <div className="flex justify-between border-t border-gray-100 pt-2 font-bold">
+                <span className="text-gray-900">Amount:</span>
+                <span className="text-gray-905">₹{booking.totalPrice?.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              {booking.status === 'pending' && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                    onClick={() => handleStatusChange(booking._id, 'confirmed')}
+                  >
+                    <CheckCircle size={14} className="mr-1.5" /> Confirm
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+                    onClick={() => handleStatusChange(booking._id, 'cancelled')}
+                  >
+                    <XCircle size={14} className="mr-1.5" /> Cancel
+                  </Button>
+                </>
+              )}
+            </div>
+          </Card>
+        ))}
+
+        {!bookingsData?.bookings.length && (
+          <div className="p-8 text-center text-gray-500 bg-white rounded-xl border border-gray-150">
+            No event bookings found matching your criteria.
+          </div>
+        )}
+      </div>
+
+      {/* Table Card (Desktop View) */}
+      <Card className="border-gray-100 shadow-sm overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

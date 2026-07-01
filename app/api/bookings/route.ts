@@ -28,6 +28,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Check-out date must be after check-in date' }, { status: 400 });
     }
 
+    // Enforce 90-day booking restriction from today (IST timezone check)
+    const todayISTStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+    const todayIST = new Date(todayISTStr + 'T00:00:00.000Z');
+    const maxBookingDate = new Date(todayIST.getTime() + 90 * 24 * 60 * 60 * 1000);
+
+    if (checkInDate > maxBookingDate) {
+      return NextResponse.json({ message: 'Stay bookings are restricted to a maximum of 90 days from the current date.' }, { status: 400 });
+    }
+
     // Check for overlapping bookings for this stay
     const overlappingBookings = await Booking.find({
       stayId,
