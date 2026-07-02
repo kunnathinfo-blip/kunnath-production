@@ -62,7 +62,7 @@ export const useStays = () => {
       const { data } = await api.get<FarmStay[]>('/stays');
       return data;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0,
   });
 };
 
