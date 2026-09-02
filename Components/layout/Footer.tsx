@@ -15,7 +15,7 @@
 
 // components/Footer.tsx
 import Link from 'next/link';
-import { Instagram, Facebook, Mail, Phone } from 'lucide-react';
+import { Instagram, Facebook, Mail, Phone, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 export const Footer = () => {
@@ -147,7 +147,7 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Social & Newsletter Callout */}
+          {/* Social & Connect Section */}
           <div>
             <h4 className="text-[#1A1A1A] font-semibold mb-4">Connect</h4>
             <div className="flex space-x-4">
@@ -170,19 +170,23 @@ export const Footer = () => {
                 <img src="/Logo/insta/facebook.png" alt="Facebook" className="w-full h-full object-contain" />
               </a>
             </div>
-            {/* <a
-                href="#"
-                className="text-[#666666] hover:text-primary transition-colors"
-                aria-label="Twitter"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.16-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 0021.38-12.08c0-.213 0-.425-.015-.637A10.025 10.025 0 0024 4.57z" />
-                </svg>
-              </a> */}
+
             <div className="mt-4">
               <p className="text-[#666666] text-sm">
                 <span className="font-medium">Address:</span> Kunnath House, Kompally-Medchal Highway, Jeedipally
               </p>
+            </div>
+
+            {/* Admin Portal Button */}
+            <div className="mt-5">
+              <Link
+                href="/admin"
+                className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r from-gray-900 via-slate-900 to-gray-800 hover:from-[#E53935] hover:to-[#C62828] text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-gray-900/10 hover:shadow-red-500/25 transition-all duration-300 transform hover:-translate-y-0.5 group border border-gray-800"
+              >
+                <ShieldCheck className="w-4 h-4 text-amber-400 group-hover:text-white transition-colors" />
+                <span>Admin Portal</span>
+                <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </Link>
             </div>
           </div>
         </div>
@@ -197,11 +201,6 @@ export const Footer = () => {
             <Link href="/terms" className="hover:text-primary transition-colors">
               Terms
             </Link>
-            {user?.role === 'admin' && (
-              <Link href="/admin" className="hover:text-primary transition-colors">
-                Admin
-              </Link>
-            )}
           </div>
         </div>
       </div>

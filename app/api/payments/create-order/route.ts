@@ -7,6 +7,7 @@ import BlockedDate from '@/lib/db/models/BlockedDate';
 import { getAuthenticatedUser } from '@/lib/auth/protect';
 import { getRazorpayInstance } from '@/lib/payments/razorpay';
 import { parseUTCDate } from '@/lib/utils';
+import { validateCouponBackend } from '@/lib/db/utils/couponHelper';
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Not authorized, token failed' }, { status: 401 });
     }
 
-    const { stayId, checkIn, checkOut, guests, guestName, guestEmail, guestPhone, selectedAddOns, termsAccepted } = await req.json();
+    const { stayId, checkIn, checkOut, guests, guestName, guestEmail, guestPhone, selectedAddOns, termsAccepted, couponCode } = await req.json();
 
     if (!stayId || !checkIn || !checkOut || !guests || !guestName || !guestPhone) {
       return NextResponse.json({ message: 'Please provide all required fields' }, { status: 400 });
@@ -117,6 +118,29 @@ export async function POST(req: NextRequest) {
       finalPrice -= (basePrice * discountPercent) / 100;
     }
 
+    // Apply Coupon Discount
+    let couponId = undefined;
+    let couponCodeApplied = undefined;
+    let originalAmount = finalPrice;
+    let discountAmount = 0;
+
+    if (couponCode) {
+      try {
+        const validation = await validateCouponBackend({
+          code: couponCode,
+          bookingType: 'stay',
+          bookingAmount: finalPrice,
+          userId: user._id,
+        });
+        couponId = validation.coupon._id;
+        couponCodeApplied = validation.coupon.code;
+        discountAmount = validation.discountAmount;
+        finalPrice = validation.finalAmount;
+      } catch (err: any) {
+        return NextResponse.json({ message: err.message || 'Invalid coupon code' }, { status: 400 });
+      }
+    }
+
     // 50% Upfront stay booking policy
     const upfrontAmountPaid = Math.round(finalPrice * 0.5);
     const amountDueAtCheckIn = finalPrice - upfrontAmountPaid;
@@ -158,7 +182,12 @@ export async function POST(req: NextRequest) {
       status: 'pending',
       paymentStatus: 'pending',
       razorpayOrderId: order.id,
-      expiresAt: new Date(Date.now() + 3 * 60 * 1000) // 3 minutes hold
+      expiresAt: new Date(Date.now() + 3 * 60 * 1000), // 3 minutes hold
+      couponId,
+      couponCode: couponCodeApplied,
+      originalAmount,
+      discountAmount,
+      finalAmount: finalPrice,
     });
 
     await booking.save();

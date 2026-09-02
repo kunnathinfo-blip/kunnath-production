@@ -4,6 +4,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { Sport } from '@/hooks/useSports';
 import { useSportAvailability, useCreateSportBooking, useCreateSportPaymentOrder, useVerifySportPayment } from '@/hooks/useSportBookings';
 import { useAuthStore } from '@/store/authStore';
+import { useValidateCoupon } from '@/hooks/useCoupons';
 import { Button } from '@/Components/ui/Button';
 import { formatCurrency } from '@/lib/utils';
 
@@ -39,6 +40,39 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
 
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const validateCouponMutation = useValidateCoupon();
+
+  const handleApplyCoupon = (bookingAmount: number) => {
+    if (!couponCode.trim()) return;
+    setCouponError('');
+    setIsValidatingCoupon(true);
+    validateCouponMutation.mutate({
+      code: couponCode,
+      bookingType: 'sport',
+      bookingAmount
+    }, {
+      onSuccess: (data) => {
+        setAppliedCoupon(data);
+        setIsValidatingCoupon(false);
+      },
+      onError: (err: any) => {
+        setCouponError(err.response?.data?.message || 'Invalid coupon code');
+        setAppliedCoupon(null);
+        setIsValidatingCoupon(false);
+      }
+    });
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode('');
+    setAppliedCoupon(null);
+    setCouponError('');
+  };
+
   const isBooking = isBookingPending || isOrderPending || isVerifyPending || isProcessingPayment;
 
   useEffect(() => {
@@ -52,6 +86,9 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
         phone: '',
         note: ''
       });
+      setCouponCode('');
+      setAppliedCoupon(null);
+      setCouponError('');
     }
   }, [isOpen, user]);
 
@@ -59,7 +96,9 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
 
   const bookedSlots = availability?.bookedSlots || [];
   const duration = selectedSlots.length;
-  const totalPrice = sport.price * duration;
+  const totalPriceBeforeCoupon = sport.price * duration;
+  const couponDiscountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  const totalPrice = totalPriceBeforeCoupon - couponDiscountAmount;
 
   // Generate next 14 days
   const dates = Array.from({ length: 14 }).map((_, i) => {
@@ -196,7 +235,8 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
         date: selectedDate,
         timeSlots: selectedSlots,
         duration: selectedSlots.length,
-        userDetails: formData
+        userDetails: formData,
+        couponCode: appliedCoupon ? appliedCoupon.code : undefined
       },
       {
         onSuccess: (data) => {
@@ -587,11 +627,60 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                     <p className="font-medium text-gray-900">{formatCurrency(sport.price)} × {duration}hr</p>
                   </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Guest Details</p>
-                  <p className="font-medium text-gray-900">{formData.name}</p>
-                  <p className="text-sm text-gray-600">{formData.email}</p>
-                  <p className="text-sm text-gray-600">{formData.phone}</p>
+                {appliedCoupon && (
+                  <div className="flex justify-between items-center border-b border-gray-200 pb-4">
+                    <div>
+                      <p className="text-sm text-gray-500 font-semibold text-green-600">Coupon ({appliedCoupon.code})</p>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-red-500 hover:text-red-700 text-[10px] font-bold underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-green-600 text-lg">-{formatCurrency(appliedCoupon.discountAmount)}</p>
+                    </div>
+                  </div>
+                )}
+                <div className="border-b border-gray-200 pb-4">
+                  <p className="text-sm text-gray-500 font-semibold mb-1">Guest Details</p>
+                  <p className="font-medium text-gray-900 text-sm">{formData.name}</p>
+                  <p className="text-xs text-gray-600">{formData.email}</p>
+                  <p className="text-xs text-gray-600">{formData.phone}</p>
+                </div>
+                {/* Coupon Form */}
+                <div className="pt-2">
+                  {!appliedCoupon ? (
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Promo Coupon</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Enter Coupon Code"
+                          className="flex-1 px-3 py-1.5 border border-gray-300 rounded-xl text-xs uppercase focus:ring-2 focus:ring-primary/20 outline-none"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          disabled={isValidatingCoupon || !couponCode.trim()}
+                          onClick={() => handleApplyCoupon(totalPriceBeforeCoupon)}
+                          className="px-4 py-1.5 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary/95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isValidatingCoupon ? 'Applying...' : 'Apply'}
+                        </button>
+                      </div>
+                      {couponError && (
+                        <p className="text-[10px] text-red-500 font-semibold mt-1">{couponError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center text-xs text-green-600 font-bold">
+                      <span>🎉 Coupon "{appliedCoupon.code}" Applied!</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex gap-3">

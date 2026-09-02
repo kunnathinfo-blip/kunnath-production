@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = pathname === '/login' || pathname === '/onboarding';
+  const isAdminPage = pathname?.startsWith('/admin');
   const [isDevDomain, setIsDevDomain] = useState(false);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     }
   }, []);
 
-  if (isAuthPage) {
+  if (isAuthPage || isAdminPage) {
     return (
       <main className="min-h-screen">
         {children}

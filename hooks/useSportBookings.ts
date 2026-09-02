@@ -78,13 +78,15 @@ export function useCreateSportPaymentOrder() {
         phone: string;
         note?: string;
       };
+      couponCode?: string;
     }) => {
       const { data } = await api.post('/payments/create-sport-order', {
         sportId: orderData.sport,
         date: orderData.date,
         timeSlots: orderData.timeSlots,
         duration: orderData.duration,
-        userDetails: orderData.userDetails
+        userDetails: orderData.userDetails,
+        couponCode: orderData.couponCode
       });
       return data;
     },

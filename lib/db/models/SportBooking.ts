@@ -69,6 +69,22 @@ const sportBookingSchema = new mongoose.Schema({
   isRead: {
     type: Boolean,
     default: false,
+  },
+  couponId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Coupon'
+  },
+  couponCode: {
+    type: String
+  },
+  originalAmount: {
+    type: Number
+  },
+  discountAmount: {
+    type: Number
+  },
+  finalAmount: {
+    type: Number
   }
 }, { timestamps: true });
 

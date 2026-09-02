@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import connectDB from '@/lib/db/connect';
 import Booking from '@/lib/db/models/Booking';
 import SportBooking from '@/lib/db/models/SportBooking';
+import { recordCouponUsage } from '@/lib/db/utils/couponHelper';
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get('x-razorpay-signature');
@@ -77,6 +78,13 @@ export async function POST(req: NextRequest) {
       booking.razorpayPaymentId = paymentId;
       booking.expiresAt = undefined;
       await booking.save();
+
+      // Record coupon usage
+      try {
+        await recordCouponUsage(booking, isSport ? 'sport' : 'stay');
+      } catch (couponError) {
+        console.error('Webhook: Error recording coupon usage:', couponError);
+      }
 
       console.log(`Webhook Success: Booking ${booking._id} (${isSport ? 'Sport' : 'Stay'}) confirmed successfully.`);
       return NextResponse.json({ status: 'ok', message: 'Booking confirmed' });

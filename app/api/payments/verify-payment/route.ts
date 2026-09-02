@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import connectDB from '@/lib/db/connect';
 import Booking from '@/lib/db/models/Booking';
 import { getAuthenticatedUser } from '@/lib/auth/protect';
+import { recordCouponUsage } from '@/lib/db/utils/couponHelper';
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,6 +54,13 @@ export async function POST(req: NextRequest) {
       booking.expiresAt = undefined; // Clear expiration hold
       
       await booking.save();
+      
+      // Record coupon usage
+      try {
+        await recordCouponUsage(booking, 'stay');
+      } catch (couponError) {
+        console.error('Error recording coupon usage:', couponError);
+      }
 
       return NextResponse.json({ 
         success: true, 

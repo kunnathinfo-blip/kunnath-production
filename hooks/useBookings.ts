@@ -11,6 +11,7 @@ interface CreateBookingParams {
   guestEmail: string;
   guestPhone: string;
   termsAccepted?: boolean;
+  couponCode?: string;
 }
 
 export const useCreateBooking = () => {

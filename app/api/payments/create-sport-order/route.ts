@@ -5,6 +5,7 @@ import Sport from '@/lib/db/models/Sport';
 import SportBooking from '@/lib/db/models/SportBooking';
 import { getAuthenticatedUser } from '@/lib/auth/protect';
 import { getRazorpayInstance } from '@/lib/payments/razorpay';
+import { validateCouponBackend } from '@/lib/db/utils/couponHelper';
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Not authorized, token failed' }, { status: 401 });
     }
 
-    const { sportId, date, timeSlots, duration, userDetails } = await req.json();
+    const { sportId, date, timeSlots, duration, userDetails, couponCode } = await req.json();
 
     if (!sportId || !date || !timeSlots || !duration || !userDetails || !userDetails.name || !userDetails.email || !userDetails.phone) {
       return NextResponse.json({ message: 'Please provide all required fields' }, { status: 400 });
@@ -88,8 +89,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Sport not found' }, { status: 404 });
     }
 
-    const totalPrice = sportDoc.price * duration;
-    const amountInPaise = Math.round(totalPrice * 100);
+    let finalPrice = sportDoc.price * duration;
+
+    // Apply Coupon Discount
+    let couponId = undefined;
+    let couponCodeApplied = undefined;
+    let originalAmount = finalPrice;
+    let discountAmount = 0;
+
+    if (couponCode) {
+      try {
+        const validation = await validateCouponBackend({
+          code: couponCode,
+          bookingType: 'sport',
+          bookingAmount: finalPrice,
+          userId: user._id,
+        });
+        couponId = validation.coupon._id;
+        couponCodeApplied = validation.coupon.code;
+        discountAmount = validation.discountAmount;
+        finalPrice = validation.finalAmount;
+      } catch (err: any) {
+        return NextResponse.json({ message: err.message || 'Invalid coupon code' }, { status: 400 });
+      }
+    }
+
+    const amountInPaise = Math.round(finalPrice * 100);
 
     const razorpay = getRazorpayInstance();
 
@@ -113,12 +138,17 @@ export async function POST(req: NextRequest) {
       timeSlots,
       duration,
       timeSlot: timeSlots[0], // Backward compatibility
-      totalPrice,
+      totalPrice: finalPrice,
       userDetails,
       status: 'pending',
       paymentStatus: 'pending',
       razorpayOrderId: order.id,
-      expiresAt: new Date(Date.now() + 3 * 60 * 1000) // 3 minutes hold
+      expiresAt: new Date(Date.now() + 3 * 60 * 1000), // 3 minutes hold
+      couponId,
+      couponCode: couponCodeApplied,
+      originalAmount,
+      discountAmount,
+      finalAmount: finalPrice,
     });
 
     await booking.save();
@@ -127,7 +157,7 @@ export async function POST(req: NextRequest) {
       success: true,
       order,
       bookingId: booking._id,
-      totalPrice
+      totalPrice: finalPrice
     }, { status: 201 });
 
   } catch (error: any) {

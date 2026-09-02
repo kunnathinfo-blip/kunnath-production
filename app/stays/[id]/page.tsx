@@ -281,6 +281,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useStayDetails } from '@/hooks/useStays';
 import { useCreateBooking, useCreatePaymentOrder, useVerifyPayment } from '@/hooks/useBookings';
 import { useAuthStore } from '@/store/authStore';
+import { useValidateCoupon } from '@/hooks/useCoupons';
 
 import { formatCurrency, cn, getOptimizedImageUrl, normalizeStayImages } from '@/lib/utils';
 import ShareModal from '@/Components/stays/ShareModal';
@@ -647,6 +648,39 @@ export default function StayDetailsPage() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const validateCouponMutation = useValidateCoupon();
+
+  const handleApplyCoupon = (bookingAmount: number) => {
+    if (!couponCode.trim()) return;
+    setCouponError('');
+    setIsValidatingCoupon(true);
+    validateCouponMutation.mutate({
+      code: couponCode,
+      bookingType: 'stay',
+      bookingAmount
+    }, {
+      onSuccess: (data) => {
+        setAppliedCoupon(data);
+        setIsValidatingCoupon(false);
+      },
+      onError: (err: any) => {
+        setCouponError(err.response?.data?.message || 'Invalid coupon code');
+        setAppliedCoupon(null);
+        setIsValidatingCoupon(false);
+      }
+    });
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode('');
+    setAppliedCoupon(null);
+    setCouponError('');
+  };
   const datePickerRef = useRef<HTMLDivElement>(null);
   const guestPickerRef = useRef<HTMLDivElement>(null);
 
@@ -830,7 +864,9 @@ export default function StayDetailsPage() {
   }
   const discountAmount = (basePrice * discountPercent) / 100;
   const subtotal = basePrice - discountAmount + extraGuestTotal + addOnsTotal;
-  const totalPrice = subtotal + cleaningFee + serviceFee;
+  const totalPriceBeforeCoupon = subtotal + cleaningFee + serviceFee;
+  const couponDiscountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
+  const totalPrice = totalPriceBeforeCoupon - couponDiscountAmount;
 
   const handleReserve = async () => {
     if (!checkIn || !checkOut) {
@@ -890,7 +926,7 @@ export default function StayDetailsPage() {
     }
 
     // Step 1: Create Order securely on backend
-    createPaymentOrder({ stayId, checkIn, checkOut, guests, guestName: formik.values.guestName, guestEmail: formik.values.guestEmail || 'no-email@kunnath.com', guestPhone: formik.values.guestPhone, totalPrice, selectedAddOns, termsAccepted: true }, {
+    createPaymentOrder({ stayId, checkIn, checkOut, guests, guestName: formik.values.guestName, guestEmail: formik.values.guestEmail || 'no-email@kunnath.com', guestPhone: formik.values.guestPhone, totalPrice, selectedAddOns, termsAccepted: true, couponCode: appliedCoupon ? appliedCoupon.code : undefined }, {
       onSuccess: (data) => {
         try {
           // Step 2: Open Razorpay Popup
@@ -1637,153 +1673,28 @@ export default function StayDetailsPage() {
                 )}
 
                 {step === 3 && (
-                  <div className="animate-in fade-in slide-in-from-right-4 flex flex-col max-h-[calc(100vh-160px)]">
-
-                    {/* ── SCROLLABLE BODY ── */}
-                    <div className="flex-1 overflow-y-auto overflow-x-hidden pr-1 [scrollbar-width:thin] [scrollbar-color:rgb(209,213,219)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300">
-
-                      <button onClick={() => setStep(2)} className="text-sm font-medium underline mb-4 flex items-center gap-1 hover:text-gray-600">
-                        <ChevronLeft size={16} /> Back
-                      </button>
-                      <h3 className="text-xl font-bold mb-4">Review & Confirm</h3>
-
-                      <div className="bg-gray-50 p-4 rounded-xl mb-4 text-sm text-gray-800 border border-gray-200">
-                        <div className="mb-2"><span className="font-semibold">Dates:</span> {checkIn} to {checkOut}</div>
-                        <div className="mb-2"><span className="font-semibold">Guests:</span> {guests}</div>
-                        <div><span className="font-semibold">Guest:</span> {formik.values.guestName}</div>
-                      </div>
-
-                      <div className="mt-4 mb-4 text-left animate-in fade-in duration-300">
-                        <h4 className="text-sm font-bold text-gray-900 mb-2">Payment Summary</h4>
-                        <div className="bg-gray-50 rounded-3xl p-6 border border-gray-200 shadow-sm space-y-4">
-                          {/* Top: Stay Pricing Breakdown */}
-                          <div className="space-y-2.5 pb-4 border-b border-gray-200/80 text-xs">
-                            {weekdayNights > 0 && (
-                              <div className="flex justify-between text-gray-600 font-medium">
-                                <span>{formatCurrency(price)} × {weekdayNights} weekday {weekdayNights === 1 ? 'night' : 'nights'}</span>
-                                <span>{formatCurrency(price * weekdayNights)}</span>
-                              </div>
-                            )}
-                            {weekendNights > 0 && (
-                              <div className="flex justify-between text-gray-600 font-medium">
-                                <span>{formatCurrency(weekendPrice)} × {weekendNights} weekend {weekendNights === 1 ? 'night' : 'nights'}</span>
-                                <span>{formatCurrency(weekendPrice * weekendNights)}</span>
-                              </div>
-                            )}
-                            {extraGuestTotal > 0 && (
-                              <div className="flex justify-between text-gray-600 font-medium">
-                                <span>Extra guest charge ({extraGuests} guests)</span>
-                                <span>{formatCurrency(extraGuestTotal)}</span>
-                              </div>
-                            )}
-                            {selectedAddOns.length > 0 && addOns.filter(a => selectedAddOns.includes(a.name)).map(addon => (
-                              <div key={addon.name} className="flex justify-between text-gray-600 font-medium">
-                                <span>{addon.name}</span>
-                                <span>{formatCurrency(addon.price)}</span>
-                              </div>
-                            ))}
-                            {user?.isMember && discountAmount > 0 && (
-                              <div className="flex justify-between text-green-600 font-semibold">
-                                <span>{((user.membershipType || 'none').charAt(0).toUpperCase() + (user.membershipType || 'none').slice(1))} discount ({discountPercent}%)</span>
-                                <span>-{formatCurrency(discountAmount)}</span>
-                              </div>
-                            )}
-                            {cleaningFee > 0 && (
-                              <div className="flex justify-between text-gray-650 font-medium">
-                                <span>Cleaning fee</span>
-                                <span>{formatCurrency(cleaningFee)}</span>
-                              </div>
-                            )}
-                            {serviceFee > 0 && (
-                              <div className="flex justify-between text-gray-650 font-medium">
-                                <span>Service fee</span>
-                                <span>{formatCurrency(serviceFee)}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Middle: Total & Split Details */}
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="text-gray-500 font-medium">Total Booking Amount</span>
-                            <span className="font-bold text-gray-900 text-sm">{formatCurrency(totalPrice)}</span>
-                          </div>
-
-                          {/* Bottom: Nested Check-in Breakdown */}
-                          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 text-[10px] text-gray-500 leading-relaxed space-y-2 mt-2">
-                            <div className="flex justify-between items-center">
-                              <span>Remaining Balance (50%)</span>
-                              <span className="font-semibold text-gray-700">{formatCurrency(totalPrice - Math.round(totalPrice * 0.5))}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span>Security Deposit (Refundable)</span>
-                              <span className="font-semibold text-gray-700">{formatCurrency(5000)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                    </div>
-
-                    {/* ── PINNED FOOTER (Always visible, never scrolls) ── */}
-                    <div className="flex-shrink-0 pt-5 border-t border-gray-100 mt-2 bg-bg-card relative">
-                      {/* Subtle top fade overlay */}
-                      <div className="absolute -top-6 left-0 right-0 h-6 bg-gradient-to-t from-bg-card to-transparent pointer-events-none" />
-
-                      {/* Visual Payment Timeline Stepper */}
-                      <div className="mb-4 px-1">
-                        <div className="flex items-center justify-between text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
-                          <span>Pay Now</span>
-                          <span>At Check-in</span>
-                        </div>
-                        <div className="relative flex items-center justify-between">
-                          <div className="absolute left-2 right-2 h-[2px] bg-gray-200 rounded-full" />
-                          <div className="absolute left-2 w-1/2 h-[2px] bg-green-500 rounded-full" />
-                          <div className="h-3.5 w-3.5 rounded-full bg-green-500 border-[3px] border-bg-card shadow-sm z-10" />
-                          <div className="h-3.5 w-3.5 rounded-full bg-amber-400 border-[3px] border-bg-card shadow-sm z-10" />
-                        </div>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-xs font-black text-green-600">{formatCurrency(totalPrice * 0.5)}</span>
-                          <span className="text-xs font-bold text-amber-600">{formatCurrency((totalPrice - Math.round(totalPrice * 0.5)) + 5000)}</span>
-                        </div>
-                      </div>
-
-                      {/* Terms agreement checkbox */}
-                      <div className="mb-4 flex items-start gap-2.5 text-xs text-gray-600 text-left bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-                        <input
-                          id="termsCheckbox"
-                          type="checkbox"
-                          checked={isTermsAccepted}
-                          onChange={(e) => setIsTermsAccepted(e.target.checked)}
-                          className="mt-0.5 w-4 h-4 rounded text-gray-900 focus:ring-gray-900 border-gray-300 cursor-pointer transition-all accent-gray-900"
-                        />
-                        <label htmlFor="termsCheckbox" className="leading-relaxed cursor-pointer select-none">
-                          I agree to the{' '}
-                          <button
-                            type="button"
-                            onClick={() => setIsTermsModalOpen(true)}
-                            className="font-black underline text-gray-900 hover:text-gray-750 transition"
-                          >
-                            booking and payment terms
-                          </button>
-                          .
-                        </label>
-                      </div>
-
-                      {/* CTA Button with exact 50% amount */}
+                  <div className="text-center py-6 animate-in fade-in duration-300">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-solid border-gray-200 border-t-gray-900 mx-auto mb-4"></div>
+                    <h4 className="text-sm font-bold text-gray-900 mb-1">Confirm in Popup Window</h4>
+                    <p className="text-xs text-gray-500 mb-4 px-2">A checkout review window has opened to confirm your booking securely.</p>
+                    <div className="flex flex-col gap-2">
                       <Button
-                        size="lg"
-                        fullWidth
-                        onClick={handleReserve}
-                        disabled={isPending || !isTermsAccepted}
-                        className="shadow-lg shadow-gray-900/10 hover:shadow-gray-900/20 active:scale-[0.98] transition-all"
+                        size="sm"
+                        onClick={() => {
+                          // Modal is already open by state
+                        }}
+                        className="w-full text-xs"
                       >
-                        {isPending ? 'Processing...' : `Pay ${formatCurrency(totalPrice * 0.5)} Now`}
+                        Complete Payment
                       </Button>
-                      <p className="text-center text-[10px] text-gray-400 mt-2 font-medium">
-                        Remaining 50% + ₹5,000 deposit payable at check-in
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setStep(2)}
+                        className="text-xs text-gray-500 hover:text-gray-900 underline font-semibold transition"
+                      >
+                        Back to Guest Details
+                      </button>
                     </div>
-
                   </div>
                 )}
 
@@ -1874,6 +1785,231 @@ export default function StayDetailsPage() {
         totalPrice={totalPrice}
         formatCurrency={formatCurrency}
       />
+
+      {/* ── STEP 3 MODAL OVERLAY ── */}
+      {step === 3 && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 sm:p-6 md:p-10">
+          <Card className="w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gray-150 flex flex-col max-h-[85vh] md:max-h-[90vh] text-left relative z-10 animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white flex-shrink-0">
+              <h2 className="text-xl font-bold font-display text-gray-900">
+                Review & Confirm Reservation
+              </h2>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-950 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 [scrollbar-width:thin] [scrollbar-color:rgb(209,213,219)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 bg-white">
+              
+              {/* Guest & Reservation details grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-5 rounded-2xl border border-gray-205 text-sm">
+                <div className="col-span-1">
+                  <span className="text-[10px] text-gray-400 uppercase font-black block tracking-wider mb-0.5">Check-in</span>
+                  <span className="font-bold text-gray-800 text-xs">{checkIn}</span>
+                </div>
+                <div className="col-span-1">
+                  <span className="text-[10px] text-gray-400 uppercase font-black block tracking-wider mb-0.5">Check-out</span>
+                  <span className="font-bold text-gray-800 text-xs">{checkOut}</span>
+                </div>
+                <div className="col-span-1">
+                  <span className="text-[10px] text-gray-400 uppercase font-black block tracking-wider mb-0.5">Nights</span>
+                  <span className="font-bold text-gray-800 text-xs">{totalNights} {totalNights === 1 ? 'night' : 'nights'}</span>
+                </div>
+                <div className="col-span-1">
+                  <span className="text-[10px] text-gray-400 uppercase font-black block tracking-wider mb-0.5">Guests</span>
+                  <span className="font-bold text-gray-800 text-xs">{guests} guests</span>
+                </div>
+                <div className="col-span-2 md:col-span-4 pt-3 border-t border-gray-200/60">
+                  <span className="text-[10px] text-gray-400 uppercase font-black block tracking-wider mb-0.5">Guest Info</span>
+                  <span className="font-bold text-gray-850 text-sm">{formik.values.guestName}</span>
+                  <span className="block text-xs text-gray-500 font-semibold mt-0.5">{formik.values.guestPhone}</span>
+                </div>
+              </div>
+
+              {/* Pricing Summary section */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-gray-800 uppercase tracking-widest">Payment Summary</h4>
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 shadow-sm space-y-4">
+                  {/* Stay Pricing Breakdown */}
+                  <div className="space-y-2.5 pb-4 border-b border-gray-200/80 text-xs">
+                    {weekdayNights > 0 && (
+                      <div className="flex justify-between text-gray-600 font-medium">
+                        <span>🏡 Base Price ({weekdayNights} weekday {weekdayNights === 1 ? 'night' : 'nights'})</span>
+                        <span>{formatCurrency(price * weekdayNights)}</span>
+                      </div>
+                    )}
+                    {weekendNights > 0 && (
+                      <div className="flex justify-between text-gray-600 font-medium">
+                        <span>🏡 Weekend Price ({weekendNights} weekend {weekendNights === 1 ? 'night' : 'nights'})</span>
+                        <span>{formatCurrency(weekendPrice * weekendNights)}</span>
+                      </div>
+                    )}
+                    {extraGuestTotal > 0 && (
+                      <div className="flex justify-between text-gray-600 font-medium">
+                        <span>👥 Extra guest charge ({extraGuests} guests)</span>
+                        <span>{formatCurrency(extraGuestTotal)}</span>
+                      </div>
+                    )}
+                    {selectedAddOns.length > 0 && addOns.filter(a => selectedAddOns.includes(a.name)).map(addon => (
+                      <div key={addon.name} className="flex justify-between text-gray-600 font-medium">
+                        <span>✨ Add-on: {addon.name}</span>
+                        <span>{formatCurrency(addon.price)}</span>
+                      </div>
+                    ))}
+                    {user?.isMember && discountAmount > 0 && (
+                      <div className="flex justify-between text-green-600 font-semibold">
+                        <span>💎 {((user.membershipType || 'none').charAt(0).toUpperCase() + (user.membershipType || 'none').slice(1))} discount ({discountPercent}%)</span>
+                        <span>-{formatCurrency(discountAmount)}</span>
+                      </div>
+                    )}
+                    {appliedCoupon && (
+                      <div className="flex justify-between text-green-650 font-semibold items-center">
+                        <span>🎉 Coupon Discount ({appliedCoupon.code})</span>
+                        <div className="flex items-center gap-1.5">
+                          <span>-{formatCurrency(appliedCoupon.discountAmount)}</span>
+                          <button
+                            type="button"
+                            onClick={handleRemoveCoupon}
+                            className="text-red-500 hover:text-red-750 text-[10px] font-bold underline"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Coupon Input Box */}
+                  {!appliedCoupon ? (
+                    <div className="pt-1 pb-1">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Enter Coupon Code"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-xl text-xs uppercase focus:ring-2 focus:ring-gray-900/10 outline-none bg-white font-mono"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          disabled={isValidatingCoupon || !couponCode.trim()}
+                          onClick={() => handleApplyCoupon(totalPriceBeforeCoupon)}
+                          className="px-4 py-2 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isValidatingCoupon ? 'Applying...' : 'Apply'}
+                        </button>
+                      </div>
+                      {couponError && (
+                        <p className="text-[10px] text-red-500 font-semibold mt-1">{couponError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="pt-1 flex justify-between items-center text-xs">
+                      <span className="text-green-600 font-bold flex items-center gap-1">
+                        🎉 Coupon "{appliedCoupon.code}" Applied!
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Middle: Total & Split Details */}
+                  <div className="flex justify-between items-center text-xs pt-3 border-t border-gray-200">
+                    <span className="text-gray-500 font-medium">Total Booking Amount</span>
+                    <span className="font-bold text-gray-900 text-sm">{formatCurrency(totalPrice)}</span>
+                  </div>
+
+                  {/* Bottom: Nested Check-in Breakdown */}
+                  <div className="bg-gray-100/50 p-4 rounded-xl border border-gray-200 text-[11px] text-gray-500 leading-relaxed space-y-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span>Remaining Balance (50% due at check-in)</span>
+                      <span className="font-semibold text-gray-700">{formatCurrency(totalPrice - Math.round(totalPrice * 0.5))}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Security Deposit (Refundable at check-out)</span>
+                      <span className="font-semibold text-gray-700">{formatCurrency(5000)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Terms agreement checkbox */}
+              <div className="flex items-start gap-2.5 text-xs text-gray-600 text-left bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <input
+                  id="termsCheckbox"
+                  type="checkbox"
+                  checked={isTermsAccepted}
+                  onChange={(e) => setIsTermsAccepted(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded text-gray-900 focus:ring-gray-900 border-gray-300 cursor-pointer transition-all accent-gray-900"
+                />
+                <label htmlFor="termsCheckbox" className="leading-relaxed cursor-pointer select-none">
+                  I agree to the{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsTermsModalOpen(true)}
+                    className="font-black underline text-gray-900 hover:text-gray-750 transition"
+                  >
+                    House Rules, Cancellation Policy & Booking Terms
+                  </button>
+                  .
+                </label>
+              </div>
+            </div>
+
+            {/* Modal Action Footer */}
+            <div className="p-6 border-t border-gray-100 bg-gray-50 flex flex-col gap-5 flex-shrink-0">
+              {/* Visual Payment Timeline Stepper */}
+              <div className="px-1">
+                <div className="flex items-center justify-between text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+                  <span>Pay Now (50% Advance)</span>
+                  <span>At Check-in</span>
+                </div>
+                <div className="relative flex items-center justify-between">
+                  <div className="absolute left-2 right-2 h-[2px] bg-gray-200 rounded-full" />
+                  <div className="absolute left-2 w-1/2 h-[2px] bg-green-500 rounded-full" />
+                  <div className="h-3.5 w-3.5 rounded-full bg-green-500 border-[3px] border-white shadow-sm z-10" />
+                  <div className="h-3.5 w-3.5 rounded-full bg-amber-400 border-[3px] border-white shadow-sm z-10" />
+                </div>
+                <div className="flex items-center justify-between mt-1.5">
+                  <span className="text-xs font-black text-green-600">{formatCurrency(totalPrice * 0.5)}</span>
+                  <span className="text-xs font-bold text-amber-600">
+                    {formatCurrency((totalPrice - Math.round(totalPrice * 0.5)) + 5000)}{' '}
+                    <span className="text-[9px] text-gray-405 font-medium lowercase font-sans tracking-normal">(incl. refundable ₹5k deposit)</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Footer Action Buttons */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-gray-200/50">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Immediate Payment</span>
+                  <span className="text-xl font-black text-green-600">{formatCurrency(totalPrice * 0.5)}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setStep(2)}
+                    disabled={isPending}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={handleReserve}
+                    disabled={!isTermsAccepted || isPending}
+                    className="px-8 shadow-md"
+                  >
+                    {isPending ? 'Processing...' : 'Confirm & Pay'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Home, Activity, Users, Calendar, Bell, PartyPopper, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Home, Activity, Users, Calendar, Bell, PartyPopper, Menu, X, Tag } from 'lucide-react';
 import { useUnreadContactCount } from '@/hooks/useContact';
 import { useUnreadStayBookingCount } from '@/hooks/useBookings';
 import { useUnreadSportBookingCount } from '@/hooks/useSportBookings';
@@ -32,6 +32,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
     { name: 'Sport Bookings', href: '/admin/sport-bookings', icon: <Calendar size={20} />, badge: unreadSportCount },
     { name: 'Enquiries', href: '/admin/contact', icon: <Bell size={20} />, badge: unreadContactCount },
     { name: 'Memberships', href: '/admin/memberships', icon: <Users size={20} /> },
+    { name: 'Manage Coupons', href: '/admin/coupons', icon: <Tag size={20} /> },
   ];
 
   return (

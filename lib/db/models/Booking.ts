@@ -88,6 +88,22 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'refunded', 'retained'],
     default: 'pending'
+  },
+  couponId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Coupon'
+  },
+  couponCode: {
+    type: String
+  },
+  originalAmount: {
+    type: Number
+  },
+  discountAmount: {
+    type: Number
+  },
+  finalAmount: {
+    type: Number
   }
 }, { timestamps: true });
 
