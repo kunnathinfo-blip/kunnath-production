@@ -73,7 +73,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api.get('/auth/me');
-      set({ user: response.data, isLoading: false });
+      const userData = response.data?.user !== undefined ? response.data.user : response.data;
+      set({ user: userData, isLoading: false });
     } catch (error: any) {
       set({ user: null, isLoading: false });
       // Don't set error state here as this runs on every page load for unauthenticated users

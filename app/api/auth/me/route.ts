@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
-      return NextResponse.json({ message: 'Not authorized, token failed' }, { status: 401 });
+      return NextResponse.json({ user: null }, { status: 200 });
     }
 
     const fullUser = await User.findById(user._id);

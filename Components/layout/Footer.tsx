@@ -1,26 +1,18 @@
 'use client';
 
-// import React from 'react';
-
-// export function Footer() {
-//   return (
-//     <footer className="bg-gray-50 py-8 border-t border-gray-100 mt-20">
-//       <div className="max-w-7xl mx-auto px-4 text-center text-gray-500">
-//         <p>&copy; {new Date().getFullYear()} Kunnath House. All rights reserved.</p>
-//       </div>
-//     </footer>
-//   );
-// }
-
-
-// components/Footer.tsx
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Instagram, Facebook, Mail, Phone, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 export const Footer = () => {
   const { user } = useAuthStore();
+  const [isMounted, setIsMounted] = useState(false);
   const currentYear = new Date().getFullYear();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <footer className="bg-white border-t border-[#E0E0E0] pt-12 pb-6">
@@ -177,17 +169,19 @@ export const Footer = () => {
               </p>
             </div>
 
-            {/* Admin Portal Button */}
-            <div className="mt-5">
-              <Link
-                href="/admin"
-                className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r from-gray-900 via-slate-900 to-gray-800 hover:from-[#E53935] hover:to-[#C62828] text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-gray-900/10 hover:shadow-red-500/25 transition-all duration-300 transform hover:-translate-y-0.5 group border border-gray-800"
-              >
-                <ShieldCheck className="w-4 h-4 text-amber-400 group-hover:text-white transition-colors" />
-                <span>Admin Portal</span>
-                <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-              </Link>
-            </div>
+            {/* Admin Portal Button - only visible to admins */}
+            {isMounted && user?.role === 'admin' && (
+              <div className="mt-5">
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r from-gray-900 via-slate-900 to-gray-800 hover:from-[#E53935] hover:to-[#C62828] text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-gray-900/10 hover:shadow-red-500/25 transition-all duration-300 transform hover:-translate-y-0.5 group border border-gray-800"
+                >
+                  <ShieldCheck className="w-4 h-4 text-amber-400 group-hover:text-white transition-colors" />
+                  <span>Admin Portal</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 

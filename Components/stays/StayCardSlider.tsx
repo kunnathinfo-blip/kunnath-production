@@ -13,9 +13,10 @@ interface StayCardSliderProps {
   description?: string;
   bedrooms?: number;
   capacity?: number;
+  hideBhk?: boolean;
 }
 
-export default function StayCardSlider({ images, stayName, stayId, description, bedrooms, capacity }: StayCardSliderProps) {
+export default function StayCardSlider({ images, stayName, stayId, description, bedrooms, capacity, hideBhk = false }: StayCardSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -93,7 +94,7 @@ export default function StayCardSlider({ images, stayName, stayId, description, 
         title={stayName}
         url={`${typeof window !== 'undefined' ? window.location.origin : ''}/stays/${stayId}`}
         image={images[0]}
-        bedrooms={bedrooms}
+        bedrooms={hideBhk ? undefined : bedrooms}
         capacity={capacity}
       />
 

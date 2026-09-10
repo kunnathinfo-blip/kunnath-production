@@ -11,6 +11,7 @@ export default function Contact() {
         firstName: '',
         lastName: '',
         email: '',
+        phone: '',
         subject: 'General Inquiry',
         message: ''
     });
@@ -29,6 +30,7 @@ export default function Contact() {
                 firstName: '',
                 lastName: '',
                 email: '',
+                phone: '',
                 subject: 'General Inquiry',
                 message: ''
             });
@@ -177,18 +179,33 @@ export default function Contact() {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-medium text-[#1A1A1A] mb-2">Email Address</label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            value={formData.email}
-                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                            className="w-full px-4 py-3.5 bg-white border border-[#E0E0E0] rounded-xl focus:ring-2 focus:ring-[#FFCDD2] focus:border-[#E53935] outline-none transition-all placeholder:text-gray-400"
-                                            placeholder="john@example.com"
-                                            required
-                                            disabled={status === 'loading'}
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label htmlFor="email" className="block text-sm font-medium text-[#1A1A1A] mb-2">Email Address *</label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                value={formData.email}
+                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                className="w-full px-4 py-3.5 bg-white border border-[#E0E0E0] rounded-xl focus:ring-2 focus:ring-[#FFCDD2] focus:border-[#E53935] outline-none transition-all placeholder:text-gray-400"
+                                                placeholder="john@example.com"
+                                                required
+                                                disabled={status === 'loading'}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="phone" className="block text-sm font-medium text-[#1A1A1A] mb-2">Phone Number *</label>
+                                            <input
+                                                type="tel"
+                                                id="phone"
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                className="w-full px-4 py-3.5 bg-white border border-[#E0E0E0] rounded-xl focus:ring-2 focus:ring-[#FFCDD2] focus:border-[#E53935] outline-none transition-all placeholder:text-gray-400"
+                                                placeholder="+91 98765 43210"
+                                                required
+                                                disabled={status === 'loading'}
+                                            />
+                                        </div>
                                     </div>
 
                                     <div>

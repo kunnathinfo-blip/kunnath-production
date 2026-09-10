@@ -16,7 +16,7 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [eventDate, setEventDate] = useState('');
-  const [guestsCount, setGuestsCount] = useState(10);
+  const [guestsRange, setGuestsRange] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,6 +42,7 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
     setPhone('');
     setEmail('');
     setEventDate('');
+    setGuestsRange('');
     setSpecialRequests('');
     onClose();
   };
@@ -83,9 +84,18 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
             <h2 className="text-2xl font-black text-gray-900 mb-1 tracking-tight">
               {eventTitle}
             </h2>
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-gray-500 mb-3">
               Fill in your details below to reserve {stay.name} Stay for your upcoming event.
             </p>
+
+            <div className="flex flex-wrap items-center gap-2 mb-6 text-[11px] font-medium">
+              <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200/70 text-amber-800">
+                🌙 Overnight stay: up to 15 members
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-red-50 border border-red-200/70 text-red-700">
+                + ₹10,000 security deposit (refundable)
+              </span>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -145,16 +155,22 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1 flex items-center gap-1">
-                    <Users size={13} /> Estimated Guests
+                    <Users size={13} /> Estimated Guests *
                   </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={100}
-                    value={guestsCount}
-                    onChange={(e) => setGuestsCount(parseInt(e.target.value) || 1)}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-                  />
+                  <select
+                    required
+                    value={guestsRange}
+                    onChange={(e) => setGuestsRange(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all text-gray-900 cursor-pointer"
+                  >
+                    <option value="" disabled>
+                      Select estimated guests
+                    </option>
+                    <option value="Up to 50 Guests">Up to 50 Guests</option>
+                    <option value="50–100 Guests">50–100 Guests</option>
+                    <option value="100–150 Guests">100–150 Guests (Mint)</option>
+                    <option value="150–200 Guests">150–200 Guests (Mint)</option>
+                  </select>
                 </div>
               </div>
 

@@ -32,7 +32,8 @@ export default function AdminContactPage() {
     return messages.filter((msg) => {
       const nameMatch = `${msg.firstName} ${msg.lastName}`.toLowerCase().includes(search.toLowerCase());
       const emailMatch = msg.email.toLowerCase().includes(search.toLowerCase());
-      const searchMatch = !search || nameMatch || emailMatch;
+      const phoneMatch = msg.phone ? msg.phone.toLowerCase().includes(search.toLowerCase()) : false;
+      const searchMatch = !search || nameMatch || emailMatch || phoneMatch;
 
       const dateMatch = !dateFilter || msg.createdAt.startsWith(dateFilter);
 
@@ -76,7 +77,7 @@ export default function AdminContactPage() {
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by name or email…"
+            placeholder="Search by name, email, or phone…"
             className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -124,6 +125,14 @@ export default function AdminContactPage() {
                 <span className="text-[10px] text-gray-400">{formatDate(msg.createdAt)}</span>
               </div>
               <div className="text-xs text-gray-500 truncate">{msg.email}</div>
+              {msg.phone && (
+                <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                  <Phone size={12} className="text-gray-400" />
+                  <a href={`tel:${msg.phone}`} className="hover:underline hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                    {msg.phone}
+                  </a>
+                </div>
+              )}
               <div className="flex justify-between items-center gap-2">
                 <span className="bg-gray-150 text-gray-700 px-2.5 py-1 rounded-md text-[10px] font-semibold">
                   {msg.subject}
@@ -150,6 +159,7 @@ export default function AdminContactPage() {
                   <th className="p-4 font-semibold w-8"></th>
                   <th className="p-4 font-semibold">Name</th>
                   <th className="p-4 font-semibold">Email</th>
+                  <th className="p-4 font-semibold">Phone</th>
                   <th className="p-4 font-semibold">Subject</th>
                   <th className="p-4 font-semibold hidden lg:table-cell">Message</th>
                   <th className="p-4 font-semibold">Date</th>
@@ -159,7 +169,7 @@ export default function AdminContactPage() {
               <tbody className="divide-y divide-gray-100">
                 {filteredMessages.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-500">
+                    <td colSpan={8} className="p-12 text-center text-gray-500">
                       {search || dateFilter ? 'No enquiries match your filters.' : 'No enquiries yet.'}
                     </td>
                   </tr>
@@ -181,6 +191,20 @@ export default function AdminContactPage() {
                         {msg.firstName} {msg.lastName}
                       </td>
                       <td className="p-4 text-gray-600">{msg.email}</td>
+                      <td className="p-4 text-gray-600 whitespace-nowrap">
+                        {msg.phone ? (
+                          <a
+                            href={`tel:${msg.phone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="hover:underline hover:text-primary inline-flex items-center gap-1.5"
+                          >
+                            <Phone size={13} className="text-gray-400" />
+                            {msg.phone}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </td>
                       <td className="p-4">
                         <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md text-xs font-medium">
                           {msg.subject}
@@ -227,9 +251,17 @@ export default function AdminContactPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
                 <div className="flex items-center gap-2 text-sm">
                   <Mail size={14} className="text-gray-400" />
-                  <span className="text-gray-700">{selectedMessage.email}</span>
+                  <a href={`mailto:${selectedMessage.email}`} className="text-gray-700 hover:underline">{selectedMessage.email}</a>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
+                  <Phone size={14} className="text-gray-400" />
+                  {selectedMessage.phone ? (
+                    <a href={`tel:${selectedMessage.phone}`} className="text-gray-700 hover:underline">{selectedMessage.phone}</a>
+                  ) : (
+                    <span className="text-gray-400">—</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 text-sm sm:col-span-2">
                   <CalendarIcon size={14} className="text-gray-400" />
                   <span className="text-gray-700">{formatDate(selectedMessage.createdAt)}</span>
                 </div>

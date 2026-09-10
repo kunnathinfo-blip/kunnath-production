@@ -5,9 +5,9 @@ import ContactMessage from '@/lib/db/models/ContactMessage';
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-    const { firstName, lastName, email, subject, message } = await req.json();
+    const { firstName, lastName, email, phone, subject, message } = await req.json();
 
-    if (!firstName || !lastName || !email || !message) {
+    if (!firstName || !lastName || !email || !phone || !message) {
       return NextResponse.json({ success: false, message: 'Please provide all required fields' }, { status: 400 });
     }
 
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
       firstName,
       lastName,
       email,
+      phone,
       subject: subject || 'No Subject',
       message,
     });
