@@ -97,7 +97,7 @@ export const EventBookingManagement = () => {
             <div className="bg-gray-50 p-3 rounded-xl text-xs space-y-2 border border-gray-100">
               <div className="flex justify-between">
                 <span className="text-gray-500">Event:</span>
-                <span className="font-medium text-gray-900">{booking.eventId?.title}</span>
+                <span className="font-medium text-gray-900">{booking.stayId?.name ? `Event at ${booking.stayId.name} Stay` : booking.eventId?.title || 'Private Event'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Booking Date:</span>
@@ -172,8 +172,8 @@ export const EventBookingManagement = () => {
                   </td>
                   <td className="p-4">
                     <div className="flex flex-col">
-                      <span className="font-medium text-gray-800">{booking.eventId?.title}</span>
-                      <span className="text-[10px] text-gray-400 uppercase">{booking.eventId?.category}</span>
+                      <span className="font-medium text-gray-800">{booking.stayId?.name ? `Event at ${booking.stayId.name} Stay` : booking.eventId?.title || 'Private Event'}</span>
+                      <span className="text-[10px] text-gray-400 uppercase">{booking.eventType || booking.eventId?.category || 'Private Venue'}</span>
                     </div>
                   </td>
                   <td className="p-4 text-sm text-gray-600">

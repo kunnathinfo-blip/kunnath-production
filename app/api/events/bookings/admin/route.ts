@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import EventBooking from '@/lib/db/models/EventBooking';
-// Register Event & User models for populating
+// Register Event, FarmStay & User models for populating
 import '@/lib/db/models/Event';
+import '@/lib/db/models/FarmStay';
 import '@/lib/db/models/User';
 import { checkAdmin } from '@/lib/auth/protect';
 
@@ -34,6 +35,7 @@ export async function GET(req: NextRequest) {
 
     const bookings = await EventBooking.find(query)
       .populate('eventId', 'title price category')
+      .populate('stayId', 'name')
       .populate('userId', 'name email')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)

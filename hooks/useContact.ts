@@ -3,8 +3,9 @@ import api from '../lib/axios';
 
 export interface ContactMessage {
   _id: string;
-  firstName: string;
-  lastName: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   phone?: string;
   subject: string;

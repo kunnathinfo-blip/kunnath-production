@@ -30,49 +30,37 @@ export default function SportsPage() {
     setIsModalOpen(true);
   };
 
-  if (isLoading) {
-    return (
-      <div className="py-32 bg-white min-h-screen">
-        <Container>
-          <div className="animate-pulse space-y-12">
-            <div className="h-40 bg-gray-100 rounded-3xl w-full"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="h-[450px] bg-gray-50 rounded-3xl"></div>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white min-h-screen">
-      {/* Premium Hero Section */}
-      <section className="relative pt-20 pb-20 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_20%,#f3f4f6_0%,transparent_50%)] z-0"></div>
-        <Container className="relative z-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold mb-6">
-              <Trophy size={16} /> Premium Sports Facilities
-            </div>
-            <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-tight mb-8">
-              Elevate Your <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-hover">Stay with Action.</span>
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed max-w-xl">
-              From professional turf cricket to high-octane ATV rides, we offer world-class facilities designed for champions and families alike.
-            </p>
-          </div>
+      {/* Hero Section - Visually consistent with Events hero */}
+      <section className="bg-gray-900 text-white py-20 sm:py-24 md:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dekz7rtoa/image/upload/v1779688300/box_cricket_rhkt0l.webp')] bg-cover bg-center opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/60 via-gray-900/40 to-gray-900/80"></div>
+
+        <Container className="relative z-10 text-center">
+          <span className="text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-4 inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15">
+            <Trophy size={16} /> Premium Sports Facilities
+          </span>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-6 tracking-tight max-w-4xl mx-auto leading-[1.15]">
+            Elevate Your Stay <span className="block sm:inline font-normal italic text-gray-200">with Action</span>
+          </h1>
+
+          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
+            From professional turf cricket to high-octane ATV rides, we offer world-class facilities designed for champions and families alike.
+          </p>
         </Container>
       </section>
 
       {/* Activities Grid */}
-      <section className="pb-32">
+      <section className="py-16 sm:py-20 pb-32">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {sports?.map((sport) => (
+            {isLoading ? (
+              [1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="h-[450px] bg-gray-50 rounded-3xl animate-pulse border border-gray-100"></div>
+              ))
+            ) : sports?.filter(sport => !sport.name?.toLowerCase().includes('bowling machine')).map((sport) => (
               <div
                 key={sport._id}
                 className="group bg-white rounded-[40px] border border-gray-100 shadow-soft hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col"

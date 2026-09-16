@@ -9,6 +9,7 @@ import { Button } from '@/Components/ui/Button';
 import { Calendar, Users, MapPin, Share, Heart, ArrowLeft, Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
+import { INITIAL_UPCOMING_EVENTS } from '@/lib/constants/events';
 
 export default function EventDetailsPage() {
   const { slug } = useParams();
@@ -25,7 +26,26 @@ export default function EventDetailsPage() {
   const [specialRequests, setSpecialRequests] = useState('');
   const [step, setStep] = useState(1);
 
-  if (isLoading) {
+  const fallbackEvent = INITIAL_UPCOMING_EVENTS.find(e => e.slug === slug);
+  const resolvedEvent = event || (fallbackEvent ? {
+    _id: fallbackEvent._id,
+    title: fallbackEvent.title,
+    slug: fallbackEvent.slug,
+    category: 'Upcoming' as const,
+    shortDescription: fallbackEvent.shortDescription,
+    description: fallbackEvent.description,
+    price: fallbackEvent.price,
+    date: fallbackEvent.date,
+    isFlexibleDate: false,
+    images: [fallbackEvent.image],
+    capacity: 100,
+    isActive: true,
+    tags: [fallbackEvent.tag, 'Competition', 'Racing'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  } : null);
+
+  if (isLoading && !fallbackEvent) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-20">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -33,7 +53,7 @@ export default function EventDetailsPage() {
     );
   }
 
-  if (isError || !event) {
+  if ((isError || !resolvedEvent) && !fallbackEvent) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center pt-20">
         <h2 className="text-2xl font-bold mb-4">Event not found</h2>
@@ -42,16 +62,18 @@ export default function EventDetailsPage() {
     );
   }
 
-  const formattedDate = event.isFlexibleDate 
+  const activeEvent = resolvedEvent!;
+
+  const formattedDate = activeEvent.isFlexibleDate 
     ? 'Flexible Dates' 
-    : new Date(event.date).toLocaleDateString('en-IN', {
+    : new Date(activeEvent.date).toLocaleDateString('en-IN', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       });
 
-  const totalPrice = event.price * guests;
-  const coverImage = event.images?.[0] || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop';
+  const totalPrice = activeEvent.price * guests;
+  const coverImage = activeEvent.images?.[0] || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop';
 
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,12 +84,12 @@ export default function EventDetailsPage() {
       return;
     }
 
-    if (!event.isFlexibleDate && !event.date) {
+    if (!activeEvent.isFlexibleDate && !activeEvent.date) {
         alert("Invalid event date.");
         return;
     }
 
-    const finalDate = event.isFlexibleDate ? bookingDate : event.date;
+    const finalDate = activeEvent.isFlexibleDate ? bookingDate : activeEvent.date;
     
     if (!finalDate) {
         alert("Please select a date.");
@@ -75,8 +97,8 @@ export default function EventDetailsPage() {
     }
 
     bookEvent({
-      eventId: event._id,
-      date: finalDate,
+      eventId: activeEvent._id,
+      date: typeof finalDate === 'string' ? finalDate : new Date(finalDate).toISOString(),
       guests,
       guestName,
       guestEmail,
@@ -103,9 +125,9 @@ export default function EventDetailsPage() {
         <div className="mb-6 flex flex-wrap justify-between items-start gap-4">
           <div>
             <div className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold mb-3">
-              {event.category}
+              {activeEvent.category}
             </div>
-            <h1 className="text-3xl md:text-5xl font-display font-bold text-gray-900 mb-4">{event.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-display font-bold text-gray-900 mb-4">{activeEvent.title}</h1>
             <div className="flex flex-wrap items-center text-sm text-gray-600 gap-4">
               <div className="flex items-center">
                 <Calendar size={18} className="mr-2 text-gray-400" />
@@ -131,7 +153,7 @@ export default function EventDetailsPage() {
         <div className="aspect-[21/9] w-full rounded-3xl overflow-hidden mb-12 shadow-lg">
           <img 
             src={coverImage} 
-            alt={event.title} 
+            alt={activeEvent.title} 
             className="w-full h-full object-cover"
           />
         </div>
@@ -143,15 +165,15 @@ export default function EventDetailsPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About this event</h2>
               <div 
                 className="text-gray-600 text-lg leading-relaxed whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: event.description }}
+                dangerouslySetInnerHTML={{ __html: activeEvent.description }}
               />
             </section>
 
-            {event.tags && event.tags.length > 0 && (
+            {activeEvent.tags && activeEvent.tags.length > 0 && (
               <section>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Tags</h3>
                 <div className="flex flex-wrap gap-2">
-                  {event.tags.map(tag => (
+                  {activeEvent.tags.map(tag => (
                     <span key={tag} className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm text-gray-600">
                       {tag}
                     </span>
@@ -167,12 +189,12 @@ export default function EventDetailsPage() {
               {step === 1 ? (
                 <>
                   <div className="mb-6 pb-6 border-b border-gray-100">
-                    <span className="text-3xl font-bold text-gray-900">₹{event.price.toLocaleString()}</span>
+                    <span className="text-3xl font-bold text-gray-900">₹{activeEvent.price.toLocaleString()}</span>
                     <span className="text-gray-500 ml-1">/ person</span>
                   </div>
 
                   <form onSubmit={handleBooking} className="space-y-4">
-                    {event.isFlexibleDate && (
+                    {activeEvent.isFlexibleDate && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
                         <input 
@@ -190,7 +212,7 @@ export default function EventDetailsPage() {
                       <input 
                         type="number" 
                         min="1" 
-                        max={event.capacity || 1000}
+                        max={activeEvent.capacity || 1000}
                         required
                         value={guests}
                         onChange={(e) => setGuests(parseInt(e.target.value))}
@@ -250,7 +272,7 @@ export default function EventDetailsPage() {
                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Booking Requested!</h3>
-                  <p className="text-gray-500 mb-6">We have received your booking request for {event.title}. Our team will contact you shortly to confirm the details.</p>
+                  <p className="text-gray-500 mb-6">We have received your booking request for {activeEvent.title}. Our team will contact you shortly to confirm the details.</p>
                   <Button variant="outline" fullWidth onClick={() => router.push('/events')}>
                     Explore More Events
                   </Button>

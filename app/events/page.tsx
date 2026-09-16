@@ -4,32 +4,18 @@ import React, { useState, useMemo } from 'react';
 import { Container } from '@/Components/ui/Container';
 import { Card } from '@/Components/ui/Card';
 import { Button } from '@/Components/ui/Button';
-import { Users, Sparkles } from 'lucide-react';
+import { Users, Sparkles, Calendar, MapPin, ArrowRight, Trophy, Flag } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { useStays, FarmStay } from '@/hooks/useStays';
 import StayCardSlider from '@/Components/stays/StayCardSlider';
 import { SkeletonStayCard } from '@/Components/ui/SkeletonStayCard';
 import { EventBookingModal } from '@/Components/events/EventBookingModal';
 import EventCelebrationMarquee from '@/Components/events/EventCelebrationMarquee';
+import { EVENT_PRICING_DETAILS, INITIAL_UPCOMING_EVENTS, UpcomingEventItem } from '@/lib/constants/events';
+import { useInfiniteEvents } from '@/hooks/useEvents';
+import Link from 'next/link';
 
 const FALLBACK_STAYS: Partial<FarmStay>[] = [
-  {
-    _id: 'orange-stay',
-    name: 'Orange',
-    slug: 'orange',
-    bedrooms: 2,
-    capacity: 15,
-    price: 10000,
-    weekendPrice: 12000,
-    images: [
-      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685469/Mainview_yviktw.jpg',
-      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685471/Pool_uigk8q.jpg',
-      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685471/Others4_gslwsx.jpg',
-      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685470/Others3_ihbdbs.jpg',
-      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1779685470/Others2_di6zyi.jpg',
-    ],
-    description: 'Orange is a 2BHK peaceful retreat with private swimming pool, designed for comfort, fun, and memorable events.',
-  },
   {
     _id: 'lemon-stay',
     name: 'Lemon',
@@ -66,46 +52,41 @@ const FALLBACK_STAYS: Partial<FarmStay>[] = [
   },
 ];
 
-// Specific event pricing and occupancy details for Kunnath House event farm stays
-interface EventPricingTier {
-  label: string;
-  price: number;
-}
-
-interface EventPricingDetail {
-  occupancy: string;
-  overnightStay: string;
-  tiers: EventPricingTier[];
-  securityDeposit: string;
-}
-
-const EVENT_PRICING_DETAILS: Record<string, EventPricingDetail> = {
-  lemon: {
-    occupancy: 'upto 100 Guests',
-    overnightStay: 'Overnight stay up to 15 members',
-    tiers: [
-      { label: 'Up to 50 members gathering', price: 35000 },
-      { label: '100 members gathering', price: 45000 },
-    ],
-    securityDeposit: '₹ 10,000 security deposit extra (refundable)',
-  },
-  mint: {
-    occupancy: 'upto 200 Guests',
-    overnightStay: 'Overnight stay up to 15 members',
-    tiers: [
-      { label: 'Up to 50 members gathering', price: 40000 },
-      { label: '100 members gathering', price: 50000 },
-      { label: '150 members gathering', price: 60000 },
-      { label: '200 members gathering', price: 70000 },
-    ],
-    securityDeposit: '₹ 10,000 security deposit extra (refundable)',
-  },
-};
-
 export default function EventsPage() {
   const { data: stays, isLoading } = useStays();
   const [selectedStayForBooking, setSelectedStayForBooking] = useState<FarmStay | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Fetch upcoming events from API if any, with fallback to INITIAL_UPCOMING_EVENTS
+  const { data: eventsData } = useInfiniteEvents('Upcoming');
+
+  const upcomingEvents: UpcomingEventItem[] = useMemo(() => {
+    const apiEvents = eventsData?.pages.flatMap(p => p.events) || [];
+    if (apiEvents.length > 0) {
+      // Map API events to UpcomingEventItem
+      const mapped = apiEvents.map(e => ({
+        _id: e._id,
+        title: e.title,
+        slug: e.slug,
+        category: e.category,
+        tag: e.tags?.[0] || 'Event',
+        shortDescription: e.shortDescription,
+        description: e.description,
+        date: new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        location: 'Kunnath House Estate',
+        image: e.images?.[0] || 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1200',
+        price: e.price,
+      }));
+
+      // Ensure RC Car Race sample is included if not in API list
+      const hasRcCar = mapped.some(e => e.slug.includes('rc-car'));
+      if (!hasRcCar) {
+        return [...INITIAL_UPCOMING_EVENTS, ...mapped];
+      }
+      return mapped;
+    }
+    return INITIAL_UPCOMING_EVENTS;
+  }, [eventsData]);
 
   const displayStays = useMemo(() => {
     const list = (stays && stays.length > 0) ? stays : (FALLBACK_STAYS as FarmStay[]);
@@ -148,7 +129,7 @@ export default function EventsPage() {
       {/* Celebration Marquee Section */}
       <EventCelebrationMarquee />
 
-      {/* Events / Stay Cards Section */}
+      {/* Private Event Venues Section */}
       <Container className="py-16">
         <div className="max-w-3xl mb-12">
           <span className="text-primary font-bold tracking-widest uppercase text-xs mb-2 block">
@@ -158,7 +139,7 @@ export default function EventsPage() {
             Select Your Preferred Venue
           </h2>
           <p className="text-gray-500 mt-2 text-base">
-            Event farm stay bookings include Lemon and Mint stays with overnight accommodation for up to 15 members, private pool, and outdoor lawns.
+            Event farm stay bookings include Lemon and Mint stays with overnight accommodation for up to 15 members, private pool, and outdoor lawns. Click Book Event to choose your gathering size and reserve directly.
           </p>
         </div>
 
@@ -176,7 +157,7 @@ export default function EventsPage() {
                 occupancy: `upto ${stay.capacity} Guests`,
                 overnightStay: 'Overnight stay up to 15 members',
                 tiers: [{ label: 'Standard Gathering', price: stay.price }],
-                securityDeposit: '₹ 10,000 security deposit extra (refundable)',
+                securityDepositNote: '₹ 10,000 security deposit extra (refundable)',
               };
 
               return (
@@ -212,40 +193,25 @@ export default function EventsPage() {
                         </div>
                       </div>
 
-                      {/* Event Gathering Pricing Tiers (Replaces Weekday / Weekend) */}
-                      <div className="mt-auto space-y-2.5 pt-2">
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1 flex items-center justify-between">
-                          <span>Gathering Size</span>
-                          <span>Event Pricing</span>
-                        </div>
+                      <p className="text-sm text-gray-500 leading-relaxed mb-5">
+                        {stay.description}
+                      </p>
 
-                        {eventDetails.tiers.map((tier, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between p-3 rounded-xl bg-gray-50/70 border border-gray-100 transition-all duration-300 group-hover:bg-white group-hover:shadow-sm"
-                          >
-                            <span className="text-xs font-bold text-gray-700">{tier.label}</span>
-                            <span className="text-sm sm:text-base font-black text-gray-900">
-                              {formatCurrency(tier.price)}
-                            </span>
-                          </div>
-                        ))}
-
-                        {/* Security Deposit Note */}
+                      {/* Card Footer: Security Deposit Note & Book Event Button */}
+                      <div className="mt-auto space-y-3 pt-2 border-t border-gray-100">
                         <div className="p-2.5 rounded-xl bg-red-50/60 border border-red-100/80 text-center">
                           <span className="text-[11px] font-semibold text-red-700">
-                            + {eventDetails.securityDeposit}
+                            + {eventDetails.securityDepositNote}
                           </span>
                         </div>
 
-                        {/* Bottom Book Event Button */}
                         <Button
                           fullWidth
                           size="md"
-                          className="py-3 text-sm font-bold rounded-xl bg-primary text-white hover:bg-primary-hover transition-all duration-300 shadow-md hover:shadow-lg mt-2 cursor-pointer"
+                          className="py-3.5 text-sm font-bold rounded-xl bg-primary text-white hover:bg-primary-hover transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
                           onClick={() => handleOpenBookingModal(stay)}
                         >
-                          Book Event
+                          Host a Booking
                         </Button>
                       </div>
                     </div>
@@ -257,7 +223,89 @@ export default function EventsPage() {
         </div>
       </Container>
 
-      {/* Booking Modal */}
+      {/* Upcoming Events Section (Requirement 3.4) */}
+      <section className="py-20 bg-gray-50/60 border-t border-gray-100">
+        <Container>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+            <div>
+              <span className="text-primary font-bold tracking-widest uppercase text-xs mb-2 inline-flex items-center gap-1.5 bg-primary/10 px-3 py-1 rounded-full">
+                <Trophy size={14} /> Competitions & Experiences
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 tracking-tight mt-2">
+                Upcoming Events
+              </h2>
+              <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-xl">
+                Exciting live tournaments, championships, and entertainment experiences hosted at Kunnath House.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {upcomingEvents.map((evt) => (
+              <div
+                key={evt._id}
+                className="bg-white rounded-[32px] border border-gray-100 shadow-soft hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group hover:-translate-y-1.5"
+              >
+                {/* Event Image */}
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <img
+                    src={evt.image}
+                    alt={evt.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-70"></div>
+
+                  {/* Category Pill */}
+                  <div className="absolute top-4 left-4 bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full text-xs font-bold text-white shadow-md flex items-center gap-1.5">
+                    <Flag size={12} /> {evt.tag || evt.category}
+                  </div>
+
+                  {/* Price Tag if applicable */}
+                  {evt.price > 0 && (
+                    <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl shadow-lg text-xs font-black text-gray-900">
+                      Entry: {formatCurrency(evt.price)}
+                    </div>
+                  )}
+                </div>
+
+                {/* Event Content */}
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                    {evt.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 leading-relaxed mb-4">
+                    {evt.shortDescription}
+                  </p>
+
+                  <div className="space-y-1.5 text-xs text-gray-600 mb-6 mt-auto pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={14} className="text-primary shrink-0" />
+                      <span>{evt.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin size={14} className="text-primary shrink-0" />
+                      <span>{evt.location}</span>
+                    </div>
+                  </div>
+
+                  <Link href={`/events/${evt.slug}`}>
+                    <Button
+                      fullWidth
+                      variant="outline"
+                      className="py-3 text-xs font-bold rounded-xl border-gray-200 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      View Details & Register <ArrowRight size={14} />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Direct Booking Modal with Razorpay */}
       <EventBookingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

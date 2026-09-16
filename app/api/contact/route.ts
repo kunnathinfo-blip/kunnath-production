@@ -5,15 +5,18 @@ import ContactMessage from '@/lib/db/models/ContactMessage';
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-    const { firstName, lastName, email, phone, subject, message } = await req.json();
+    const body = await req.json();
+    const { name, firstName, lastName, email, phone, subject, message } = body;
+    const fullName = (name || [firstName, lastName].filter(Boolean).join(' ') || '').trim();
 
-    if (!firstName || !lastName || !email || !phone || !message) {
+    if (!fullName || !email || !phone || !message) {
       return NextResponse.json({ success: false, message: 'Please provide all required fields' }, { status: 400 });
     }
 
     const newContactMessage = new ContactMessage({
-      firstName,
-      lastName,
+      name: fullName,
+      firstName: firstName || fullName,
+      lastName: lastName || '',
       email,
       phone,
       subject: subject || 'No Subject',

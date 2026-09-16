@@ -7,6 +7,7 @@ import connectDB from '@/lib/db/connect';
 import FarmStay from '@/lib/db/models/FarmStay';
 import Booking from '@/lib/db/models/Booking';
 import BlockedDate from '@/lib/db/models/BlockedDate';
+import EventBooking from '@/lib/db/models/EventBooking';
 import { normalizeStayImages, parseUTCDate } from '@/lib/utils';
 
 const IMAGE_RE = /\.(jpg|jpeg|png|gif|webp)$/i;
@@ -63,10 +64,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const stayObj = stay.toObject();
 
-    // Calculate unavailable dates from confirmed bookings
+    // Calculate unavailable dates from confirmed & active pending stay bookings
     const bookings = await Booking.find({
       stayId: stay._id,
-      status: { $ne: 'cancelled' }
+      $or: [
+        { status: 'confirmed' },
+        { status: 'pending', expiresAt: { $gt: new Date() } }
+      ]
     });
 
     const bookedDates: string[] = [];
@@ -78,6 +82,22 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       while (current < end) {
         bookedDates.push(current.toISOString().split('T')[0]);
         current.setUTCDate(current.getUTCDate() + 1);
+      }
+    });
+
+    // Also include confirmed & active pending Event bookings for this stay (shared availability)
+    const eventBookings = await EventBooking.find({
+      stayId: stay._id,
+      $or: [
+        { status: 'confirmed' },
+        { status: 'pending', expiresAt: { $gt: new Date() } }
+      ]
+    });
+
+    eventBookings.forEach(eb => {
+      const dateStr = parseUTCDate(eb.date).toISOString().split('T')[0];
+      if (!bookedDates.includes(dateStr)) {
+        bookedDates.push(dateStr);
       }
     });
 

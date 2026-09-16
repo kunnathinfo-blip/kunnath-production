@@ -7,7 +7,7 @@ import Sport from '@/lib/db/models/Sport';
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const sports = await Sport.find({});
+    const sports = await Sport.find({ name: { $not: /bowling machine/i } });
     return NextResponse.json(sports);
   } catch (error: any) {
     return NextResponse.json({ message: error.message }, { status: 500 });

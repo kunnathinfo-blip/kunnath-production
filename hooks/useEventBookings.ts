@@ -2,14 +2,59 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import api from '../lib/axios';
 
 export interface EventBookingPayload {
-  eventId: string;
+  eventId?: string;
+  stayId?: string;
   date: string;
-  guests: number;
+  guests?: number;
+  gatheringSize?: string;
+  eventType?: string;
   guestName: string;
   guestEmail: string;
   guestPhone: string;
   specialRequests?: string;
 }
+
+export interface CreateEventOrderParams {
+  stayId: string;
+  date: string;
+  gatheringSize: string;
+  eventType: string;
+  guestName: string;
+  guestEmail?: string;
+  guestPhone: string;
+  specialRequests?: string;
+  termsAccepted: boolean;
+}
+
+export const useCreateEventPaymentOrder = () => {
+  return useMutation({
+    mutationFn: async (orderData: CreateEventOrderParams) => {
+      const { data } = await api.post('/payments/create-event-order', orderData);
+      return data;
+    },
+  });
+};
+
+export const useVerifyEventPayment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (paymentData: {
+      razorpay_order_id: string;
+      razorpay_payment_id: string;
+      razorpay_signature: string;
+      bookingId: string;
+    }) => {
+      const { data } = await api.post('/payments/verify-event-payment', paymentData);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminEventBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['unreadEventBookingCount'] });
+      queryClient.invalidateQueries({ queryKey: ['stay'] });
+      queryClient.invalidateQueries({ queryKey: ['stays'] });
+    },
+  });
+};
 
 export const useCreateEventBooking = () => {
   const queryClient = useQueryClient();

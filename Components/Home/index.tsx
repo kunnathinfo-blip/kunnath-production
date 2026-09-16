@@ -121,11 +121,11 @@ export default function Home() {
 
                                         <div className="mt-auto space-y-2">
                                             <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 border border-gray-100 transition-all duration-300 group-hover:bg-white group-hover:shadow-sm">
-                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Weekdays</span>
+                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Weekday - (Mon – Fri)</span>
                                                 <span className="text-base font-black text-gray-900">{formatCurrency(stay.price)}</span>
                                             </div>
                                             <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 border border-gray-100 transition-all duration-300 group-hover:bg-white group-hover:shadow-sm">
-                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Weekends</span>
+                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Weekend – (Sat-Sun)</span>
                                                 <span className="text-base font-black text-gray-900">{formatCurrency(stay.weekendPrice || 0)}</span>
                                             </div>
                                         </div>
@@ -157,7 +157,7 @@ export default function Home() {
                                 <SkeletonSportCard />
                                 <SkeletonSportCard />
                             </>
-                        ) : sports?.slice(0, 4).map((activity, idx) => (
+                        ) : sports?.filter(s => !s.name?.toLowerCase().includes('bowling machine')).slice(0, 4).map((activity, idx) => (
                             <Link href="/sports" key={idx} className="block group relative h-[420px] rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 animate-in fade-in duration-500">
                                 <img
                                     src={getOptimizedImageUrl(activity.image, 500)}

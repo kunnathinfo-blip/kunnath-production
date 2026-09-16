@@ -30,7 +30,8 @@ export default function AdminContactPage() {
   const filteredMessages = useMemo(() => {
     if (!messages) return [];
     return messages.filter((msg) => {
-      const nameMatch = `${msg.firstName} ${msg.lastName}`.toLowerCase().includes(search.toLowerCase());
+      const senderName = msg.name || `${msg.firstName || ''} ${msg.lastName || ''}`.trim();
+      const nameMatch = senderName.toLowerCase().includes(search.toLowerCase());
       const emailMatch = msg.email.toLowerCase().includes(search.toLowerCase());
       const phoneMatch = msg.phone ? msg.phone.toLowerCase().includes(search.toLowerCase()) : false;
       const searchMatch = !search || nameMatch || emailMatch || phoneMatch;
@@ -119,7 +120,7 @@ export default function AdminContactPage() {
                     <MailOpen size={16} className="text-gray-400 shrink-0" />
                   )}
                   <span className={`text-sm ${!msg.isRead ? 'font-bold text-gray-900' : 'text-gray-700'}`}>
-                    {msg.firstName} {msg.lastName}
+                    {msg.name || `${msg.firstName || ''} ${msg.lastName || ''}`.trim()}
                   </span>
                 </div>
                 <span className="text-[10px] text-gray-400">{formatDate(msg.createdAt)}</span>
@@ -188,7 +189,7 @@ export default function AdminContactPage() {
                         )}
                       </td>
                       <td className={`p-4 ${!msg.isRead ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>
-                        {msg.firstName} {msg.lastName}
+                        {msg.name || `${msg.firstName || ''} ${msg.lastName || ''}`.trim()}
                       </td>
                       <td className="p-4 text-gray-600">{msg.email}</td>
                       <td className="p-4 text-gray-600 whitespace-nowrap">
@@ -238,7 +239,7 @@ export default function AdminContactPage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{selectedMessage.firstName} {selectedMessage.lastName}</h2>
+                <h2 className="text-xl font-bold text-gray-900">{selectedMessage.name || `${selectedMessage.firstName || ''} ${selectedMessage.lastName || ''}`.trim()}</h2>
                 <p className="text-sm text-gray-500 mt-0.5">{selectedMessage.subject}</p>
               </div>
               <button onClick={() => setSelectedMessage(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">

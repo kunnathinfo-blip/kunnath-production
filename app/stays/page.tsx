@@ -62,11 +62,11 @@ export default function FarmStaysPage() {
 
                                     <div className="mt-auto space-y-2">
                                         <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 border border-gray-100 transition-all duration-300 group-hover:bg-white group-hover:shadow-sm">
-                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Weekdays</span>
+                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Weekday - (Mon – Fri)</span>
                                             <span className="text-base font-black text-gray-900">{formatCurrency(stay.price)}</span>
                                         </div>
                                         <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 border border-gray-100 transition-all duration-300 group-hover:bg-white group-hover:shadow-sm">
-                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Weekends</span>
+                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Weekend – (Sat-Sun)</span>
                                             <span className="text-base font-black text-gray-900">{formatCurrency(stay.weekendPrice || 0)}</span>
                                         </div>
                                     </div>

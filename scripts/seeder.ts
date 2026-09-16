@@ -314,14 +314,14 @@ const dummySports = [
     description: 'Professional grade court for an exciting volleyball experience.',
     icon: '🏐'
   },
-  {
-    name: 'Cricket Bowling Machine',
-    price: 299,
-    duration: '30 mins',
-    image: 'https://res.cloudinary.com/dwrxo4hvx/image/upload/v1777899658/2_cwqayd.webp',
-    description: 'Practice your batting skills with our automated cricket bowling machine.',
-    icon: '🏏'
-  },
+  // {
+  //   name: 'Cricket Bowling Machine',
+  //   price: 299,
+  //   duration: '30 mins',
+  //   image: 'https://res.cloudinary.com/dwrxo4hvx/image/upload/v1777899658/2_cwqayd.webp',
+  //   description: 'Practice your batting skills with our automated cricket bowling machine.',
+  //   icon: '🏏'
+  // },
   {
     name: 'ATV Bike',
     price: 299,
@@ -341,6 +341,20 @@ const dummySports = [
 ];
 
 const dummyEvents = [
+  {
+    title: 'RC Car Race',
+    slug: 'rc-car-race',
+    category: 'Upcoming',
+    shortDescription: 'High-speed remote-controlled car racing tournament across custom off-road tracks at Kunnath House.',
+    description: 'Get ready for an adrenaline-pumping RC Car Racing Championship! Bring your skills and compete against racers across thrilling obstacle courses and high-speed dirt straights. Complete event schedule, rules, and registration categories will be announced shortly.',
+    price: 499,
+    date: new Date('2026-10-15'),
+    isFlexibleDate: false,
+    images: ['https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1200&auto=format&fit=crop'],
+    capacity: 100,
+    isActive: true,
+    tags: ['Competition Event', 'Racing', 'RC Car', 'Tournament']
+  },
   {
     title: 'Holi Festival of Colors 2024',
     slug: 'holi-festival-2024',

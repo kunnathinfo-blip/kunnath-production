@@ -4,6 +4,7 @@ import connectDB from '@/lib/db/connect';
 import Booking from '@/lib/db/models/Booking';
 import FarmStay from '@/lib/db/models/FarmStay';
 import BlockedDate from '@/lib/db/models/BlockedDate';
+import EventBooking from '@/lib/db/models/EventBooking';
 import { getAuthenticatedUser } from '@/lib/auth/protect';
 import { getRazorpayInstance } from '@/lib/payments/razorpay';
 import { parseUTCDate } from '@/lib/utils';
@@ -59,6 +60,20 @@ export async function POST(req: NextRequest) {
 
     if (overlappingBookings.length > 0) {
       return NextResponse.json({ message: 'These dates are already booked for this stay' }, { status: 400 });
+    }
+
+    // Check for overlapping Event bookings on this stay (shared availability)
+    const overlappingEventBookings = await EventBooking.find({
+      stayId,
+      date: { $gte: checkInDate, $lt: checkOutDate },
+      $or: [
+        { status: 'confirmed' },
+        { status: 'pending', expiresAt: { $gt: new Date() } }
+      ]
+    });
+
+    if (overlappingEventBookings.length > 0) {
+      return NextResponse.json({ message: 'These dates are already booked for a private event at this venue' }, { status: 400 });
     }
 
     // Check for overlapping blocked dates

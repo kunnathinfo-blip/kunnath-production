@@ -8,8 +8,7 @@ import api from '@/lib/axios';
 
 export default function Contact() {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        name: '',
         email: '',
         phone: '',
         subject: 'General Inquiry',
@@ -27,8 +26,7 @@ export default function Contact() {
             await api.post('/contact', formData);
             setStatus('success');
             setFormData({
-                firstName: '',
-                lastName: '',
+                name: '',
                 email: '',
                 phone: '',
                 subject: 'General Inquiry',
@@ -86,7 +84,7 @@ export default function Contact() {
                                 <div>
                                     <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Email</h3>
                                     <p className="text-[#666666] mb-2">We typically reply within 24 hours.</p>
-                                    <a href="mailto:hello@kunnathhouse.com" className="font-medium text-[#1A1A1A] hover:underline">hello@kunnath.com</a>
+                                    <a href="mailto:hello@kunnathhouse.com" className="font-medium text-[#1A1A1A] hover:underline">hello@kunnathhouse.com</a>
                                 </div>
                             </div>
 
@@ -98,7 +96,7 @@ export default function Contact() {
                                     <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Location</h3>
                                     <p className="text-[#666666] leading-relaxed">
                                         Shivam, G1, Kunnath House<br />
-                                        Station Road, Jeedipally, Manoharabad<br />
+                                        Kompally-Medchal Highway, Station Road, Jeedipally, Manoharabad<br />
                                         Telangana 502336
                                     </p>
                                 </div>
@@ -150,33 +148,18 @@ export default function Contact() {
                                         </div>
                                     )}
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label htmlFor="firstName" className="block text-sm font-medium text-[#1A1A1A] mb-2">First Name</label>
-                                            <input
-                                                type="text"
-                                                id="firstName"
-                                                value={formData.firstName}
-                                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                                className="w-full px-4 py-3.5 bg-white border border-[#E0E0E0] rounded-xl focus:ring-2 focus:ring-[#FFCDD2] focus:border-[#E53935] outline-none transition-all placeholder:text-gray-400"
-                                                placeholder="John"
-                                                required
-                                                disabled={status === 'loading'}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="lastName" className="block text-sm font-medium text-[#1A1A1A] mb-2">Last Name</label>
-                                            <input
-                                                type="text"
-                                                id="lastName"
-                                                value={formData.lastName}
-                                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                                className="w-full px-4 py-3.5 bg-white border border-[#E0E0E0] rounded-xl focus:ring-2 focus:ring-[#FFCDD2] focus:border-[#E53935] outline-none transition-all placeholder:text-gray-400"
-                                                placeholder="Doe"
-                                                required
-                                                disabled={status === 'loading'}
-                                            />
-                                        </div>
+                                    <div>
+                                        <label htmlFor="name" className="block text-sm font-medium text-[#1A1A1A] mb-2">Name *</label>
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            className="w-full px-4 py-3.5 bg-white border border-[#E0E0E0] rounded-xl focus:ring-2 focus:ring-[#FFCDD2] focus:border-[#E53935] outline-none transition-all placeholder:text-gray-400"
+                                            placeholder="John Doe"
+                                            required
+                                            disabled={status === 'loading'}
+                                        />
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
