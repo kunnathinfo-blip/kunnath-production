@@ -95,8 +95,9 @@ export default function Contact() {
                                 <div>
                                     <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">Location</h3>
                                     <p className="text-[#666666] leading-relaxed">
-                                        Shivam, G1, Kunnath House<br />
-                                        Kompally-Medchal Highway, Station Road, Jeedipally, Manoharabad<br />
+                                        Kunnath House Arya Private Limited,<br />
+                                        Jeedipally Village, Manoharabad,<br />
+                                        Kompally-Medchal Highway,<br />
                                         Telangana 502336
                                     </p>
                                 </div>

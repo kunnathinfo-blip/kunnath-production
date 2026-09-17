@@ -163,8 +163,12 @@ export const Footer = () => {
             </div>
 
             <div className="mt-4">
-              <p className="text-[#666666] text-sm">
-                <span className="font-medium">Address:</span> Kunnath House, Kompally-Medchal Highway, Jeedipally
+              <p className="text-[#666666] text-sm leading-relaxed">
+                <span className="font-semibold text-[#1A1A1A]">Address:</span><br />
+                Kunnath House Arya Private Limited,<br />
+                Jeedipally Village, Manoharabad,<br />
+                Kompally-Medchal Highway,<br />
+                Telangana 502336
               </p>
             </div>
 
