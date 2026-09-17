@@ -73,7 +73,7 @@ export default function EventsPage() {
         shortDescription: e.shortDescription,
         description: e.description,
         date: new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
-        location: 'Kunnath House Estate',
+        location: 'Kunnath House',
         image: e.images?.[0] || 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1200',
         price: e.price,
         showPrice: e.showPrice,
@@ -243,10 +243,9 @@ export default function EventsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {upcomingEvents.map((evt) => (
-              <Link
+              <div
                 key={evt._id}
-                href={`/events/${evt.slug}`}
-                className="bg-white rounded-[32px] border border-gray-100 shadow-soft hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group hover:-translate-y-1.5 block cursor-pointer"
+                className="bg-white rounded-[32px] border border-gray-100 shadow-soft hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group"
               >
                 {/* Event Image */}
                 <div className="relative aspect-[16/10] overflow-hidden">
@@ -272,7 +271,7 @@ export default function EventsPage() {
 
                 {/* Event Content */}
                 <div className="p-6 flex flex-col flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {evt.title}
                   </h3>
 
@@ -291,7 +290,7 @@ export default function EventsPage() {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </Container>
