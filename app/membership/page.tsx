@@ -23,7 +23,7 @@ export default function MembershipPage() {
     name: '',
     phone: '',
     email: '',
-    membershipType: 'Annual Pre-Launch Package (₹24,999/yr)',
+    membershipType: 'Gold Membership (Coming Soon)',
     message: '',
   });
 
@@ -50,7 +50,7 @@ export default function MembershipPage() {
       `💬 *Message:* ${message.trim() ? message : 'I am interested in becoming a member of Kunnath House.'}`;
 
     const encodedText = encodeURIComponent(formattedMessage);
-    const whatsappUrl = `https://wa.me/919700799099?text=${encodedText}`;
+    const whatsappUrl = `https://wa.me/917702402505?text=${encodedText}`;
 
     window.open(whatsappUrl, '_blank');
   };
@@ -58,26 +58,26 @@ export default function MembershipPage() {
   return (
     <div className="bg-white min-h-screen pb-20 font-sans">
       {/* Hero Header matching site standard */}
-      <section className="bg-gray-900 text-white py-24 relative overflow-hidden">
+      <section className="bg-gray-900 text-white py-14 sm:py-16 md:py-20 relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2000')" }}
         />
         <Container className="relative z-10 text-center max-w-4xl">
-          <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 flex items-center justify-center gap-1.5">
+          <span className="text-primary font-bold tracking-widest uppercase text-xs mb-3 inline-flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15">
             <Sparkles size={16} /> Exclusive Membership Access
           </span>
-          <h1 className="text-5xl md:text-6xl font-display font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4 tracking-tight">
             Kunnath House Membership
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
             Unlock priority stay reservations, private pool access, sports arena perks, and bespoke hospitality crafted for recreation.
           </p>
         </Container>
       </section>
 
       {/* Main Two-Column Section */}
-      <Container className="py-16">
+      <Container className="py-12 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-stretch">
           
           {/* LEFT COLUMN: Membership Inquiry Form Card */}
@@ -88,16 +88,16 @@ export default function MembershipPage() {
                   <span className="text-xs font-bold text-primary uppercase tracking-widest block">
                     INQUIRE NOW
                   </span>
-                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
-                    Limited Time Offer
+                  <span className="bg-amber-50 text-amber-700 border border-amber-200/80 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <Crown size={13} className="text-amber-600" /> Coming Soon
                   </span>
                 </div>
 
-                <h2 className="text-3xl font-display font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-2">
                   Request Membership Details
                 </h2>
                 <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                  Fill out the form below. Clicking send will directly connect you with our team on WhatsApp.
+                  Register your interest early. Clicking send will directly connect you with our team on WhatsApp.
                 </p>
 
                 <form onSubmit={handleWhatsAppSubmit} className="space-y-4">
@@ -170,9 +170,8 @@ export default function MembershipPage() {
                         onChange={handleChange}
                         className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none cursor-pointer"
                       >
-                        <option value="Annual Pre-Launch Package (₹24,999/yr)">Annual Pre-Launch Package (₹24,999/yr)</option>
-                        <option value="Gold Membership">Gold Membership Plan</option>
-                        <option value="Platinum Membership">Platinum VIP Membership</option>
+                        <option value="Gold Membership (Coming Soon)">Gold Membership (Coming Soon)</option>
+                        <option value="Platinum VIP Membership">Platinum VIP Membership</option>
                         <option value="General Inquiry">General Membership Inquiry</option>
                       </select>
                     </div>
@@ -214,7 +213,7 @@ export default function MembershipPage() {
                   <ShieldCheck className="w-4 h-4" />
                   <span>Direct Team Connection</span>
                 </div>
-                <span className="text-gray-400">Call / WhatsApp: +91 7842402505</span>
+                <span className="text-gray-600 font-semibold">WhatsApp: +91 7702402505</span>
               </div>
             </Card>
           </div>
@@ -225,7 +224,7 @@ export default function MembershipPage() {
               <div className="relative aspect-auto overflow-hidden rounded-[24px] group">
                 <img
                   src="/membership.jpeg"
-                  alt="Kunnath House Membership Offer Poster"
+                  alt="Kunnath House Gold Membership Coming Soon Poster"
                   className="w-full h-auto object-cover rounded-[24px] group-hover:scale-[1.02] transition-transform duration-500 cursor-pointer"
                   onClick={() => setIsModalOpen(true)}
                 />
@@ -238,11 +237,11 @@ export default function MembershipPage() {
                 </div>
               </div>
 
-              <div className="p-6 pt-4 flex flex-col justify-between flex-1">
+              <div className="p-6 pt-5 flex flex-col justify-between flex-1">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-primary font-bold text-xs uppercase tracking-widest">
-                      Pre-Launch Offer Poster
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-amber-700 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                      <Crown size={14} className="text-amber-600" /> Gold Membership
                     </span>
                     <button
                       onClick={() => setIsModalOpen(true)}
@@ -253,42 +252,41 @@ export default function MembershipPage() {
                     </button>
                   </div>
 
-                  {/* Price Highlight Row */}
-                  <div className="p-4 rounded-xl bg-gray-50/50 border border-gray-100 flex items-center justify-between mb-4">
+                  {/* Status Highlight Row */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50/60 to-orange-50/60 border border-amber-100 flex items-center justify-between mb-5">
                     <div>
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">
-                        Pre-Launch Price
+                      <span className="text-[10px] font-black text-amber-800/80 uppercase tracking-widest block mb-0.5">
+                        Membership Status
                       </span>
-                      <span className="text-2xl font-black text-primary">₹24,999</span>
-                      <span className="text-xs text-gray-500 font-bold ml-1">/ year</span>
+                      <span className="text-2xl font-black text-gray-900">Coming Soon</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">
-                        Package Value
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                        Official Inquiry
                       </span>
-                      <span className="text-sm font-bold text-gray-400 line-through">
-                        ₹1,000,000+
+                      <span className="text-xs font-bold text-primary">
+                        +91 77024 02505
                       </span>
                     </div>
                   </div>
 
-                  {/* Key Features Grid */}
+                  {/* Key Highlights Grid */}
                   <div className="grid grid-cols-2 gap-2.5 text-xs font-bold text-gray-700">
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
                       <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Complimentary Stays</span>
+                      <span>Private Luxury Stays</span>
                     </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
                       <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>20+ Sports & Activities</span>
+                      <span>Elite Sports Club Perks</span>
                     </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
                       <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Party Lawn & Events</span>
+                      <span>Party Lawn & Poolside</span>
                     </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
                       <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Discount Vouchers</span>
+                      <span>Priority Reservations</span>
                     </div>
                   </div>
                 </div>
