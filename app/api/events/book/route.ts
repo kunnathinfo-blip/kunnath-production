@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       guests,
       totalPrice,
       guestName,
-      guestEmail,
+      guestEmail: guestEmail || user.email || '',
       guestPhone,
       specialRequests
     });

@@ -46,7 +46,8 @@ const eventBookingSchema = new mongoose.Schema({
   },
   guestEmail: {
     type: String,
-    required: true
+    required: false,
+    default: ''
   },
   guestPhone: {
     type: String,
