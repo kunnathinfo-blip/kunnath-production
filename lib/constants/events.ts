@@ -64,6 +64,7 @@ export interface UpcomingEventItem {
   location: string;
   image: string;
   price: number;
+  showPrice?: boolean;
 }
 
 export const INITIAL_UPCOMING_EVENTS: UpcomingEventItem[] = [

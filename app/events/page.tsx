@@ -76,6 +76,7 @@ export default function EventsPage() {
         location: 'Kunnath House Estate',
         image: e.images?.[0] || 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1200',
         price: e.price,
+        showPrice: e.showPrice,
       }));
 
       // Ensure RC Car Race sample is included if not in API list
@@ -260,8 +261,8 @@ export default function EventsPage() {
                     <Flag size={12} /> {evt.tag || evt.category}
                   </div>
 
-                  {/* Price Tag if applicable */}
-                  {evt.price > 0 && (
+                  {/* Price Tag if applicable and not hidden */}
+                  {evt.showPrice !== false && evt.price > 0 && (
                     <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl shadow-lg text-xs font-black text-gray-900">
                       Entry: {formatCurrency(evt.price)}
                     </div>

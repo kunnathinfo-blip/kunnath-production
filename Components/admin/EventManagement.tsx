@@ -79,9 +79,15 @@ export const EventManagement = () => {
                   {event.isFlexibleDate ? 'Flexible Dates' : new Date(event.date).toLocaleDateString()}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-gray-500">Price:</span>
-                <span className="font-bold text-gray-900">₹{event.price.toLocaleString()}</span>
+                {event.showPrice !== false && event.price > 0 ? (
+                  <span className="font-bold text-gray-900">₹{event.price.toLocaleString()}</span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-600 text-[10px] font-medium">
+                    Hidden / Optional
+                  </span>
+                )}
               </div>
             </div>
 
@@ -153,8 +159,14 @@ export const EventManagement = () => {
                   <td className="p-4 text-sm text-gray-600">
                     {event.isFlexibleDate ? 'Flexible Dates' : new Date(event.date).toLocaleDateString()}
                   </td>
-                  <td className="p-4 font-medium text-gray-900">
-                    ₹{event.price.toLocaleString()}
+                  <td className="p-4">
+                    {event.showPrice !== false && event.price > 0 ? (
+                      <span className="font-semibold text-gray-900">₹{event.price.toLocaleString()}</span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                        Hidden / Optional
+                      </span>
+                    )}
                   </td>
                   <td className="p-4">
                     {event.isActive ? (

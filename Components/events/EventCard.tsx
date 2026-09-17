@@ -37,11 +37,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event }) => {
             {event.category}
           </div>
 
-          {/* Price Highlight */}
-          <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-2xl text-sm font-bold shadow-xl border border-white/50">
-            <span className="text-xs text-gray-500 font-medium mr-1">Starts at</span>
-            ₹{event.price.toLocaleString()}
-          </div>
+          {/* Price Highlight (Optional) */}
+          {event.showPrice !== false && event.price > 0 && (
+            <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-2xl text-sm font-bold shadow-xl border border-white/50">
+              <span className="text-xs text-gray-500 font-medium mr-1">Starts at</span>
+              ₹{event.price.toLocaleString()}
+            </div>
+          )}
         </div>
         
         {/* Content Section */}

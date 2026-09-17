@@ -9,6 +9,7 @@ export interface Event {
   shortDescription: string;
   description: string;
   price: number;
+  showPrice?: boolean;
   date: string;
   isFlexibleDate: boolean;
   images: string[];

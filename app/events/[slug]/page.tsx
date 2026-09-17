@@ -189,8 +189,14 @@ export default function EventDetailsPage() {
               {step === 1 ? (
                 <>
                   <div className="mb-6 pb-6 border-b border-gray-100">
-                    <span className="text-3xl font-bold text-gray-900">₹{activeEvent.price.toLocaleString()}</span>
-                    <span className="text-gray-500 ml-1">/ person</span>
+                    {activeEvent.showPrice !== false && activeEvent.price > 0 ? (
+                      <>
+                        <span className="text-3xl font-bold text-gray-900">₹{activeEvent.price.toLocaleString()}</span>
+                        <span className="text-gray-500 ml-1">/ person</span>
+                      </>
+                    ) : (
+                      <span className="text-2xl font-bold text-gray-900">Price on Request / Free</span>
+                    )}
                   </div>
 
                   <form onSubmit={handleBooking} className="space-y-4">

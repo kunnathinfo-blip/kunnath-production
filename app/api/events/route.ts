@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     }
 
     const events = await Event.find(query)
-      .select('title slug category price date images shortDescription isFlexibleDate')
+      .select('title slug category price showPrice date images shortDescription isFlexibleDate')
       .sort({ date: 1 })
       .skip((page - 1) * limit)
       .limit(limit)

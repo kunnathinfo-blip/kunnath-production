@@ -20,6 +20,7 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, eventTo
     shortDescription: '',
     description: '',
     price: 0,
+    showPrice: true,
     date: '',
     isFlexibleDate: false,
     images: [] as string[],
@@ -39,7 +40,8 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, eventTo
         category: eventToEdit.category || 'Upcoming',
         shortDescription: eventToEdit.shortDescription || '',
         description: eventToEdit.description || '',
-        price: eventToEdit.price || 0,
+        price: eventToEdit.price ?? 0,
+        showPrice: eventToEdit.showPrice ?? (eventToEdit.price > 0),
         date: eventToEdit.date ? new Date(eventToEdit.date).toISOString().split('T')[0] : '',
         isFlexibleDate: eventToEdit.isFlexibleDate || false,
         images: eventToEdit.images || [],
@@ -157,15 +159,44 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, eventTo
                   </select>
                 </div>
 
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
-                    <input required type="number" name="price" value={formData.price} onChange={handleChange} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none" />
+                <div className="space-y-3 bg-gray-50/80 p-3.5 rounded-xl border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input 
+                        type="checkbox" 
+                        name="showPrice" 
+                        checked={formData.showPrice} 
+                        onChange={handleChange} 
+                        className="w-4 h-4 text-primary rounded focus:ring-primary/20 cursor-pointer" 
+                      />
+                      <span className="text-sm font-semibold text-gray-800">Show Price to Public</span>
+                    </label>
+                    <span className="text-[11px] text-gray-500 font-medium">
+                      {formData.showPrice ? 'Price visible' : 'Hidden / Free / Inquiry'}
+                    </span>
                   </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
-                    <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none" />
-                  </div>
+
+                  {formData.showPrice && (
+                    <div className="pt-2 border-t border-gray-200/60">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">
+                        Price (₹)
+                      </label>
+                      <input 
+                        type="number" 
+                        name="price" 
+                        min="0"
+                        value={formData.price} 
+                        onChange={handleChange} 
+                        placeholder="0"
+                        className="w-full p-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none" 
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
+                  <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none" />
                 </div>
 
                 <div>
