@@ -103,7 +103,11 @@ export const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, eventTo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const payload = { ...formData };
+    const payload = { 
+      ...formData,
+      showPrice: Boolean(formData.showPrice),
+      price: formData.showPrice ? Number(formData.price) || 0 : 0
+    };
     
     if (eventToEdit) {
       updateEvent.mutate(

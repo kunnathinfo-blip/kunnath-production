@@ -79,6 +79,7 @@ export const INITIAL_UPCOMING_EVENTS: UpcomingEventItem[] = [
     date: '2026-10-15',
     location: 'Off-Road Track, Kunnath House',
     image: 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1200&auto=format&fit=crop',
-    price: 499,
+    price: 0,
+    showPrice: false,
   },
 ];

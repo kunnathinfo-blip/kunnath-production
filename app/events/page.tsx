@@ -243,9 +243,10 @@ export default function EventsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {upcomingEvents.map((evt) => (
-              <div
+              <Link
                 key={evt._id}
-                className="bg-white rounded-[32px] border border-gray-100 shadow-soft hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group hover:-translate-y-1.5"
+                href={`/events/${evt.slug}`}
+                className="bg-white rounded-[32px] border border-gray-100 shadow-soft hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group hover:-translate-y-1.5 block cursor-pointer"
               >
                 {/* Event Image */}
                 <div className="relative aspect-[16/10] overflow-hidden">
@@ -262,7 +263,7 @@ export default function EventsPage() {
                   </div>
 
                   {/* Price Tag if applicable and not hidden */}
-                  {evt.showPrice !== false && evt.price > 0 && (
+                  {evt.showPrice === true && evt.price > 0 && (
                     <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-3.5 py-1.5 rounded-2xl shadow-lg text-xs font-black text-gray-900">
                       Entry: {formatCurrency(evt.price)}
                     </div>
@@ -279,7 +280,7 @@ export default function EventsPage() {
                     {evt.shortDescription}
                   </p>
 
-                  <div className="space-y-1.5 text-xs text-gray-600 mb-6 mt-auto pt-4 border-t border-gray-100">
+                  <div className="space-y-1.5 text-xs text-gray-600 mt-auto pt-4 border-t border-gray-100">
                     <div className="flex items-center gap-2">
                       <Calendar size={14} className="text-primary shrink-0" />
                       <span>{evt.date}</span>
@@ -289,18 +290,8 @@ export default function EventsPage() {
                       <span>{evt.location}</span>
                     </div>
                   </div>
-
-                  <Link href={`/events/${evt.slug}`}>
-                    <Button
-                      fullWidth
-                      variant="outline"
-                      className="py-3 text-xs font-bold rounded-xl border-gray-200 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      View Details & Register <ArrowRight size={14} />
-                    </Button>
-                  </Link>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </Container>
