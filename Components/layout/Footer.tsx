@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Instagram, Facebook, Mail, Phone, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
@@ -20,27 +21,25 @@ export const Footer = () => {
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand Column */}
-          <div>
-            <h3 className="text-2xl font-semibold text-primary hover:text-primary-hover transition-colors">
-              Kunnath House Arya Private Limited
-            </h3>
-            <p className="text-gray-400 mt-2 text-[10px] uppercase tracking-[0.3em] font-bold opacity-80">
-              Crafted for Recreation
+          <div className="space-y-4">
+            <Link href="/" className="inline-block group">
+              <Image
+                src="/logo.png"
+                alt="Kunnath House - Crafted for Recreation"
+                width={200}
+                height={111}
+                className="h-16 sm:h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+            </Link>
+            <p className="text-gray-500 text-xs sm:text-sm leading-relaxed max-w-xs">
+              Kunnath House Arya Private Limited — crafted for recreation, private luxury stays, and memorable celebrations.
             </p>
-            <div className="mt-4">
+            <div className="pt-1">
               <a
                 href="tel:+919700799099"
-                className="text-primary hover:text-primary-hover font-medium transition-colors"
+                className="text-primary hover:text-primary-hover font-semibold text-sm transition-colors inline-flex items-center gap-2"
               >
-                +91 97007 99099
-              </a>
-            </div>
-            <div className="flex gap-4 mt-6">
-              <a href="https://www.instagram.com/kunnath_farmhouse?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw%3D%3D" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center hover:scale-110 transition-all overflow-hidden p-2">
-                <img src="/Logo/insta/instagram.png" alt="Instagram" className="w-full h-full object-contain" />
-              </a>
-              <a href="https://www.facebook.com/kunnathfarmhouse" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center hover:scale-110 transition-all overflow-hidden p-2">
-                <img src="/Logo/insta/facebook.png" alt="Facebook" className="w-full h-full object-contain" />
+                <Phone size={15} /> +91 97007 99099
               </a>
             </div>
           </div>

@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
       userId: user._id,
       stayId,
       date: eventDate,
-      guests: 1,
+      guests: parseInt(selectedTier.label.replace(/\D/g, ''), 10) || 1,
       gatheringSize: selectedTier.label,
       eventType: eventType || 'Celebration',
       totalPrice: finalPrice,

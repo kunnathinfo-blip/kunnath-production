@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { Menu, X, User, Phone, LogOut, Instagram, Home, Settings, Calendar } from 'lucide-react';
+import { Menu, X, User, Phone, LogOut, Instagram, Settings, Calendar } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -68,17 +69,15 @@ export function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-11 h-11 rounded-[14px] bg-[radial-gradient(circle_at_top_right,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)] flex items-center justify-center shadow-lg transition-all duration-500 group-hover:shadow-[0_8px_20px_-5px_rgba(220,39,67,0.4)] group-hover:scale-110 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none"></div>
-                <Home size={22} className="text-white relative z-10 drop-shadow-sm" strokeWidth={2.5} />
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="text-xl font-black font-display text-gray-900 tracking-tighter group-hover:text-primary transition-colors duration-300">
-                  Kunnath<span className="text-gray-900"> House</span>
-                </span>
-                <span className="text-[8px] uppercase tracking-[0.3em] font-bold text-gray-400 mt-1 opacity-80">Crafted for Recreation</span>
-              </div>
+            <Link href="/" className="flex items-center group py-0.5">
+              <Image
+                src="/logo.png"
+                alt="Kunnath House - Crafted for Recreation"
+                width={180}
+                height={100}
+                priority
+                className="h-14 sm:h-16 md:h-[4.5rem] lg:h-[4.75rem] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
             </Link>
           </div>
 

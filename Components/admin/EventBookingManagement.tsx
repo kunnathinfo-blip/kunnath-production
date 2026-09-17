@@ -105,7 +105,7 @@ export const EventBookingManagement = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Guests:</span>
-                <span className="font-medium text-gray-900">{booking.guests} Pax</span>
+                <span className="font-medium text-gray-900">{booking.gatheringSize || (booking.guests ? `${booking.guests} Pax` : 'N/A')}</span>
               </div>
               <div className="flex justify-between border-t border-gray-100 pt-2 font-bold">
                 <span className="text-gray-900">Amount:</span>
@@ -180,7 +180,7 @@ export const EventBookingManagement = () => {
                     {new Date(booking.date).toLocaleDateString()}
                   </td>
                   <td className="p-4 text-sm text-gray-600 font-medium">
-                    {booking.guests} Pax
+                    {booking.gatheringSize || (booking.guests ? `${booking.guests} Pax` : 'N/A')}
                   </td>
                   <td className="p-4 font-bold text-gray-900">
                     ₹{booking.totalPrice?.toLocaleString()}

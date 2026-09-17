@@ -66,15 +66,15 @@ export default function EventCelebrationMarquee() {
   const marqueeItems = [...CELEBRATIONS, ...CELEBRATIONS];
 
   return (
-    <section className="py-14 md:py-20 bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 text-center">
-        <span className="text-primary font-bold tracking-widest uppercase text-xs mb-3 inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-3.5 py-1.5 rounded-full border border-red-100">
+    <section className="py-8 sm:py-10 bg-gradient-to-b from-[#FAFAFA] to-white overflow-hidden border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 text-center">
+        <span className="text-primary font-bold tracking-widest uppercase text-xs mb-2 inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-3.5 py-1 rounded-full border border-red-100">
           <Sparkles size={14} /> Celebrations at Kunnath House
         </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gray-900 tracking-tight mt-3">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900 tracking-tight mt-2">
           Whatever the Celebration, We Have the Space
         </h2>
-        <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto mt-3 font-normal">
+        <p className="text-sm sm:text-base text-gray-500 max-w-2xl mx-auto mt-2 font-normal">
           From intimate ceremonies to grand festivities, craft your moments in our picturesque private farm venues.
         </p>
       </div>

@@ -106,22 +106,22 @@ export default function EventsPage() {
 
   return (
     <div className="bg-white min-h-screen pb-20">
-      {/* Hero Section */}
-      <section className="bg-gray-900 text-white py-20 sm:py-24 md:py-28 relative overflow-hidden">
+      {/* Hero Section - Compact so cards are immediately visible */}
+      <section className="bg-gray-900 text-white py-10 sm:py-12 md:py-14 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2000')] bg-cover bg-center opacity-30"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900/60 via-gray-900/40 to-gray-900/80"></div>
 
         <Container className="relative z-10 text-center">
-          <span className="text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-4 inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15">
-            <Sparkles size={16} /> Unforgettable Celebrations
+          <span className="text-primary font-semibold tracking-wider uppercase text-xs mb-2.5 inline-flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/15">
+            <Sparkles size={14} /> Unforgettable Celebrations
           </span>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-6 tracking-tight max-w-4xl mx-auto leading-[1.15]">
-            Host Your Event <span className="block sm:inline font-normal italic text-gray-200">at Kunnath House</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 tracking-tight max-w-3xl mx-auto leading-tight">
+            Host Your Event <span className="font-normal italic text-gray-200">at Kunnath House</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
-            Choose from our premium farm stays for your corporate retreats, family celebrations, and private events at Kunnath House.
+          <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
+            Choose from our premium farm stays for corporate retreats, family celebrations, and private events.
           </p>
         </Container>
       </section>

@@ -32,28 +32,28 @@ export default function SportsPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Hero Section - Visually consistent with Events hero */}
-      <section className="bg-gray-900 text-white py-20 sm:py-24 md:py-28 relative overflow-hidden">
+      {/* Hero Section - Compact so cards are immediately visible */}
+      <section className="bg-gray-900 text-white py-10 sm:py-12 md:py-14 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dekz7rtoa/image/upload/v1779688300/box_cricket_rhkt0l.webp')] bg-cover bg-center opacity-30"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900/60 via-gray-900/40 to-gray-900/80"></div>
 
         <Container className="relative z-10 text-center">
-          <span className="text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-4 inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15">
-            <Trophy size={16} /> Premium Sports Facilities
+          <span className="text-primary font-semibold tracking-wider uppercase text-xs mb-2.5 inline-flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/15">
+            <Trophy size={14} /> Premium Sports Facilities
           </span>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold mb-6 tracking-tight max-w-4xl mx-auto leading-[1.15]">
-            Elevate Your Stay <span className="block sm:inline font-normal italic text-gray-200">with Action</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 tracking-tight max-w-3xl mx-auto leading-tight">
+            Elevate Your Stay <span className="font-normal italic text-gray-200">with Action</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
-            From professional turf cricket to high-octane ATV rides, we offer world-class facilities designed for champions and families alike.
+          <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
+            From professional turf cricket to high-octane ATV rides, explore our world-class facilities.
           </p>
         </Container>
       </section>
 
       {/* Activities Grid */}
-      <section className="py-16 sm:py-20 pb-32">
+      <section className="py-8 sm:py-10 pb-32">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {isLoading ? (
