@@ -15,7 +15,6 @@ export const metadata: Metadata = {
 }
 
 import Script from 'next/script'
-
 export default function RootLayout({
   children,
 }: {
@@ -25,6 +24,24 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        {/* Google Analytics direct integration */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-87GKFG49L0"
+        />
+        <script
+          id="google-analytics"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-87GKFG49L0', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
       </head>
       <body>
         <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
