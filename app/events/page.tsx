@@ -14,6 +14,7 @@ import EventCelebrationMarquee from '@/Components/events/EventCelebrationMarquee
 import { EVENT_PRICING_DETAILS, INITIAL_UPCOMING_EVENTS, UpcomingEventItem } from '@/lib/constants/events';
 import { useInfiniteEvents } from '@/hooks/useEvents';
 import Link from 'next/link';
+import { AnalyticsEvents } from '@/lib/analytics';
 
 const FALLBACK_STAYS: Partial<FarmStay>[] = [
   {
@@ -101,6 +102,12 @@ export default function EventsPage() {
   }, [stays]);
 
   const handleOpenBookingModal = (stay: FarmStay) => {
+    AnalyticsEvents.bookingInitiated({
+      category: 'event',
+      title: stay.name,
+      id: stay._id,
+      price: stay.price,
+    });
     setSelectedStayForBooking(stay);
     setIsModalOpen(true);
   };

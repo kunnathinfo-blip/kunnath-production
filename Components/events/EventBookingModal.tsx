@@ -16,6 +16,7 @@ import {
   useCreateEventPaymentOrder,
   useVerifyEventPayment
 } from '@/hooks/useEventBookings';
+import { AnalyticsEvents } from '@/lib/analytics';
 
 interface EventBookingModalProps {
   isOpen: boolean;
@@ -205,6 +206,13 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
                 bookingId: data.bookingId,
               }, {
                 onSuccess: () => {
+                  AnalyticsEvents.bookingSuccess({
+                    bookingId: data.bookingId,
+                    paymentId: response.razorpay_payment_id,
+                    category: 'event',
+                    title: `${stay.name} - ${eventTitle}`,
+                    amount: selectedTier.price,
+                  });
                   setConfirmedBooking({
                     bookingId: data.bookingId,
                     paymentId: response.razorpay_payment_id,
@@ -218,6 +226,11 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
                   setIsProcessing(false);
                 },
                 onError: (err: any) => {
+                  AnalyticsEvents.paymentFailed({
+                    category: 'event',
+                    amount: selectedTier.price,
+                    errorReason: err.response?.data?.message || 'Verification failed',
+                  });
                   setErrorMessage(err.response?.data?.message || 'Payment verification failed. Please contact support.');
                   setIsProcessing(false);
                 },
@@ -233,6 +246,11 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
             },
             modal: {
               ondismiss: function () {
+                AnalyticsEvents.paymentFailed({
+                  category: 'event',
+                  amount: selectedTier.price,
+                  errorReason: 'Customer dismissed payment modal',
+                });
                 setIsProcessing(false);
               },
             },
@@ -240,6 +258,11 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
 
           const rzp = new (window as any).Razorpay(options);
           rzp.on('payment.failed', function (resp: any) {
+            AnalyticsEvents.paymentFailed({
+              category: 'event',
+              amount: selectedTier.price,
+              errorReason: resp.error.description,
+            });
             setErrorMessage(`Payment Failed: ${resp.error.description}`);
             setIsProcessing(false);
           });
