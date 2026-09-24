@@ -289,6 +289,7 @@ import TermsModal from '@/Components/stays/TermsModal';
 import Link from 'next/link';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { AnalyticsEvents } from '@/lib/analytics';
 
 // ---------- TIMEZONE-SAFE DATE HELPERS ----------
 function getTodayLocal(): string {
@@ -705,6 +706,11 @@ export default function StayDetailsPage() {
 
   useEffect(() => {
     if (stayData?.slug) {
+      AnalyticsEvents.stayViewed({
+        id: stayData._id,
+        title: stayData.name,
+        price: stayData.price,
+      });
       fetch(`/api/gallery/${stayData.slug}`)
         .then(res => res.json())
         .then(data => {
@@ -719,7 +725,7 @@ export default function StayDetailsPage() {
         })
         .catch(err => console.error('Failed to fetch gallery images:', err));
     }
-  }, [stayData?.slug]);
+  }, [stayData?.slug, stayData?._id, stayData?.name, stayData?.price]);
 
   // Progressive booking flow state
   const [step, setStep] = useState(1);
@@ -905,6 +911,12 @@ export default function StayDetailsPage() {
     }
 
     setIsProcessingPayment(true);
+    AnalyticsEvents.bookingInitiated({
+      category: 'stay',
+      title: name,
+      id: stayId,
+      price: totalPrice,
+    });
 
     // Dynamically ensure Razorpay script is loaded
     const isLoaded = await new Promise((resolve) => {
@@ -947,6 +959,13 @@ export default function StayDetailsPage() {
                 bookingId: data.bookingId
               }, {
                 onSuccess: (verifyData) => {
+                  AnalyticsEvents.bookingSuccess({
+                    bookingId: data.bookingId,
+                    paymentId: response.razorpay_payment_id,
+                    category: 'stay',
+                    title: name,
+                    amount: totalPrice,
+                  });
                   setPaymentDetails({
                     paymentId: response.razorpay_payment_id,
                     bookingId: data.bookingId,
@@ -958,6 +977,11 @@ export default function StayDetailsPage() {
                   setIsProcessingPayment(false);
                 },
                 onError: () => {
+                  AnalyticsEvents.paymentFailed({
+                    category: 'stay',
+                    amount: totalPrice,
+                    errorReason: 'Payment verification failed',
+                  });
                   alert('Payment verification failed.');
                   setIsProcessingPayment(false);
                 }
@@ -973,6 +997,11 @@ export default function StayDetailsPage() {
             },
             modal: {
               ondismiss: function () {
+                AnalyticsEvents.paymentFailed({
+                  category: 'stay',
+                  amount: totalPrice,
+                  errorReason: 'Customer dismissed payment modal',
+                });
                 setIsProcessingPayment(false);
               }
             }
@@ -980,6 +1009,11 @@ export default function StayDetailsPage() {
 
           const rzp = new (window as any).Razorpay(options);
           rzp.on('payment.failed', function (response: any) {
+            AnalyticsEvents.paymentFailed({
+              category: 'stay',
+              amount: totalPrice,
+              errorReason: response.error.description,
+            });
             alert(`Payment Failed: ${response.error.description}`);
             setIsProcessingPayment(false);
           });

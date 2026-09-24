@@ -42,6 +42,21 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Microsoft Clarity (Heatmaps & Session Replays) */}
+        {(process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || process.env.CLARITY_ID) && (
+          <script
+            id="microsoft-clarity"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window, document, "clarity", "script", "${process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || process.env.CLARITY_ID}");
+              `,
+            }}
+          />
+        )}
       </head>
       <body>
         <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />

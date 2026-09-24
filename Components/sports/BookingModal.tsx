@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useValidateCoupon } from '@/hooks/useCoupons';
 import { Button } from '@/Components/ui/Button';
 import { formatCurrency } from '@/lib/utils';
+import { AnalyticsEvents } from '@/lib/analytics';
 
 interface BookingModalProps {
   sport: Sport | null;
@@ -261,6 +262,13 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                   },
                   {
                     onSuccess: (verifyData) => {
+                      AnalyticsEvents.bookingSuccess({
+                        bookingId: data.bookingId,
+                        paymentId: response.razorpay_payment_id,
+                        category: 'sport',
+                        title: sport.name,
+                        amount: data.order.amount / 100,
+                      });
                       setPaymentDetails({
                         paymentId: response.razorpay_payment_id,
                         bookingId: data.bookingId,
@@ -269,6 +277,11 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                       setStep(4);
                     },
                     onError: (error: any) => {
+                      AnalyticsEvents.paymentFailed({
+                        category: 'sport',
+                        amount: data.order.amount / 100,
+                        errorReason: error.response?.data?.message || 'Payment verification failed',
+                      });
                       alert(error.response?.data?.message || 'Payment verification failed');
                     },
                     onSettled: () => {
@@ -287,12 +300,26 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
               },
               modal: {
                 ondismiss: function () {
+                  AnalyticsEvents.paymentFailed({
+                    category: 'sport',
+                    amount: data.order.amount / 100,
+                    errorReason: 'Customer dismissed payment modal',
+                  });
                   setIsProcessingPayment(false);
                 }
               }
             };
 
             const rzp = new (window as any).Razorpay(options);
+            rzp.on('payment.failed', function (resp: any) {
+              AnalyticsEvents.paymentFailed({
+                category: 'sport',
+                amount: data.order.amount / 100,
+                errorReason: resp.error.description,
+              });
+              alert(`Payment failed: ${resp.error.description}`);
+              setIsProcessingPayment(false);
+            });
             rzp.open();
           } catch (err: any) {
             console.error('Razorpay initialization error:', err);
