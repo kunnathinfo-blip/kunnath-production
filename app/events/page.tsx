@@ -113,40 +113,17 @@ export default function EventsPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen pb-20">
-      {/* Hero Section - Compact so cards are immediately visible */}
-      <section className="bg-gray-900 text-white py-10 sm:py-12 md:py-14 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2000')] bg-cover bg-center opacity-30"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/60 via-gray-900/40 to-gray-900/80"></div>
-
-        <Container className="relative z-10 text-center">
-          <span className="text-primary font-semibold tracking-wider uppercase text-xs mb-2.5 inline-flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/15">
-            <Sparkles size={14} /> Unforgettable Celebrations
-          </span>
-
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 tracking-tight max-w-3xl mx-auto leading-tight">
-            Host Your Event <span className="font-normal italic text-gray-200">at Kunnath House</span>
-          </h1>
-
-          <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
-            Choose from our premium farm stays for corporate retreats, family celebrations, and private events.
-          </p>
-        </Container>
-      </section>
-
-      {/* Celebration Marquee Section */}
-      <EventCelebrationMarquee />
-
-      {/* Private Event Venues Section */}
-      <Container className="py-16">
-        <div className="max-w-3xl mb-12">
+    <div className="bg-white min-h-screen pb-20 pt-6 sm:pt-10">
+      {/* Private Event Venues Section on top */}
+      <Container className="pb-16">
+        <div className="max-w-3xl mb-10">
           <span className="text-primary font-bold tracking-widest uppercase text-xs mb-2 block">
             Private Event Venues
           </span>
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gray-900 tracking-tight">
             Select Your Preferred Venue
-          </h2>
-          <p className="text-gray-500 mt-2 text-base">
+          </h1>
+          <p className="text-gray-500 mt-2 text-sm sm:text-base">
             Event farm stay bookings include Lemon and Mint stays with overnight accommodation for up to 15 members, private pool, and outdoor lawns. Click Book Event to choose your gathering size and reserve directly.
           </p>
         </div>
@@ -159,7 +136,7 @@ export default function EventsPage() {
             </>
           ) : (
             displayStays.map((stay) => {
-              const eventTitle = `Event at ${stay.name} Stay`;
+              const eventTitle = `${stay.name} Farm stay`;
               const stayKey = (stay.name || '').toLowerCase().trim();
               const eventDetails = EVENT_PRICING_DETAILS[stayKey] || {
                 occupancy: `upto ${stay.capacity} Guests`,
@@ -230,6 +207,9 @@ export default function EventsPage() {
           )}
         </div>
       </Container>
+
+      {/* Celebration Marquee Section */}
+      <EventCelebrationMarquee />
 
       {/* Upcoming Events Section (Requirement 3.4) */}
       <section className="py-20 bg-gray-50/60 border-t border-gray-100">

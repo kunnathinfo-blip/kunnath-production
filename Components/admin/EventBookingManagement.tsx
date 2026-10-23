@@ -97,7 +97,7 @@ export const EventBookingManagement = () => {
             <div className="bg-gray-50 p-3 rounded-xl text-xs space-y-2 border border-gray-100">
               <div className="flex justify-between">
                 <span className="text-gray-500">Event:</span>
-                <span className="font-medium text-gray-900">{booking.stayId?.name ? `Event at ${booking.stayId.name} Stay` : booking.eventId?.title || 'Private Event'}</span>
+                <span className="font-medium text-gray-900">{booking.stayId?.name ? `${booking.stayId.name} Farm stay` : booking.eventId?.title || 'Private Event'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Booking Date:</span>
@@ -108,8 +108,16 @@ export const EventBookingManagement = () => {
                 <span className="font-medium text-gray-900">{booking.gatheringSize || (booking.guests ? `${booking.guests} Pax` : 'N/A')}</span>
               </div>
               <div className="flex justify-between border-t border-gray-100 pt-2 font-bold">
-                <span className="text-gray-900">Amount:</span>
-                <span className="text-gray-905">₹{booking.totalPrice?.toLocaleString()}</span>
+                <span className="text-gray-900">Total Amount:</span>
+                <span className="text-gray-900">₹{booking.totalPrice?.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-[11px]">
+                <span className="text-emerald-700 font-medium">Advance Paid (50%):</span>
+                <span className="text-emerald-700 font-bold">₹{(booking.upfrontAmountPaid || Math.round((booking.totalPrice || 0) * 0.5))?.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-[11px]">
+                <span className="text-amber-700 font-medium">Due at Check-in (50%):</span>
+                <span className="text-amber-700 font-bold">₹{(booking.amountDueAtCheckIn || ((booking.totalPrice || 0) - Math.round((booking.totalPrice || 0) * 0.5)))?.toLocaleString()}</span>
               </div>
             </div>
 
@@ -172,7 +180,7 @@ export const EventBookingManagement = () => {
                   </td>
                   <td className="p-4">
                     <div className="flex flex-col">
-                      <span className="font-medium text-gray-800">{booking.stayId?.name ? `Event at ${booking.stayId.name} Stay` : booking.eventId?.title || 'Private Event'}</span>
+                      <span className="font-medium text-gray-800">{booking.stayId?.name ? `${booking.stayId.name} Farm stay` : booking.eventId?.title || 'Private Event'}</span>
                       <span className="text-[10px] text-gray-400 uppercase">{booking.eventType || booking.eventId?.category || 'Private Venue'}</span>
                     </div>
                   </td>
@@ -182,8 +190,14 @@ export const EventBookingManagement = () => {
                   <td className="p-4 text-sm text-gray-600 font-medium">
                     {booking.gatheringSize || (booking.guests ? `${booking.guests} Pax` : 'N/A')}
                   </td>
-                  <td className="p-4 font-bold text-gray-900">
-                    ₹{booking.totalPrice?.toLocaleString()}
+                  <td className="p-4">
+                    <div className="font-bold text-gray-900">₹{booking.totalPrice?.toLocaleString()}</div>
+                    <div className="text-[11px] text-emerald-700 font-semibold">
+                      Paid: ₹{(booking.upfrontAmountPaid || Math.round((booking.totalPrice || 0) * 0.5))?.toLocaleString()}
+                    </div>
+                    <div className="text-[10px] text-gray-400">
+                      Due: ₹{(booking.amountDueAtCheckIn || ((booking.totalPrice || 0) - Math.round((booking.totalPrice || 0) * 0.5)))?.toLocaleString()}
+                    </div>
                   </td>
                   <td className="p-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${getStatusColor(booking.status)}`}>

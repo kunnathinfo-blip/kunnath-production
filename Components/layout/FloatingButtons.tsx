@@ -5,7 +5,7 @@ import { Facebook, Instagram } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 const FloatingButtons = () => {
-  const whatsappNumber = "918143245959"; // Replace with real number
+  const whatsappNumber = "917900306655";
   const whatsappUrl = `https://wa.me/${whatsappNumber}`;
 
   return (

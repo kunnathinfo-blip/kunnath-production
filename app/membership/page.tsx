@@ -57,7 +57,7 @@ export default function MembershipPage() {
 
   return (
     <div className="bg-white min-h-screen pb-20 font-sans">
-      {/* Hero Header matching site standard */}
+      {/* Hero Header matching site standard (Commented out for later use)
       <section className="bg-gray-900 text-white py-14 sm:py-16 md:py-20 relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30"
@@ -75,12 +75,99 @@ export default function MembershipPage() {
           </p>
         </Container>
       </section>
+      */}
 
       {/* Main Two-Column Section */}
       <Container className="py-12 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-stretch">
           
-          {/* LEFT COLUMN: Membership Inquiry Form Card */}
+          {/* LEFT COLUMN: Poster Showcase */}
+          <div className="lg:col-span-6 flex flex-col justify-between">
+            <Card className="rounded-[32px] overflow-hidden border border-gray-100 bg-white p-2.5 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] flex flex-col justify-between h-full">
+              <div className="relative aspect-auto overflow-hidden rounded-[24px] group">
+                <img
+                  src="/membership.jpeg"
+                  alt="Kunnath House Gold Membership Coming Soon Poster"
+                  className="w-full h-auto object-cover rounded-[24px] group-hover:scale-[1.02] transition-transform duration-500 cursor-pointer"
+                  onClick={() => setIsModalOpen(true)}
+                />
+                <div 
+                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white gap-2 font-bold text-sm cursor-pointer"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <ZoomIn className="w-5 h-5 text-white" />
+                  <span>Click to enlarge poster</span>
+                </div>
+              </div>
+
+              <div className="p-6 pt-5 flex flex-col justify-between flex-1">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-amber-700 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                      <Crown size={14} className="text-amber-600" /> Gold Membership
+                    </span>
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className="text-primary font-bold text-xs hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <ZoomIn className="w-3.5 h-3.5" />
+                      <span>Enlarge Poster</span>
+                    </button>
+                  </div>
+
+                  {/* Status Highlight Row */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50/60 to-orange-50/60 border border-amber-100 flex items-center justify-between mb-5">
+                    <div>
+                      <span className="text-[10px] font-black text-amber-800/80 uppercase tracking-widest block mb-0.5">
+                        Membership Status
+                      </span>
+                      <span className="text-2xl font-black text-gray-900">Coming Soon</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                        Official Inquiry
+                      </span>
+                      <span className="text-xs font-bold text-primary">
+                        +91 77024 02505
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Key Highlights Grid */}
+                  <div className="grid grid-cols-2 gap-2.5 text-xs font-bold text-gray-700">
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                      <span>Private Luxury Stays</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                      <span>Elite Sports Club Perks</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                      <span>Party Lawn & Poolside</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                      <span>Priority Reservations</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  fullWidth
+                  size="md"
+                  variant="outline"
+                  className="mt-6 py-3 text-sm font-bold rounded-xl border-primary text-primary hover:bg-primary/5 transition-all"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  View Poster Fullscreen
+                </Button>
+              </div>
+            </Card>
+          </div>
+
+          {/* RIGHT COLUMN: Membership Inquiry Form Card */}
           <div className="lg:col-span-6 flex flex-col justify-between">
             <Card className="rounded-[32px] p-6 sm:p-8 md:p-10 border border-gray-100 bg-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] flex flex-col justify-between h-full">
               <div>
@@ -214,92 +301,6 @@ export default function MembershipPage() {
                   <span>Direct Team Connection</span>
                 </div>
                 <span className="text-gray-600 font-semibold">WhatsApp: +91 7702402505</span>
-              </div>
-            </Card>
-          </div>
-
-          {/* RIGHT COLUMN: Poster Showcase matching website Card design */}
-          <div className="lg:col-span-6 flex flex-col justify-between">
-            <Card className="rounded-[32px] overflow-hidden border border-gray-100 bg-white p-2.5 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] flex flex-col justify-between h-full">
-              <div className="relative aspect-auto overflow-hidden rounded-[24px] group">
-                <img
-                  src="/membership.jpeg"
-                  alt="Kunnath House Gold Membership Coming Soon Poster"
-                  className="w-full h-auto object-cover rounded-[24px] group-hover:scale-[1.02] transition-transform duration-500 cursor-pointer"
-                  onClick={() => setIsModalOpen(true)}
-                />
-                <div 
-                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white gap-2 font-bold text-sm cursor-pointer"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <ZoomIn className="w-5 h-5 text-white" />
-                  <span>Click to enlarge poster</span>
-                </div>
-              </div>
-
-              <div className="p-6 pt-5 flex flex-col justify-between flex-1">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-amber-700 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
-                      <Crown size={14} className="text-amber-600" /> Gold Membership
-                    </span>
-                    <button
-                      onClick={() => setIsModalOpen(true)}
-                      className="text-primary font-bold text-xs hover:underline flex items-center gap-1 cursor-pointer"
-                    >
-                      <ZoomIn className="w-3.5 h-3.5" />
-                      <span>Enlarge Poster</span>
-                    </button>
-                  </div>
-
-                  {/* Status Highlight Row */}
-                  <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50/60 to-orange-50/60 border border-amber-100 flex items-center justify-between mb-5">
-                    <div>
-                      <span className="text-[10px] font-black text-amber-800/80 uppercase tracking-widest block mb-0.5">
-                        Membership Status
-                      </span>
-                      <span className="text-2xl font-black text-gray-900">Coming Soon</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-                        Official Inquiry
-                      </span>
-                      <span className="text-xs font-bold text-primary">
-                        +91 77024 02505
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Key Highlights Grid */}
-                  <div className="grid grid-cols-2 gap-2.5 text-xs font-bold text-gray-700">
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Private Luxury Stays</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Elite Sports Club Perks</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Party Lawn & Poolside</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Priority Reservations</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button
-                  fullWidth
-                  size="md"
-                  variant="outline"
-                  className="mt-6 py-3 text-sm font-bold rounded-xl border-primary text-primary hover:bg-primary/5 transition-all"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  View Poster Fullscreen
-                </Button>
               </div>
             </Card>
           </div>

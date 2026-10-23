@@ -168,7 +168,8 @@ export const Footer = () => {
                 Kunnath House Arya Private Limited,<br />
                 Jeedipally Village, Manoharabad,<br />
                 Kompally-Medchal Highway,<br />
-                Telangana 502336
+                Telangana 502336<br />
+                <span className="font-medium text-[#1A1A1A]">7702402505 / 7900306655</span>
               </p>
             </div>
 

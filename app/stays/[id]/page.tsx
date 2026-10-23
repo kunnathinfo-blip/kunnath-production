@@ -278,7 +278,7 @@ import {
   Plus, Minus
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useStayDetails } from '@/hooks/useStays';
+import { useStayDetails, useStays } from '@/hooks/useStays';
 import { useCreateBooking, useCreatePaymentOrder, useVerifyPayment } from '@/hooks/useBookings';
 import { useAuthStore } from '@/store/authStore';
 import { useValidateCoupon } from '@/hooks/useCoupons';
@@ -626,6 +626,7 @@ export default function StayDetailsPage() {
   const { user } = useAuthStore();
 
   const { data: stayData, isLoading, refetch } = useStayDetails(stayId);
+  const { data: allStays } = useStays();
   const { mutate: createBooking, isPending: isBookingPending } = useCreateBooking();
   const { mutate: createPaymentOrder, isPending: isOrderPending } = useCreatePaymentOrder();
   const { mutate: verifyPayment, isPending: isVerifyPending } = useVerifyPayment();
@@ -1060,17 +1061,15 @@ export default function StayDetailsPage() {
         {/* Title & action row */}
         <div className="mb-6 flex flex-wrap justify-between items-start gap-4">
           <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Link 
+                href="/stays" 
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-primary transition-colors py-1 px-2.5 rounded-lg hover:bg-gray-100"
+              >
+                <ArrowLeft size={14} /> Back to all stays
+              </Link>
+            </div>
             <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">{name}</h1>
-            {/* <div className="flex items-center text-sm text-gray-500 space-x-3 mt-2">
-              <div className="flex items-center">
-                <Star size={14} className="fill-primary text-primary mr-1" />
-                <span className="font-bold text-gray-900">{rating}</span>
-              </div>
-              <span>·</span>
-              <span className="underline font-medium hover:text-gray-900 transition-colors cursor-pointer">{reviews} reviews</span>
-              <span>·</span>
-              <span className="underline font-medium hover:text-gray-900 transition-colors cursor-pointer">{location.address.split(',')[0]}</span>
-            </div> */}
           </div>
           <div className="flex items-center gap-4">
             <button
@@ -1081,6 +1080,43 @@ export default function StayDetailsPage() {
             </button>
           </div>
         </div>
+
+        {/* Quick Switch Between Stays Tabs */}
+        {allStays && allStays.length > 0 && (
+          <div className="mb-6 pb-2 border-b border-gray-100 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-2 min-w-max">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-2">Switch Stay:</span>
+              {[...allStays]
+                .sort((a, b) => {
+                  const order: Record<string, number> = { 'Orange': 1, 'Lemon': 2, 'Mint': 3, 'Lotus': 4 };
+                  return (order[a.name] || 99) - (order[b.name] || 99);
+                })
+                .map((s) => {
+                  const isActive = s._id === stayId;
+                  return (
+                    <Link
+                      key={s._id}
+                      href={`/stays/${s._id}`}
+                      className={cn(
+                        "px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-2 border",
+                        isActive
+                          ? "bg-primary text-white border-primary shadow-sm"
+                          : "bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50"
+                      )}
+                    >
+                      <span>{s.name} Farm Stay</span>
+                      <span className={cn(
+                        "text-[10px] px-1.5 py-0.5 rounded-full",
+                        isActive ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
+                      )}>
+                        {formatCurrency(s.price)}
+                      </span>
+                    </Link>
+                  );
+                })}
+            </div>
+          </div>
+        )}
 
         {/* Photo Gallery */}
         <div className="relative grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-1.5 mb-8 rounded-xl overflow-hidden h-[260px] md:h-[324px] ">
@@ -1265,19 +1301,7 @@ export default function StayDetailsPage() {
             })()}
             */}
 
-            {/* Double Month Availability Calendar */}
-            <div id="availability" className="border-t border-gray-200 pt-8">
-              <div className="flex items-center gap-2 mb-4">
-                <CalendarIcon size={22} className="text-gray-700" />
-                <h2 className="text-xl font-semibold">Availability</h2>
-              </div>
-              <AvailabilityCalendar
-                bookedDates={bookedDates}
-                checkIn={checkIn}
-                checkOut={checkOut}
-                onDateSelect={() => { }} // Disconnected as requested
-              />
-            </div>
+
 
             <div className="border-t border-gray-100 pt-8">
               <h2 className="text-xl font-bold text-gray-900 mb-2">Where you'll be</h2>
@@ -1360,6 +1384,63 @@ export default function StayDetailsPage() {
                 </div>
               </div>
             </div>
+
+            {/* Explore Other Stays Showcase */}
+            {allStays && allStays.filter(s => s._id !== stayId).length > 0 && (
+              <div className="border-t border-gray-200 pt-10">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 font-display">Explore Other Farm Stays</h2>
+                    <p className="text-xs text-gray-500 mt-1">Switch to one of our other premium properties</p>
+                  </div>
+                  <Link 
+                    href="/stays" 
+                    className="text-xs font-bold text-primary hover:text-primary-hover flex items-center gap-1 group"
+                  >
+                    View All <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[...allStays]
+                    .filter(s => s._id !== stayId)
+                    .sort((a, b) => {
+                      const order: Record<string, number> = { 'Orange': 1, 'Lemon': 2, 'Mint': 3, 'Lotus': 4 };
+                      return (order[a.name] || 99) - (order[b.name] || 99);
+                    })
+                    .map((otherStay) => (
+                      <Link 
+                        key={otherStay._id} 
+                        href={`/stays/${otherStay._id}`}
+                        className="group flex flex-col bg-gray-50/70 hover:bg-white rounded-2xl p-3 border border-gray-200/80 hover:border-gray-300 hover:shadow-md transition-all duration-300"
+                      >
+                        <div className="aspect-[16/10] rounded-xl overflow-hidden mb-3 bg-gray-200 relative">
+                          <img 
+                            src={getOptimizedImageUrl(otherStay.images?.[0] || '/placeholder.jpg', 300)} 
+                            alt={otherStay.name} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 text-gray-800 backdrop-blur-sm shadow-sm">
+                            {otherStay.bedrooms} BHK
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-bold text-sm text-gray-900 group-hover:text-primary transition-colors">
+                            {otherStay.name}
+                          </h4>
+                          <span className="text-xs font-black text-gray-900">
+                            {formatCurrency(otherStay.price)}
+                            <span className="text-[10px] font-normal text-gray-500">/nt</span>
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-primary font-bold mt-2 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                          Switch to this stay →
+                        </span>
+                      </Link>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* RIGHT COLUMN - Booking card */}

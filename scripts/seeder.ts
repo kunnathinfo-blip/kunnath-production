@@ -295,6 +295,147 @@ const dummyStays = [
     addOns: [{ name: 'Campfire', price: 750 }],
     description: 'Mint is a spacious 4-bedroom private stay featuring a living room, dining area, and a large party hall. Enjoy a huge swimming pool, party lawn, projector, 65” Smart TV, powerful music system, high-speed WIFI, refrigerator, microwave, and BBQ setup—perfect for celebrations, group stays, and unforgettable get-togethers.',
   },
+  {
+    name: 'Lotus',
+    slug: 'lotus',
+    price: 10000,
+    weekendPrice: 12000,
+    beds: 2,
+    bedrooms: 2,
+    bathrooms: 2,
+    halls: 1,
+    capacity: 15,
+    maxGuests: 20,
+    extraGuestCharge: 500,
+    securityDeposit: 5000,
+    bookingAdvance: 5000,
+    images: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425909/Pool_1_mgze5n.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425752/Living_1_wrupr1.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425763/Bedroom_1_intnj1.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425888/Lawn_g5xeuy.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425707/Paddy_1_pfvrhi.jpg',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425837/Bedroom_2_on16if.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425770/Bedroom_3_lavjpo.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425818/Bedroom_4_jybkwk.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425812/Bedroom_5_fetsib.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425821/Bedroom_6_icgvtv.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425761/Living_2_sktn7m.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425740/Living_3_ddjnms.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425830/Living_4_dxxu4h.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425759/Living_5_cexya0.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425906/Pool_2_kckgp7.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425923/Pool_3_awkfhc.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425899/Deck_1_kpxllg.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425793/Paddy_field_a9cgx0.heic',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425882/Paddy_bnei9u.heic',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425855/Sunrise_bq01i3.heic',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425958/Verandah_zbpnix.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425966/WR_vwlaxo.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425967/WR1_fapx5p.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425970/WR2_uorwro.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425983/WR3_xjn7gu.png'
+    ],
+    featuredImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425909/Pool_1_mgze5n.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425752/Living_1_wrupr1.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425763/Bedroom_1_intnj1.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425888/Lawn_g5xeuy.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425707/Paddy_1_pfvrhi.jpg'
+    ],
+    categorizedImages: {
+      rooms: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425763/Bedroom_1_intnj1.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425837/Bedroom_2_on16if.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425770/Bedroom_3_lavjpo.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425818/Bedroom_4_jybkwk.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425812/Bedroom_5_fetsib.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425821/Bedroom_6_icgvtv.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425752/Living_1_wrupr1.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425761/Living_2_sktn7m.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425740/Living_3_ddjnms.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425830/Living_4_dxxu4h.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425759/Living_5_cexya0.png'
+      ],
+      amenities: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425909/Pool_1_mgze5n.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425906/Pool_2_kckgp7.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425923/Pool_3_awkfhc.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425899/Deck_1_kpxllg.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425888/Lawn_g5xeuy.png'
+      ],
+      dining: [],
+      activities: [],
+      exterior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425707/Paddy_1_pfvrhi.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425793/Paddy_field_a9cgx0.heic',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425882/Paddy_bnei9u.heic',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425855/Sunrise_bq01i3.heic',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425958/Verandah_zbpnix.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425899/Deck_1_kpxllg.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425888/Lawn_g5xeuy.png'
+      ],
+      interior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425752/Living_1_wrupr1.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425761/Living_2_sktn7m.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425740/Living_3_ddjnms.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425830/Living_4_dxxu4h.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425759/Living_5_cexya0.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425763/Bedroom_1_intnj1.png'
+      ]
+    },
+    otherImages: [
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425966/WR_vwlaxo.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425967/WR1_fapx5p.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425970/WR2_uorwro.png',
+      'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425983/WR3_xjn7gu.png'
+    ],
+    gallery: {
+      exterior: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425707/Paddy_1_pfvrhi.jpg',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425793/Paddy_field_a9cgx0.heic',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425882/Paddy_bnei9u.heic',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425855/Sunrise_bq01i3.heic',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425958/Verandah_zbpnix.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425899/Deck_1_kpxllg.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425888/Lawn_g5xeuy.png'
+      ],
+      living: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425752/Living_1_wrupr1.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425761/Living_2_sktn7m.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425740/Living_3_ddjnms.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425830/Living_4_dxxu4h.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425759/Living_5_cexya0.png'
+      ],
+      bedroom: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425763/Bedroom_1_intnj1.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425837/Bedroom_2_on16if.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425770/Bedroom_3_lavjpo.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425818/Bedroom_4_jybkwk.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425812/Bedroom_5_fetsib.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425821/Bedroom_6_icgvtv.png'
+      ],
+      bathroom: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425966/WR_vwlaxo.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425967/WR1_fapx5p.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425970/WR2_uorwro.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425983/WR3_xjn7gu.png'
+      ],
+      kitchen: [],
+      amenities: [
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425909/Pool_1_mgze5n.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425906/Pool_2_kckgp7.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425923/Pool_3_awkfhc.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425899/Deck_1_kpxllg.png',
+        'https://res.cloudinary.com/dekz7rtoa/image/upload/v1790425888/Lawn_g5xeuy.png'
+      ]
+    },
+    amenities: ['Private Swimming Pool', "Separate Kids' Pool", 'Lawn for Games', 'WIFI', 'Refrigerator', 'Microwave', '55inch Smart TV', 'RO Water', 'Kitchen', 'Extra Mattresses', 'Geyser', 'AC', 'Campfire', 'In-house Kitchen'],
+    foodOptions: ['Swiggy & Zomato Available', 'Chef Available on request', 'In-House kitchen available'],
+    addOns: [{ name: 'Campfire', price: 750 }],
+    description: "Surrounded by paddy fields, Lotus Farmhouse brings the charm of a traditional farmstay to a relaxed private getaway. It’s a place to slow down, spend time together, and enjoy the open countryside.\n\nThe farmhouse has two bedrooms and a living room, with space for family and friends to gather. Outside, enjoy the swimming pool, a separate kids’ pool, and a lawn for games or quiet evenings under the sky.\n\nCome for the peaceful setting. Stay for the moments you’ll share at Lotus.",
+  },
+
 ];
 
 const dummySports = [

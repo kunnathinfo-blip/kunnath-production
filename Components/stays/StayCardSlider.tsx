@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { IoShareOutline } from 'react-icons/io5';
 import { cn, getOptimizedImageUrl } from '@/lib/utils';
 import ShareModal from './ShareModal';
+import AvailabilityModal from './AvailabilityModal';
 
 interface StayCardSliderProps {
   images: string[];
@@ -14,12 +15,18 @@ interface StayCardSliderProps {
   bedrooms?: number;
   capacity?: number;
   hideBhk?: boolean;
+  price?: number;
+  weekendPrice?: number;
 }
 
-export default function StayCardSlider({ images, stayName, stayId, description, bedrooms, capacity, hideBhk = false }: StayCardSliderProps) {
+export default function StayCardSlider({ images = [], stayName, stayId, description, bedrooms, capacity, hideBhk = false, price, weekendPrice }: StayCardSliderProps) {
+  const displayImages = images && images.length > 0 
+    ? images 
+    : ['https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=1200&auto=format&fit=crop'];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -32,13 +39,13 @@ export default function StayCardSlider({ images, stayName, stayId, description, 
   const handleNext = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setCurrentIndex((prev) => (prev + 1) % displayImages.length);
   };
 
   const handlePrev = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -54,9 +61,9 @@ export default function StayCardSlider({ images, stayName, stayId, description, 
     const diff = touchStartX.current - touchEndX.current;
     if (Math.abs(diff) > 50) {
       if (diff > 0) {
-        setCurrentIndex((prev) => (prev + 1) % images.length);
+        setCurrentIndex((prev) => (prev + 1) % displayImages.length);
       } else {
-        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrentIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
       }
     }
     touchStartX.current = null;
@@ -72,28 +79,58 @@ export default function StayCardSlider({ images, stayName, stayId, description, 
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Share Button (Top Right) */}
-      <div className="absolute top-4 right-4 z-20">
+      {/* Check Availability & Share Buttons */}
+      <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsAvailabilityOpen(true);
+          }}
+          className={cn(
+            "h-7 sm:h-8 px-2.5 sm:px-3 rounded-full flex items-center gap-1.5 transition-all duration-300 shadow-md pointer-events-auto",
+            "bg-white/95 hover:bg-white hover:scale-105 active:scale-95",
+            "text-gray-800 text-[11px] sm:text-xs font-bold border border-gray-100/80 backdrop-blur-sm"
+          )}
+          title="Check Availability"
+          aria-label="Check Availability"
+        >
+          <Calendar size={13} className="text-primary" />
+          <span>Check Availability</span>
+        </button>
+
         <button
           onClick={handleShare}
           className={cn(
-            "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md",
-            "bg-white/90 hover:bg-white hover:scale-110 active:scale-90",
-            "text-gray-800"
+            "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow-md pointer-events-auto",
+            "bg-white/95 hover:bg-white hover:scale-110 active:scale-90",
+            "text-gray-800 backdrop-blur-sm border border-gray-100/80"
           )}
           title="Share stay"
           aria-label="Share this stay"
         >
-          <IoShareOutline size={18} className="group-hover/slider:rotate-12 transition-transform" />
+          <IoShareOutline size={16} className="group-hover/slider:rotate-12 transition-transform" />
         </button>
       </div>
+
+      <AvailabilityModal
+        isOpen={isAvailabilityOpen}
+        onClose={() => setIsAvailabilityOpen(false)}
+        stay={{
+          _id: stayId,
+          name: stayName,
+          price: price || 0,
+          weekendPrice: weekendPrice,
+          images: displayImages,
+        }}
+      />
 
       <ShareModal 
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         title={stayName}
         url={`${typeof window !== 'undefined' ? window.location.origin : ''}/stays/${stayId}`}
-        image={images[0]}
+        image={displayImages[0]}
         bedrooms={hideBhk ? undefined : bedrooms}
         capacity={capacity}
       />
@@ -104,7 +141,7 @@ export default function StayCardSlider({ images, stayName, stayId, description, 
           className="flex w-full h-full transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {images.map((src, idx) => (
+          {displayImages.map((src, idx) => (
             <div key={idx} className="w-full h-full flex-none overflow-hidden">
               <img
                 src={getOptimizedImageUrl(src, 600)}
@@ -137,14 +174,10 @@ export default function StayCardSlider({ images, stayName, stayId, description, 
 
       {/* Pagination Dots (Limited to 5) */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 pointer-events-none">
-        {images.slice(0, 5).map((_, idx) => {
-          // If total images > 5, we show 5 dots that represent a window
-          // For simplicity and matching "show only 5 dots", we'll just show 5
-          // and highlight the one corresponding to (currentIndex % 5) or similar
-          // But usually, users just want a cleaner look.
-          const isSelected = images.length <= 5 
+        {displayImages.slice(0, 5).map((_, idx) => {
+          const isSelected = displayImages.length <= 5 
             ? currentIndex === idx 
-            : Math.floor(currentIndex / (images.length / 5)) === idx;
+            : Math.floor(currentIndex / (displayImages.length / 5)) === idx;
 
           return (
             <div

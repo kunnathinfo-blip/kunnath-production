@@ -35,6 +35,14 @@ const eventBookingSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  upfrontAmountPaid: {
+    type: Number,
+    default: 0
+  },
+  amountDueAtCheckIn: {
+    type: Number,
+    default: 0
+  },
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'cancelled'],

@@ -35,20 +35,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Verify user has an active stay booking
-    const stayBooking = await Booking.findOne({
-      userId: user._id,
-      status: 'confirmed',
-      paymentStatus: 'completed'
-    });
-
-    if (!stayBooking) {
-      return NextResponse.json({ 
-        message: 'To book sports slots, please book a stay first or contact us for assistance.',
-        requiresStay: true
-      }, { status: 403 });
-    }
-
     // Check for overlapping bookings
     const existingBookings = await SportBooking.find({
       sport,

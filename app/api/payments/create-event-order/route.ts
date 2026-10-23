@@ -126,7 +126,11 @@ export async function POST(req: NextRequest) {
 
     const finalPrice = selectedTier.price;
     const securityDeposit = eventPricing.securityDeposit || 10000;
-    const amountInPaise = Math.round(finalPrice * 100);
+
+    // 50% upfront payment split policy (matches stay bookings)
+    const upfrontAmountPaid = Math.round(finalPrice * 0.5);
+    const amountDueAtCheckIn = finalPrice - upfrontAmountPaid;
+    const amountInPaise = Math.round(upfrontAmountPaid * 100);
 
     const razorpay = getRazorpayInstance();
     const options = {
@@ -150,6 +154,8 @@ export async function POST(req: NextRequest) {
       gatheringSize: selectedTier.label,
       eventType: eventType || 'Celebration',
       totalPrice: finalPrice,
+      upfrontAmountPaid,
+      amountDueAtCheckIn,
       securityDeposit,
       termsAccepted: true,
       guestName,
@@ -169,6 +175,8 @@ export async function POST(req: NextRequest) {
       order,
       bookingId: booking._id,
       finalPrice,
+      upfrontAmountPaid,
+      amountDueAtCheckIn,
       securityDeposit,
     }, { status: 201 });
 

@@ -127,10 +127,10 @@ export default function EventCelebrationMarquee() {
       <style jsx>{`
         @keyframes marqueeScroll {
           0% {
-            transform: translateX(0%);
+            transform: translateX(-50%);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(0%);
           }
         }
         .animate-marquee {

@@ -49,6 +49,8 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
     bookingId: string;
     paymentId: string;
     amount: number;
+    totalAmount: number;
+    balanceDue: number;
     stayName: string;
     date: string;
     gatheringSize: string;
@@ -104,7 +106,7 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
 
   if (!isOpen || !stay) return null;
 
-  const eventTitle = `Event at ${stay.name} Stay`;
+  const eventTitle = `${stay.name} Farm stay`;
 
   const handleDateChange = (val: string) => {
     setErrorMessage('');
@@ -206,17 +208,21 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
                 bookingId: data.bookingId,
               }, {
                 onSuccess: () => {
+                  const upfrontPaid = Math.round(selectedTier.price * 0.5);
+                  const balanceDue = selectedTier.price - upfrontPaid;
                   AnalyticsEvents.bookingSuccess({
                     bookingId: data.bookingId,
                     paymentId: response.razorpay_payment_id,
                     category: 'event',
                     title: `${stay.name} - ${eventTitle}`,
-                    amount: selectedTier.price,
+                    amount: upfrontPaid,
                   });
                   setConfirmedBooking({
                     bookingId: data.bookingId,
                     paymentId: response.razorpay_payment_id,
-                    amount: selectedTier.price,
+                    amount: upfrontPaid,
+                    totalAmount: selectedTier.price,
+                    balanceDue: balanceDue,
                     stayName: stay.name,
                     date: eventDate,
                     gatheringSize: selectedTier.label,
@@ -322,8 +328,16 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
                 <span className="font-bold text-gray-900">{confirmedBooking.gatheringSize}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-gray-100">
-                <span className="text-gray-500 font-medium">Amount Paid</span>
+                <span className="text-gray-500 font-medium">Total Booking Amount</span>
+                <span className="font-bold text-gray-900">{formatCurrency(confirmedBooking.totalAmount)}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-gray-100">
+                <span className="text-gray-500 font-medium">50% Advance Paid Online</span>
                 <span className="font-bold text-emerald-700 text-sm">{formatCurrency(confirmedBooking.amount)}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-gray-100">
+                <span className="text-gray-500 font-medium">Balance Due at Check-in (50%)</span>
+                <span className="font-semibold text-gray-700">{formatCurrency(confirmedBooking.balanceDue)}</span>
               </div>
               <div className="flex justify-between py-1 text-gray-500">
                 <span>Payment ID</span>
@@ -331,8 +345,9 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs text-left">
-              ℹ️ <strong>Security Deposit:</strong> ₹10,000 refundable security deposit will be collected prior to check-in and returned upon inspection after the event.
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs text-left space-y-1">
+              <p>ℹ️ <strong>Remaining Balance:</strong> {formatCurrency(confirmedBooking.balanceDue)} is payable at check-in.</p>
+              <p>ℹ️ <strong>Security Deposit:</strong> ₹10,000 refundable security deposit will also be collected at check-in and returned upon inspection after the event.</p>
             </div>
 
             <div className="pt-2">
@@ -484,53 +499,91 @@ export function EventBookingModal({ isOpen, onClose, stay }: EventBookingModalPr
                 />
               </div>
 
-              {/* Dynamic Price Breakdown Box */}
-              <div className="bg-gray-50/80 border border-gray-200/80 rounded-2xl p-4 space-y-2 text-xs">
-                <div className="flex justify-between items-center text-gray-600">
-                  <span>Selected Package:</span>
-                  <span className="font-semibold text-gray-900">{selectedTier.label}</span>
-                </div>
-                <div className="flex justify-between items-center text-gray-600">
-                  <span>Event Venue Fee:</span>
-                  <span className="font-bold text-gray-900 text-sm">{formatCurrency(selectedTier.price)}</span>
-                </div>
-                <div className="flex justify-between items-center text-gray-500 pt-1 border-t border-gray-200/60">
-                  <span>Refundable Security Deposit:</span>
-                  <span className="font-medium text-gray-700">₹10,000 (at check-in)</span>
-                </div>
-                <div className="flex justify-between items-center pt-2 border-t border-gray-200 text-sm font-black text-gray-900">
-                  <span>Total Due Online:</span>
-                  <span className="text-primary text-base">{formatCurrency(selectedTier.price)}</span>
-                </div>
-              </div>
+              {/* Dynamic Price Breakdown Box with 50% Split */}
+              {(() => {
+                const upfrontPaid = Math.round(selectedTier.price * 0.5);
+                const balanceDue = selectedTier.price - upfrontPaid;
+                const securityDeposit = 10000;
 
-              {/* Terms Acceptance Checkbox */}
-              <div className="flex items-start gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="eventTerms"
-                  required
-                  checked={termsAccepted}
-                  onChange={(e) => setTermsAccepted(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                />
-                <label htmlFor="eventTerms" className="text-xs text-gray-600 cursor-pointer">
-                  I agree to the booking terms, house rules, and understand that ₹10,000 refundable security deposit is payable before check-in.
-                </label>
-              </div>
+                return (
+                  <div className="space-y-3">
+                    <div className="bg-gray-50/90 border border-gray-200/80 rounded-2xl p-4 space-y-2 text-xs">
+                      <div className="flex justify-between items-center text-gray-600">
+                        <span>Selected Package:</span>
+                        <span className="font-semibold text-gray-900">{selectedTier.label}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-gray-600">
+                        <span>Total Venue Fee:</span>
+                        <span className="font-bold text-gray-900 text-sm">{formatCurrency(selectedTier.price)}</span>
+                      </div>
+                      
+                      <div className="pt-2 border-t border-gray-200 space-y-1.5">
+                        <div className="flex justify-between items-center text-xs font-bold text-emerald-700">
+                          <span>Pay Now (50% Advance):</span>
+                          <span className="text-sm">{formatCurrency(upfrontPaid)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs text-gray-600">
+                          <span>Remaining Balance (50% at check-in):</span>
+                          <span className="font-semibold text-gray-800">{formatCurrency(balanceDue)}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs text-gray-500">
+                          <span>Refundable Security Deposit:</span>
+                          <span className="font-medium text-gray-700">{formatCurrency(securityDeposit)} (at check-in)</span>
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Action Button */}
-              <div className="pt-2">
-                <Button
-                  type="submit"
-                  fullWidth
-                  size="lg"
-                  isLoading={isProcessing || isOrderPending || isVerifyPending}
-                  className="py-4 text-base font-bold rounded-2xl shadow-lg cursor-pointer"
-                >
-                  Confirm & Pay {formatCurrency(selectedTier.price)}
-                </Button>
-              </div>
+                    {/* Visual Payment Timeline Stepper */}
+                    <div className="bg-white border border-gray-200/80 rounded-2xl p-3.5">
+                      <div className="flex items-center justify-between text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+                        <span>Pay Now (50% Advance)</span>
+                        <span>At Check-in</span>
+                      </div>
+                      <div className="relative flex items-center justify-between">
+                        <div className="absolute left-2 right-2 h-[2px] bg-gray-200 rounded-full" />
+                        <div className="absolute left-2 w-1/2 h-[2px] bg-green-500 rounded-full" />
+                        <div className="h-3.5 w-3.5 rounded-full bg-green-500 border-[3px] border-white shadow-sm z-10" />
+                        <div className="h-3.5 w-3.5 rounded-full bg-amber-400 border-[3px] border-white shadow-sm z-10" />
+                      </div>
+                      <div className="flex items-center justify-between mt-1.5">
+                        <span className="text-xs font-black text-green-600">{formatCurrency(upfrontPaid)}</span>
+                        <span className="text-xs font-bold text-amber-600">
+                          {formatCurrency(balanceDue + securityDeposit)}{' '}
+                          <span className="text-[9px] text-gray-400 font-medium font-sans tracking-normal">(incl. refundable ₹10k deposit)</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Terms Acceptance Checkbox */}
+                    <div className="flex items-start gap-2 pt-1">
+                      <input
+                        type="checkbox"
+                        id="eventTerms"
+                        required
+                        checked={termsAccepted}
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer accent-primary"
+                      />
+                      <label htmlFor="eventTerms" className="text-xs text-gray-600 cursor-pointer leading-relaxed">
+                        I agree to pay 50% advance ({formatCurrency(upfrontPaid)}) now, and the remaining 50% ({formatCurrency(balanceDue)}) + ₹10,000 refundable security deposit before check-in.
+                      </label>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="pt-2">
+                      <Button
+                        type="submit"
+                        fullWidth
+                        size="lg"
+                        isLoading={isProcessing || isOrderPending || isVerifyPending}
+                        className="py-4 text-base font-bold rounded-2xl shadow-lg cursor-pointer bg-primary text-white hover:bg-primary-hover"
+                      >
+                        Confirm & Pay 50% Advance ({formatCurrency(upfrontPaid)})
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })()}
             </form>
           </div>
         )}

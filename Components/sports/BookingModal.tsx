@@ -16,7 +16,7 @@ interface BookingModalProps {
   hasStayBooking: boolean;
 }
 
-const WHATSAPP_NUMBER = '918143245959';
+const WHATSAPP_NUMBER = '917900306655';
 
 export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }: BookingModalProps) {
   const { user } = useAuthStore();
@@ -208,7 +208,12 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
   };
 
   const handleBooking = async () => {
-    if (!user) return;
+    if (!user) {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login?redirect=/sports';
+      }
+      return;
+    }
     setIsProcessingPayment(true);
 
     // Dynamically ensure Razorpay script is loaded
@@ -344,57 +349,6 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
     );
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
   };
-
-  // ── Stay Restriction Modal ──
-  if (!hasStayBooking) {
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-300 overflow-hidden">
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 px-8 pt-10 pb-8 text-center relative">
-            <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-white/60 rounded-full transition-colors">
-              <X size={18} className="text-gray-500" />
-            </button>
-            <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-5 rotate-3">
-              <AlertTriangle size={28} className="text-amber-600" />
-            </div>
-            <h2 className="text-xl font-black text-gray-900 mb-2">Stay Booking Required</h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              To book sports slots, please book a stay first or contact us for assistance.
-            </p>
-          </div>
-          <div className="px-8 pb-8 pt-6 space-y-4">
-            <div className="bg-gray-50 rounded-2xl p-4 flex items-center gap-4">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm border border-gray-100">
-                {sport.icon}
-              </div>
-              <div>
-                <p className="font-bold text-gray-900">{sport.name}</p>
-                <p className="text-sm text-gray-500">{formatCurrency(sport.price)} / hr</p>
-              </div>
-            </div>
-            <a
-              href={getWhatsAppUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-3 w-full py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-bold rounded-2xl transition-all shadow-lg shadow-green-500/20 hover:shadow-xl hover:scale-[1.02]"
-            >
-              <FaWhatsapp size={22} />
-              Chat on WhatsApp
-            </a>
-            <Button
-              variant="outline"
-              fullWidth
-              size="lg"
-              className="border-2 border-gray-200 hover:border-gray-900 text-gray-700 font-bold rounded-2xl"
-              onClick={onClose}
-            >
-              Go Back
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // ── Slot style classes ──
   const slotStyles: Record<string, string> = {
