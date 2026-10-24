@@ -26,6 +26,19 @@ const sportSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  bookingType: {
+    type: String,
+    enum: ['hourly', 'lap'],
+    default: 'hourly',
+  },
+  pricingUnit: {
+    type: String,
+    default: 'hr',
+  },
+  maxCapacityPerSlot: {
+    type: Number,
+    default: 1,
+  },
 }, { timestamps: true });
 
 const Sport = mongoose.models.Sport || mongoose.model('Sport', sportSchema);

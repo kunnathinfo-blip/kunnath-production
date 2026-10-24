@@ -468,8 +468,11 @@ const dummySports = [
     price: 299,
     duration: '1 lap',
     image: 'https://res.cloudinary.com/dwrxo4hvx/image/upload/v1777899656/1_pknngl.jpg',
-    description: 'Enjoy an adrenaline-filled ride on our off-road ATV track.',
-    icon: '🏎️'
+    description: 'Adrenaline-packed off-road circuit. 1 lap per ride across our dirt track.',
+    icon: '🏎️',
+    bookingType: 'lap',
+    pricingUnit: 'lap',
+    maxCapacityPerSlot: 7
   },
   // {
   //   name: 'RC Car',

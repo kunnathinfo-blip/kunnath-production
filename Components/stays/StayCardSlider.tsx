@@ -17,9 +17,10 @@ interface StayCardSliderProps {
   hideBhk?: boolean;
   price?: number;
   weekendPrice?: number;
+  showAvailabilityOnImage?: boolean;
 }
 
-export default function StayCardSlider({ images = [], stayName, stayId, description, bedrooms, capacity, hideBhk = false, price, weekendPrice }: StayCardSliderProps) {
+export default function StayCardSlider({ images = [], stayName, stayId, description, bedrooms, capacity, hideBhk = false, price, weekendPrice, showAvailabilityOnImage = true }: StayCardSliderProps) {
   const displayImages = images && images.length > 0 
     ? images 
     : ['https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=1200&auto=format&fit=crop'];
@@ -80,24 +81,29 @@ export default function StayCardSlider({ images = [], stayName, stayId, descript
       onTouchEnd={handleTouchEnd}
     >
       {/* Check Availability & Share Buttons */}
-      <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsAvailabilityOpen(true);
-          }}
-          className={cn(
-            "h-7 sm:h-8 px-2.5 sm:px-3 rounded-full flex items-center gap-1.5 transition-all duration-300 shadow-md pointer-events-auto",
-            "bg-white/95 hover:bg-white hover:scale-105 active:scale-95",
-            "text-gray-800 text-[11px] sm:text-xs font-bold border border-gray-100/80 backdrop-blur-sm"
-          )}
-          title="Check Availability"
-          aria-label="Check Availability"
-        >
-          <Calendar size={13} className="text-primary" />
-          <span>Check Availability</span>
-        </button>
+      <div className={cn(
+        "absolute top-3 left-3 right-3 z-20 flex items-center pointer-events-none",
+        showAvailabilityOnImage ? "justify-between" : "justify-end"
+      )}>
+        {showAvailabilityOnImage && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsAvailabilityOpen(true);
+            }}
+            className={cn(
+              "h-7 sm:h-8 px-2.5 sm:px-3 rounded-full flex items-center gap-1.5 transition-all duration-300 shadow-md pointer-events-auto",
+              "bg-white/95 hover:bg-white hover:scale-105 active:scale-95",
+              "text-gray-800 text-[11px] sm:text-xs font-bold border border-gray-100/80 backdrop-blur-sm"
+            )}
+            title="Check Availability"
+            aria-label="Check Availability"
+          >
+            <Calendar size={13} className="text-primary" />
+            <span>Check Availability</span>
+          </button>
+        )}
 
         <button
           onClick={handleShare}

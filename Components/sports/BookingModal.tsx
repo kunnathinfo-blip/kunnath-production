@@ -30,6 +30,9 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
     note: ''
   });
 
+  const isLapSport = sport?.bookingType === 'lap' || sport?.name?.toLowerCase().includes('atv');
+  const [lapsCount, setLapsCount] = useState<number>(1);
+
   const { data: availability, isLoading: checkingAvailability } = useSportAvailability(
     sport?._id || '', 
     selectedDate
@@ -81,6 +84,7 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
       setStep(1);
       setSelectedDate('');
       setSelectedSlots([]);
+      setLapsCount(1);
       setFormData({
         name: user?.name || '',
         email: user?.email || '',
@@ -96,10 +100,12 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
   if (!isOpen || !sport) return null;
 
   const bookedSlots = availability?.bookedSlots || [];
+  const slotOccupancy = availability?.slotOccupancy || {};
+  const maxCapacityPerSlot = availability?.maxCapacity || (isLapSport ? 7 : 1);
   const duration = selectedSlots.length;
-  const totalPriceBeforeCoupon = sport.price * duration;
+  const totalPriceBeforeCoupon = isLapSport ? (sport.price * lapsCount) : (sport.price * duration);
   const couponDiscountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
-  const totalPrice = totalPriceBeforeCoupon - couponDiscountAmount;
+  const totalPrice = Math.max(0, totalPriceBeforeCoupon - couponDiscountAmount);
 
   // Generate next 14 days
   const dates = Array.from({ length: 14 }).map((_, i) => {
@@ -113,25 +119,59 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
     };
   });
 
-  // Generate time slots (6:00 to 23:00 for practical use)
-  const timeSlots = Array.from({ length: 24 }).map((_, i) =>
-    `${i.toString().padStart(2, '0')}:00`
-  );
+  // Generate time slots: 15-minute micro-slots for lap sports (e.g. 06:00 to 22:45)
+  // or 1-hour slots for standard hourly sports
+  const timeSlots = useMemo(() => {
+    if (isLapSport) {
+      const slots: string[] = [];
+      for (let h = 6; h <= 22; h++) {
+        for (const m of ['00', '15', '30', '45']) {
+          slots.push(`${h.toString().padStart(2, '0')}:${m}`);
+        }
+      }
+      return slots;
+    }
+    return Array.from({ length: 24 }).map((_, i) =>
+      `${i.toString().padStart(2, '0')}:00`
+    );
+  }, [isLapSport]);
 
   const isSlotPast = (slot: string) => {
     const today = new Date().toISOString().split('T')[0];
     if (selectedDate !== today) return false;
-    const currentHour = new Date().getHours();
-    const slotHour = parseInt(slot.split(':')[0]);
-    return slotHour <= currentHour;
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const [slotH, slotM] = slot.split(':').map(Number);
+    if (slotH < currentHour) return true;
+    if (slotH === currentHour && (slotM || 0) <= currentMinute) return true;
+    return false;
   };
 
-  const isSlotBooked = (slot: string) => bookedSlots.includes(slot);
+  const getSlotRemainingCapacity = (slot: string) => {
+    if (!isLapSport) return bookedSlots.includes(slot) ? 0 : 1;
+    const used = slotOccupancy[slot] || 0;
+    return Math.max(0, maxCapacityPerSlot - used);
+  };
+
+  const isSlotBooked = (slot: string) => {
+    if (isLapSport) {
+      return getSlotRemainingCapacity(slot) < lapsCount;
+    }
+    return bookedSlots.includes(slot);
+  };
+
   const isSlotDisabled = (slot: string) => isSlotPast(slot) || isSlotBooked(slot);
 
-  // Handle slot click — range selection logic (like check-in / check-out)
+  // Handle slot click
   const handleSlotClick = (slot: string) => {
     if (isSlotDisabled(slot)) return;
+
+    if (isLapSport) {
+      // In ATV lap mode, only 1 specific 15-minute slot is chosen
+      setSelectedSlots([slot]);
+      return;
+    }
 
     const slotHour = parseInt(slot.split(':')[0]);
 
@@ -203,6 +243,13 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
 
   const getEndTime = () => {
     if (selectedSlots.length === 0) return '';
+    if (isLapSport) {
+      const [h, m] = selectedSlots[0].split(':').map(Number);
+      const totalMin = h * 60 + m + 15;
+      const endH = Math.floor(totalMin / 60);
+      const endM = totalMin % 60;
+      return `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
+    }
     const lastHour = parseInt(selectedSlots[selectedSlots.length - 1].split(':')[0]);
     return `${(lastHour + 1).toString().padStart(2, '0')}:00`;
   };
@@ -240,7 +287,8 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
         sport: sport._id,
         date: selectedDate,
         timeSlots: selectedSlots,
-        duration: selectedSlots.length,
+        duration: isLapSport ? 1 : selectedSlots.length,
+        lapsCount: isLapSport ? lapsCount : undefined,
         userDetails: formData,
         couponCode: appliedCoupon ? appliedCoupon.code : undefined
       },
@@ -369,7 +417,11 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
         <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
           <div>
             <h2 className="text-xl font-bold font-display text-gray-900">Book {sport.name}</h2>
-            <p className="text-sm text-gray-500">{formatCurrency(sport.price)} per hour • Up to 3 hours</p>
+            <p className="text-sm text-gray-500">
+              {isLapSport
+                ? `${formatCurrency(sport.price)} per lap • 15-min slots (max 30 rides/hr)`
+                : `${formatCurrency(sport.price)} per hour • Up to 3 hours`}
+            </p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <X size={20} className="text-gray-500" />
@@ -399,6 +451,41 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
           {step === 1 && (
             <div className="space-y-8 animate-in slide-in-from-right-4">
 
+              {/* Lap Selector for ATV */}
+              {isLapSport && (
+                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold text-gray-900">Select Number of Laps</h4>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {formatCurrency(sport.price)} per lap • ~1.5 to 2 mins per lap
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-200 p-1">
+                      <button
+                        type="button"
+                        onClick={() => setLapsCount(prev => Math.max(1, prev - 1))}
+                        disabled={lapsCount <= 1}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-gray-700 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        -
+                      </button>
+                      <span className="w-8 text-center font-black text-gray-900 text-sm">
+                        {lapsCount}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setLapsCount(prev => Math.min(5, prev + 1))}
+                        disabled={lapsCount >= 5}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-gray-700 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Date Selector */}
               <div>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -423,14 +510,23 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                 </div>
               </div>
 
-              {/* Time Slot Picker — Range Selection */}
+              {/* Time Slot Picker */}
               {selectedDate && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-                    <Clock size={18} className="text-primary" /> Select Time Slots
-                  </h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      <Clock size={18} className="text-primary" /> {isLapSport ? 'Select 15-Minute Slot' : 'Select Time Slots'}
+                    </h3>
+                    {isLapSport && (
+                      <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                        Max 7–8 rides per 15 min
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-gray-400 mb-4">
-                    Tap a start time, then tap an end time to select up to 3 consecutive hours.
+                    {isLapSport
+                      ? `Choose your preferred 15-minute arrival time slot. Need ${lapsCount} ride slot(s).`
+                      : 'Tap a start time, then tap an end time to select up to 3 consecutive hours.'}
                   </p>
 
                   {checkingAvailability ? (
@@ -439,18 +535,30 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                       Checking availability...
                     </div>
                   ) : (
-                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+                    <div className={isLapSport ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2" : "grid grid-cols-4 sm:grid-cols-6 gap-1.5"}>
                       {timeSlots.map((slot) => {
                         const state = getSlotState(slot);
                         const disabled = state === 'booked' || state === 'disabled';
+                        const remaining = isLapSport ? getSlotRemainingCapacity(slot) : null;
+
                         return (
                           <button
                             key={slot}
                             disabled={disabled}
                             onClick={() => handleSlotClick(slot)}
-                            className={`p-2.5 text-sm font-semibold border-2 transition-all duration-150 rounded-xl ${slotStyles[state]}`}
+                            className={`p-2 sm:p-2.5 text-xs sm:text-sm font-semibold border-2 transition-all duration-150 rounded-xl flex flex-col items-center justify-center ${slotStyles[state]}`}
                           >
-                            {slot}
+                            <span>{slot}</span>
+                            {isLapSport && !disabled && (
+                              <span className="text-[9px] font-normal opacity-80 mt-0.5">
+                                {remaining} left
+                              </span>
+                            )}
+                            {isLapSport && state === 'booked' && (
+                              <span className="text-[9px] font-normal opacity-80 mt-0.5">
+                                Full
+                              </span>
+                            )}
                           </button>
                         );
                       })}
@@ -466,7 +574,7 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                       <div className="w-3 h-3 rounded bg-primary"></div> Selected
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded bg-red-100 border border-red-200"></div> Booked
+                      <div className="w-3 h-3 rounded bg-red-100 border border-red-200"></div> {isLapSport ? 'Full' : 'Booked'}
                     </div>
                   </div>
 
@@ -481,7 +589,9 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                               {selectedSlots[0]} — {getEndTime()}
                             </span>
                             <span className="text-xs text-gray-500 ml-2">
-                              ({duration} {duration === 1 ? 'hour' : 'hours'})
+                              {isLapSport
+                                ? `(${lapsCount} ${lapsCount === 1 ? 'Lap' : 'Laps'})`
+                                : `(${duration} ${duration === 1 ? 'hour' : 'hours'})`}
                             </span>
                           </div>
                         </div>
@@ -489,11 +599,11 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                           {formatCurrency(totalPrice)}
                         </span>
                       </div>
-                      {duration > 1 && (
-                        <p className="text-[11px] text-gray-400 mt-2 ml-7">
-                          {formatCurrency(sport.price)} × {duration} hours
-                        </p>
-                      )}
+                      <p className="text-[11px] text-gray-400 mt-2 ml-7">
+                        {isLapSport
+                          ? `${formatCurrency(sport.price)} × ${lapsCount} ${lapsCount === 1 ? 'lap' : 'laps'}`
+                          : duration > 1 ? `${formatCurrency(sport.price)} × ${duration} hours` : null}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -598,14 +708,20 @@ export default function BookingModal({ sport, isOpen, onClose, hasStayBooking }:
                     <p className="font-medium text-gray-900">{selectedSlots[0]} — {getEndTime()}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Duration</p>
-                    <p className="font-medium text-gray-900">{duration} {duration === 1 ? 'hour' : 'hours'}</p>
+                    <p className="text-sm text-gray-500">{isLapSport ? 'Rides / Laps' : 'Duration'}</p>
+                    <p className="font-medium text-gray-900">
+                      {isLapSport ? `${lapsCount} ${lapsCount === 1 ? 'Lap' : 'Laps'}` : `${duration} ${duration === 1 ? 'hour' : 'hours'}`}
+                    </p>
                   </div>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 pb-4">
                   <div>
                     <p className="text-sm text-gray-500">Rate</p>
-                    <p className="font-medium text-gray-900">{formatCurrency(sport.price)} × {duration}hr</p>
+                    <p className="font-medium text-gray-900">
+                      {isLapSport
+                        ? `${formatCurrency(sport.price)} × ${lapsCount} ${lapsCount === 1 ? 'lap' : 'laps'}`
+                        : `${formatCurrency(sport.price)} × ${duration}hr`}
+                    </p>
                   </div>
                 </div>
                 {appliedCoupon && (

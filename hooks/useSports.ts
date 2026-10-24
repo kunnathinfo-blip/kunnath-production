@@ -9,6 +9,9 @@ export interface Sport {
   image: string;
   description: string;
   icon: string;
+  bookingType?: 'hourly' | 'lap';
+  pricingUnit?: string;
+  maxCapacityPerSlot?: number;
 }
 
 export function useSports() {

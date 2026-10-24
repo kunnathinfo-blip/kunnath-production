@@ -18,18 +18,17 @@ const sportBookingSchema = new mongoose.Schema({
   timeSlots: {
     type: [String],
     required: true,
-    validate: {
-      validator: function(v: string[]) {
-        return v.length >= 1 && v.length <= 3;
-      },
-      message: 'You can book between 1 and 3 consecutive hour slots'
-    }
   },
   duration: {
     type: Number,
     required: true,
+    default: 1,
+  },
+  lapsCount: {
+    type: Number,
+    default: 1,
     min: 1,
-    max: 3,
+    max: 10,
   },
   timeSlot: {
     type: String,

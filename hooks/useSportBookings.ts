@@ -32,8 +32,13 @@ export function useSportAvailability(sportId: string, date: string) {
   return useQuery({
     queryKey: ['sportAvailability', sportId, date],
     queryFn: async () => {
-      if (!sportId || !date) return { bookedSlots: [] };
-      const { data } = await api.get<{ bookedSlots: string[] }>(`/sport-bookings/availability/${sportId}/${date}`);
+      if (!sportId || !date) return { bookedSlots: [], slotOccupancy: {}, maxCapacity: 1, isLapType: false };
+      const { data } = await api.get<{
+        bookedSlots: string[];
+        slotOccupancy?: Record<string, number>;
+        maxCapacity?: number;
+        isLapType?: boolean;
+      }>(`/sport-bookings/availability/${sportId}/${date}`);
       return data;
     },
     enabled: !!sportId && !!date,
@@ -72,6 +77,7 @@ export function useCreateSportPaymentOrder() {
       date: string;
       timeSlots: string[];
       duration: number;
+      lapsCount?: number;
       userDetails: {
         name: string;
         email: string;
@@ -85,6 +91,7 @@ export function useCreateSportPaymentOrder() {
         date: orderData.date,
         timeSlots: orderData.timeSlots,
         duration: orderData.duration,
+        lapsCount: orderData.lapsCount,
         userDetails: orderData.userDetails,
         couponCode: orderData.couponCode
       });

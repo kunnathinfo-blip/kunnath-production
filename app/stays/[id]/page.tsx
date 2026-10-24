@@ -1098,19 +1098,13 @@ export default function StayDetailsPage() {
                       key={s._id}
                       href={`/stays/${s._id}`}
                       className={cn(
-                        "px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 flex items-center gap-2 border",
+                        "px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 flex items-center border",
                         isActive
                           ? "bg-primary text-white border-primary shadow-sm"
                           : "bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50"
                       )}
                     >
-                      <span>{s.name} Farm Stay</span>
-                      <span className={cn(
-                        "text-[10px] px-1.5 py-0.5 rounded-full",
-                        isActive ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
-                      )}>
-                        {formatCurrency(s.price)}
-                      </span>
+                      <span>{s.name}</span>
                     </Link>
                   );
                 })}
@@ -1428,10 +1422,6 @@ export default function StayDetailsPage() {
                           <h4 className="font-bold text-sm text-gray-900 group-hover:text-primary transition-colors">
                             {otherStay.name}
                           </h4>
-                          <span className="text-xs font-black text-gray-900">
-                            {formatCurrency(otherStay.price)}
-                            <span className="text-[10px] font-normal text-gray-500">/nt</span>
-                          </span>
                         </div>
                         <span className="text-[11px] text-primary font-bold mt-2 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                           Switch to this stay →

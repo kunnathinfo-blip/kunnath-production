@@ -6,329 +6,415 @@ import { Card } from '@/Components/ui/Card';
 import { Button } from '@/Components/ui/Button';
 import { 
   Crown, 
-  Send, 
-  User, 
+  Sparkles, 
+  Home, 
+  Ticket, 
+  Trophy, 
+  Bike, 
+  Car, 
+  Heart, 
+  Utensils, 
+  Rocket, 
+  Calendar, 
+  CheckCircle2, 
+  ArrowRight, 
   Phone, 
-  Mail, 
-  MessageSquare, 
   ShieldCheck, 
-  ZoomIn, 
   X,
-  Sparkles,
-  CheckCircle2
+  Instagram,
+  Globe
 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import MembershipPosterSlider from '@/Components/membership/MembershipPosterSlider';
+import JoinMembershipModal from '@/Components/membership/JoinMembershipModal';
+
+const POSTERS = ['/membership.jpeg', '/membershippp.jpeg'];
+
+const BENEFITS = [
+  {
+    icon: <Home className="w-5 h-5 text-amber-600" />,
+    title: '2 Complimentary Family Farmstays',
+    badge: '₹20,000+ Value',
+    description: '2BHK private farmhouse stays at Orange or Lotus for up to 10–12 guests. Includes private pool & lawn access.',
+  },
+  {
+    icon: <Ticket className="w-5 h-5 text-orange-600" />,
+    title: '3 Stay Discount Vouchers',
+    badge: '₹15,000 Total Off',
+    description: '₹5,000 off each on three additional farmhouse bookings throughout your 2-year membership.',
+  },
+  {
+    icon: <Trophy className="w-5 h-5 text-emerald-600" />,
+    title: 'Complimentary Team Sports',
+    badge: 'With Every Stay',
+    description: '2 hours of Box Cricket, Sand Volleyball, and Human Foosball included with every eligible farmhouse reservation.',
+  },
+  {
+    icon: <Bike className="w-5 h-5 text-red-600" />,
+    title: '15 Adventure Rides Laps',
+    badge: 'Adults & Kids',
+    description: '15 complimentary laps of ATV & Dirt Bike rides on our custom off-road dirt circuit with every eligible farmhouse booking.',
+  },
+  {
+    icon: <Car className="w-5 h-5 text-blue-600" />,
+    title: 'RC Car Experiences',
+    badge: 'Interactive Fun',
+    description: 'RC Car Sumo Challenge plus a 30-minute hobby-grade remote control car drive across our custom hurdle tracks.',
+  },
+  {
+    icon: <Heart className="w-5 h-5 text-pink-600" />,
+    title: 'Family & Kids Fun Zone',
+    badge: 'All Ages',
+    description: 'Complimentary access to the Kids’ Pet & Play Zone, exotic bird aviary interaction, and indoor recreation games.',
+  },
+  {
+    icon: <Utensils className="w-5 h-5 text-purple-600" />,
+    title: 'Member Dining & Privileges',
+    badge: 'VIP Status',
+    description: 'Special member discounts on catering and food menus, priority reservation windows, and VIP access to upcoming resort attractions.',
+  },
+];
+
+const UPCOMING_2027 = [
+  { title: 'High-Speed RC Off-Roading', note: 'Up to 100 kmph speed trials', emoji: '🏎️' },
+  { title: 'Cottages & Service Apartments', note: 'Extended countryside stays', emoji: '🏡' },
+  { title: 'Open-Air IPL & T20 Screenings', note: 'Giant outdoor stadium displays', emoji: '🏏' },
+  { title: 'Fishing Pond & Live BBQ', note: 'Catch & grill fresh stations', emoji: '🎣' },
+  { title: 'Stargazing & Camping Tents', note: 'Under the night sky glamping', emoji: '🔭' },
+  { title: 'Kids’ Zipline & Play Park', note: 'High-wire adventure fun', emoji: '🪁' },
+  { title: 'Snookball (Football Billiards)', note: 'Giant pool table game', emoji: '⚽' },
+  { title: 'Golf Snooker Green', note: 'Precision putting greens', emoji: '⛳' },
+];
 
 export default function MembershipPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    membershipType: 'Gold Membership (Coming Soon)',
-    message: '',
-  });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleWhatsAppSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { name, phone, email, membershipType, message } = formData;
-
-    const formattedMessage = 
-      `*New Membership Inquiry - Kunnath House*\n\n` +
-      `👤 *Name:* ${name}\n` +
-      `📱 *Phone:* ${phone}\n` +
-      `✉️ *Email:* ${email.trim() ? email : 'Not specified'}\n` +
-      `👑 *Interested Plan:* ${membershipType}\n` +
-      `💬 *Message:* ${message.trim() ? message : 'I am interested in becoming a member of Kunnath House.'}`;
-
-    const encodedText = encodeURIComponent(formattedMessage);
-    const whatsappUrl = `https://wa.me/917702402505?text=${encodedText}`;
-
-    window.open(whatsappUrl, '_blank');
-  };
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [zoomPosterIndex, setZoomPosterIndex] = useState<number | null>(null);
 
   return (
-    <div className="bg-white min-h-screen pb-20 font-sans">
-      {/* Hero Header matching site standard (Commented out for later use)
-      <section className="bg-gray-900 text-white py-14 sm:py-16 md:py-20 relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2000')" }}
-        />
-        <Container className="relative z-10 text-center max-w-4xl">
-          <span className="text-primary font-bold tracking-widest uppercase text-xs mb-3 inline-flex items-center justify-center gap-1.5 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15">
-            <Sparkles size={16} /> Exclusive Membership Access
-          </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold mb-4 tracking-tight">
-            Kunnath House Membership
-          </h1>
-          <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
-            Unlock priority stay reservations, private pool access, sports arena perks, and bespoke hospitality crafted for recreation.
-          </p>
-        </Container>
-      </section>
-      */}
+    <div className="bg-white min-h-screen pb-24 font-sans">
+      {/* 1. HERO SECTION */}
+      <section className="relative bg-gradient-to-b from-amber-500/10 via-orange-500/5 to-white py-12 sm:py-16 border-b border-gray-100">
+        <Container className="max-w-[1440px]">
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+            {/* Crown Tag */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-900 text-xs font-black uppercase tracking-wider mb-4 shadow-xs">
+              <Crown size={15} className="text-amber-600" />
+              <span>Founder Member Programme • Limited Enrolments</span>
+            </div>
 
-      {/* Main Two-Column Section */}
-      <Container className="py-12 sm:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-stretch">
-          
-          {/* LEFT COLUMN: Poster Showcase */}
-          <div className="lg:col-span-6 flex flex-col justify-between">
-            <Card className="rounded-[32px] overflow-hidden border border-gray-100 bg-white p-2.5 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] flex flex-col justify-between h-full">
-              <div className="relative aspect-auto overflow-hidden rounded-[24px] group">
-                <img
-                  src="/membership.jpeg"
-                  alt="Kunnath House Gold Membership Coming Soon Poster"
-                  className="w-full h-auto object-cover rounded-[24px] group-hover:scale-[1.02] transition-transform duration-500 cursor-pointer"
-                  onClick={() => setIsModalOpen(true)}
-                />
-                <div 
-                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white gap-2 font-bold text-sm cursor-pointer"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <ZoomIn className="w-5 h-5 text-white" />
-                  <span>Click to enlarge poster</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4 font-display">
+              Kunnath House <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Gold Membership</span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-medium mb-6">
+              Two years of private luxury stays, adventure rides & unforgettable family memories.
+            </p>
+
+            {/* Price Pill & Single CTA */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-2.5 sm:p-3 rounded-3xl border border-gray-200/90 shadow-xl shadow-amber-500/5">
+              <div className="px-5 py-2 text-center sm:text-left">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                  Membership Fee
+                </span>
+                <div className="flex items-baseline justify-center sm:justify-start gap-1.5">
+                  <span className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+                    {formatCurrency(29999)}
+                  </span>
+                  <span className="text-xs font-bold text-gray-500">/ 2 Years</span>
                 </div>
               </div>
 
-              <div className="p-6 pt-5 flex flex-col justify-between flex-1">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-amber-700 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
-                      <Crown size={14} className="text-amber-600" /> Gold Membership
-                    </span>
+              <Button
+                size="lg"
+                onClick={() => setIsJoinModalOpen(true)}
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl font-black text-base bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                <Crown size={18} />
+                <span>Join Membership</span>
+                <ArrowRight size={16} />
+              </Button>
+            </div>
+
+            {/* Quick Status Bar */}
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-6 text-xs text-gray-500 font-bold">
+              <div className="flex items-center gap-1.5">
+                <Calendar size={14} className="text-amber-600" />
+                <span>Validity: <strong className="text-gray-900">2 Full Years</strong></span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Sparkles size={14} className="text-amber-600" />
+                <span>Pre-Launch: <strong className="text-gray-900">11 Oct 2026</strong></span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 size={14} className="text-emerald-600" />
+                <span>Benefits Begin: <strong className="text-gray-900">25 Nov 2026</strong></span>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* 2. MAIN SHOWCASE: POSTER SLIDER & HIGHLIGHTS */}
+      <section className="py-12 sm:py-16">
+        <Container className="max-w-[1440px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+            
+            {/* LEFT: Auto-scrolling Poster Window */}
+            <div className="lg:col-span-5">
+              <Card className="rounded-[32px] p-3 border border-gray-100 bg-white shadow-[0_20px_45px_-10px_rgba(0,0,0,0.08)] flex flex-col">
+                <div className="flex items-center justify-between px-3 py-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="text-xs font-black tracking-wider uppercase text-gray-700">Official Posters</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-gray-400">Auto-Scrolling</span>
+                </div>
+
+                {/* Auto-scroll poster slider */}
+                <MembershipPosterSlider
+                  posters={POSTERS}
+                  onOpenZoom={(idx) => setZoomPosterIndex(idx)}
+                  autoPlayInterval={4000}
+                />
+
+                {/* Bottom Bar on Poster */}
+                <div className="p-4 pt-3 space-y-3">
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>Swipe or click arrows to view slides</span>
                     <button
-                      onClick={() => setIsModalOpen(true)}
-                      className="text-primary font-bold text-xs hover:underline flex items-center gap-1 cursor-pointer"
+                      onClick={() => setZoomPosterIndex(0)}
+                      className="font-bold text-primary hover:underline cursor-pointer"
                     >
-                      <ZoomIn className="w-3.5 h-3.5" />
-                      <span>Enlarge Poster</span>
+                      Enlarge Poster
                     </button>
                   </div>
 
-                  {/* Status Highlight Row */}
-                  <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50/60 to-orange-50/60 border border-amber-100 flex items-center justify-between mb-5">
+                  <Button
+                    fullWidth
+                    size="md"
+                    onClick={() => setIsJoinModalOpen(true)}
+                    className="py-3 rounded-xl font-black bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-md hover:shadow-lg cursor-pointer"
+                  >
+                    Join Membership • ₹29,999
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            {/* RIGHT: Benefits Grid */}
+            <div className="lg:col-span-7 space-y-6">
+              <div>
+                <span className="text-xs font-black tracking-widest uppercase text-amber-600 mb-1.5 block">
+                  Exclusive Privileges
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight leading-tight">
+                  Your Membership Benefits
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Enjoy over ₹80,000+ worth of stays, sports, and recreation perks across 2 years.
+                </p>
+              </div>
+
+              {/* Benefits Cards Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {BENEFITS.map((b, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-2xl bg-gray-50/70 border border-gray-100 hover:border-amber-200 hover:bg-white hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                  >
                     <div>
-                      <span className="text-[10px] font-black text-amber-800/80 uppercase tracking-widest block mb-0.5">
-                        Membership Status
-                      </span>
-                      <span className="text-2xl font-black text-gray-900">Coming Soon</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-                        Official Inquiry
-                      </span>
-                      <span className="text-xs font-bold text-primary">
-                        +91 77024 02505
-                      </span>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="w-10 h-10 rounded-xl bg-white border border-gray-200/80 shadow-xs flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                          {b.icon}
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full shrink-0">
+                          {b.badge}
+                        </span>
+                      </div>
+
+                      <h3 className="text-sm font-black text-gray-900 leading-snug mb-1 group-hover:text-primary transition-colors">
+                        {b.title}
+                      </h3>
+
+                      <p className="text-xs text-gray-500 leading-relaxed font-normal">
+                        {b.description}
+                      </p>
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  {/* Key Highlights Grid */}
-                  <div className="grid grid-cols-2 gap-2.5 text-xs font-bold text-gray-700">
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Private Luxury Stays</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Elite Sports Club Perks</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Party Lawn & Poolside</span>
-                    </div>
-                    <div className="flex items-center gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                      <span>Priority Reservations</span>
-                    </div>
+              {/* Founder Guarantee Box */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 border border-amber-300/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <ShieldCheck size={28} className="text-amber-600 shrink-0" />
+                  <div>
+                    <h4 className="text-xs font-black text-gray-900 uppercase tracking-wide">
+                      Exclusive Circle Guarantee
+                    </h4>
+                    <p className="text-xs text-gray-600">
+                      Limited membership slots released. Enrolments close once the initial founder batch is filled.
+                    </p>
                   </div>
                 </div>
 
                 <Button
-                  fullWidth
-                  size="md"
-                  variant="outline"
-                  className="mt-6 py-3 text-sm font-bold rounded-xl border-primary text-primary hover:bg-primary/5 transition-all"
-                  onClick={() => setIsModalOpen(true)}
+                  size="sm"
+                  onClick={() => setIsJoinModalOpen(true)}
+                  className="shrink-0 px-5 py-2.5 rounded-xl font-black bg-gray-900 hover:bg-black text-white text-xs cursor-pointer shadow-sm"
                 >
-                  View Poster Fullscreen
+                  Enrol Now
                 </Button>
               </div>
-            </Card>
+            </div>
+
+          </div>
+        </Container>
+      </section>
+
+      {/* 3. COMING SOON IN 2027 SECTION */}
+      <section className="py-12 bg-gray-50/70 border-y border-gray-100">
+        <Container className="max-w-[1440px]">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-8">
+            <div>
+              <span className="text-xs font-black tracking-widest uppercase text-primary inline-flex items-center gap-1.5 mb-1.5">
+                <Rocket size={14} /> The Future of Kunnath
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+                Coming Soon in 2027
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                Members get automatic priority access and special privileges for upcoming mega attractions.
+              </p>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsJoinModalOpen(true)}
+              className="rounded-xl border-gray-300 text-gray-800 font-bold hover:bg-white cursor-pointer"
+            >
+              Enquire on WhatsApp
+            </Button>
           </div>
 
-          {/* RIGHT COLUMN: Membership Inquiry Form Card */}
-          <div className="lg:col-span-6 flex flex-col justify-between">
-            <Card className="rounded-[32px] p-6 sm:p-8 md:p-10 border border-gray-100 bg-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] flex flex-col justify-between h-full">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold text-primary uppercase tracking-widest block">
-                    INQUIRE NOW
-                  </span>
-                  <span className="bg-amber-50 text-amber-700 border border-amber-200/80 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                    <Crown size={13} className="text-amber-600" /> Coming Soon
-                  </span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
+            {UPCOMING_2027.map((item, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-2xl bg-white border border-gray-200/80 shadow-xs hover:shadow-md hover:border-gray-300 transition-all flex items-start gap-3"
+              >
+                <span className="text-2xl shrink-0 p-2 bg-gray-50 rounded-xl border border-gray-100">
+                  {item.emoji}
+                </span>
+                <div>
+                  <h4 className="text-xs font-black text-gray-900 leading-tight mb-0.5">
+                    {item.title}
+                  </h4>
+                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
+                    {item.note}
+                  </p>
                 </div>
-
-                <h2 className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-2">
-                  Request Membership Details
-                </h2>
-                <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                  Register your interest early. Clicking send will directly connect you with our team on WhatsApp.
-                </p>
-
-                <form onSubmit={handleWhatsAppSubmit} className="space-y-4">
-                  {/* Full Name */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-700 block">
-                      Full Name <span className="text-primary">*</span>
-                    </label>
-                    <div className="relative">
-                      <User className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="e.g. Rahul Sharma"
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Mobile / WhatsApp Number */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-700 block">
-                      Mobile / WhatsApp Number <span className="text-primary">*</span>
-                    </label>
-                    <div className="relative">
-                      <Phone className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="tel"
-                        name="phone"
-                        required
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="e.g. 9876543210"
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Email Address */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-700 block">
-                      Email Address <span className="text-gray-400 font-normal">(Optional)</span>
-                    </label>
-                    <div className="relative">
-                      <Mail className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="e.g. rahul@example.com"
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Interested Membership Tier */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-700 block">
-                      Interested Membership Tier
-                    </label>
-                    <div className="relative">
-                      <Crown className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      <select
-                        name="membershipType"
-                        value={formData.membershipType}
-                        onChange={handleChange}
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none cursor-pointer"
-                      >
-                        <option value="Gold Membership (Coming Soon)">Gold Membership (Coming Soon)</option>
-                        <option value="Platinum VIP Membership">Platinum VIP Membership</option>
-                        <option value="General Inquiry">General Membership Inquiry</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Message */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-700 block">
-                      Message / Special Requirements
-                    </label>
-                    <div className="relative">
-                      <MessageSquare className="w-5 h-5 text-gray-400 absolute left-4 top-4" />
-                      <textarea
-                        name="message"
-                        rows={3}
-                        value={formData.message}
-                        onChange={handleChange}
-                        placeholder="Tell us any specific preferences or questions..."
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Send Button */}
-                  <Button
-                    type="submit"
-                    fullWidth
-                    size="lg"
-                    className="py-4 text-base font-bold rounded-2xl bg-primary text-white hover:bg-primary-hover shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>Send Inquiry via WhatsApp</span>
-                  </Button>
-                </form>
               </div>
-
-              <div className="pt-6 mt-6 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
-                <div className="flex items-center gap-2 text-primary font-bold">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Direct Team Connection</span>
-                </div>
-                <span className="text-gray-600 font-semibold">WhatsApp: +91 7702402505</span>
-              </div>
-            </Card>
+            ))}
           </div>
 
-        </div>
-      </Container>
+          <p className="text-[11px] text-gray-400 text-center mt-6 italic">
+            * Benefits are subject to availability and membership terms. Upcoming attractions are planned for 2027; opening dates may vary.
+          </p>
+        </Container>
+      </section>
 
-      {/* Lightbox Modal for HD Poster */}
-      {isModalOpen && (
+      {/* 4. FOOTER CALL-TO-ACTION BANNER */}
+      <section className="pt-12">
+        <Container className="max-w-[1440px]">
+          <div className="rounded-[32px] bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-8 sm:p-12 text-white text-center relative overflow-hidden shadow-2xl">
+            <div className="relative z-10 max-w-2xl mx-auto space-y-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                <Crown size={14} /> Founder Batch Closing Soon
+              </span>
+
+              <h2 className="text-2xl sm:text-4xl font-black font-display tracking-tight">
+                Secure Your Founder Place Today
+              </h2>
+
+              <p className="text-sm sm:text-base text-gray-300 font-medium leading-relaxed">
+                Reply <strong>GOLD</strong> to enquire, confirm availability, and secure your 2-year membership at Kunnath House.
+              </p>
+
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button
+                  size="lg"
+                  onClick={() => setIsJoinModalOpen(true)}
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl font-black text-base bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95"
+                >
+                  <Crown size={18} />
+                  <span>Join Gold Membership • ₹29,999</span>
+                </Button>
+              </div>
+
+              <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-gray-400">
+                <a
+                  href="tel:7900306655"
+                  className="flex items-center gap-1.5 hover:text-white transition"
+                >
+                  <Phone size={13} className="text-primary" />
+                  <span>7900306655</span>
+                </a>
+                <a
+                  href="tel:7702402505"
+                  className="flex items-center gap-1.5 hover:text-white transition"
+                >
+                  <Phone size={13} className="text-primary" />
+                  <span>7702402505</span>
+                </a>
+                <a
+                  href="https://instagram.com/kunnath_farmhouse"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 hover:text-white transition"
+                >
+                  <Instagram size={13} className="text-pink-400" />
+                  <span>@kunnath_farmhouse</span>
+                </a>
+                <span className="text-gray-500">
+                  Kunnath House Arya Pvt Ltd
+                </span>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Join Membership Modal */}
+      <JoinMembershipModal
+        isOpen={isJoinModalOpen}
+        onClose={() => setIsJoinModalOpen(false)}
+        price={29999}
+      />
+
+      {/* Fullscreen Poster Zoom Modal */}
+      {zoomPosterIndex !== null && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-300"
-          onClick={() => setIsModalOpen(false)}
+          className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200"
+          onClick={() => setZoomPosterIndex(null)}
         >
+          <button
+            onClick={() => setZoomPosterIndex(null)}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-11 h-11 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg"
+            aria-label="Close fullscreen"
+          >
+            <X size={24} />
+          </button>
+
           <div 
-            className="relative max-w-5xl w-full max-h-[92vh] flex flex-col items-center justify-center"
+            className="relative max-w-3xl max-h-[94vh] flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute -top-12 right-0 text-white bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-md transition-all cursor-pointer shadow-lg"
-              aria-label="Close poster view"
-            >
-              <X className="w-6 h-6" />
-            </button>
             <img
-              src="/membership.jpeg"
-              alt="Kunnath House Membership Poster Full Resolution"
-              className="w-full h-auto max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+              src={POSTERS[zoomPosterIndex]}
+              alt={`Kunnath Gold Membership Poster ${zoomPosterIndex + 1}`}
+              className="max-w-full max-h-[92vh] object-contain rounded-2xl shadow-2xl"
             />
           </div>
         </div>
